@@ -1,0 +1,111 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Luanti textdomain mcl_buckets x.x.x\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"X-Generator: mtt_convert 0.1.1\n"
+
+msgid "Empty Bucket"
+msgstr "空桶"
+
+msgid "A bucket can be used to collect and release liquids."
+msgstr "桶可以用來收集和倒出液體。"
+
+msgid "Punch a liquid source to collect it. You can then use the filled bucket to place the liquid somewhere else."
+msgstr "擊打一個液體源頭來收集它。然後你可以用裝滿的桶把液體放在其他地方。"
+
+msgid "Collects liquids"
+msgstr "攜帶流體"
+
+msgid "Bucket of Axolotl"
+msgstr ""
+
+msgid "Bucket of Cod"
+msgstr ""
+
+msgid "Bucket of Salmon"
+msgstr ""
+
+msgid "Bucket of Tropical Fish"
+msgstr ""
+
+msgid "Place it to empty the bucket and place a Cod. Obtain by right clicking on a Cod with a bucket of water."
+msgstr ""
+
+msgid "Place it to empty the bucket and place a Salmon. Obtain by right clicking on a Salmon with a bucket of water."
+msgstr ""
+
+msgid "Place it to empty the bucket and place a Tropical Fish. Obtain by right clicking on a Tropical Fish with a bucket of water."
+msgstr ""
+
+msgid "Place it to empty the bucket and place an Axolotl. Obtain by right clicking on an Axolotl with a bucket of water."
+msgstr ""
+
+msgid "Places a water source and a Cod."
+msgstr ""
+
+msgid "Places a water source and a Salmon."
+msgstr ""
+
+msgid "Places a water source and a Tropical Fish."
+msgstr ""
+
+msgid "Places a water source and an Axolotl."
+msgstr ""
+
+msgid "This bucket is filled with water and a Cod."
+msgstr ""
+
+msgid "This bucket is filled with water and a Salmon."
+msgstr ""
+
+msgid "This bucket is filled with water and a Tropical Fish."
+msgstr ""
+
+msgid "This bucket is filled with water and an Axolotl."
+msgstr ""
+
+msgid "Lava Bucket"
+msgstr "熔岩桶"
+
+msgid "A bucket can be used to collect and release liquids. This one is filled with hot lava, safely contained inside. Use with caution."
+msgstr "桶可以用來收集和釋放液體。這個桶裡裝的是熱的熔岩，安全地裝在裡面。使用時要小心！"
+
+msgid "Get in a safe distance and place the bucket to empty it and create a lava source at this spot. Don't burn yourself!"
+msgstr "在安全距離內，將熔岩倒出，在這個地方創造一個熔岩源頭。不要燒到自己!"
+
+msgid "Places a lava source"
+msgstr "放置熔岩源頭"
+
+msgid "Water Bucket"
+msgstr "水桶"
+
+msgid "A bucket can be used to collect and release liquids. This one is filled with water."
+msgstr "桶可以用來收集和倒出液體。這個桶裡裝的是水。"
+
+msgid "Place it to empty the bucket and create a water source."
+msgstr "放置它以清空水桶並創建水源。"
+
+msgid "Places a water source"
+msgstr "放置水源"
+
+msgid "River Water Bucket"
+msgstr "河水桶"
+
+msgid "A bucket can be used to collect and release liquids. This one is filled with river water."
+msgstr "桶可以用來收集和倒出液體。這個桶裡裝的是河水。"
+
+msgid "Place it to empty the bucket and create a river water source."
+msgstr "放置它以清空水桶並創建河水源。"
+
+msgid "Places a river water source"
+msgstr "放置河水源頭"
+

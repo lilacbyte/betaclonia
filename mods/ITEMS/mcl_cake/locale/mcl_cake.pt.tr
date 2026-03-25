@@ -1,0 +1,12 @@
+# textdomain: mcl_cake
+Cake=Bolo
+With 7 tasty slices!=Com 7 fatias deliciosas!
+Hunger points: +@1 per slice=Pontos de fome: +@1 por fatia
+Cakes can be placed and eaten to restore hunger points. A cake has 7 slices. Each slice restores 2 hunger points and 0.4 saturation points. Cakes will be destroyed when dug or when the block below them is broken.=Bolos podem ser colocados e comidos para restaurar pontos de fome. Um bolo contém 7 pedaços. Cada pedaço restaura 2 pontos de fome e 0.4 pontos de saturação. Bolos são destruídos quando cavados ou quando o blocos abaixo deles são quebrados.
+Place the cake anywhere, then rightclick it to eat a single slice. You can't eat from the cake when your hunger bar is full.=Coloque o bolo em qualquer lugar, depois clique nele com o botão direito para comer um único pedaço. Você não consegue comer quando sua barra de fome estiver cheia.
+Cake (6 Slices Left)=Bolo (6 Fatias Restantes)
+Cake (5 Slices Left)=Bolo (5 Fatias Restantes)
+Cake (4 Slices Left)=Bolo (4 Fatias Restantes
+Cake (3 Slices Left)=Bolo (3 Fatias Restantes)
+Cake (2 Slices Left)=Bolo (2 Fatias Restantes)
+Cake (1 Slice Left)=Bolo (1 Fatia Restante)

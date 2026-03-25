@@ -1,0 +1,39 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Luanti textdomain findbiome x.x.x\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"X-Generator: mtt_convert 0.1.1\n"
+
+msgid "Find and teleport to biome"
+msgstr "找尋和傳送至生態域"
+
+msgid "<biome>"
+msgstr "<生態域>"
+
+msgid "No player."
+msgstr "沒有玩家。"
+
+msgid "Biome found at @1."
+msgstr "生態域在 @1 找到。"
+
+msgid "No biome found!"
+msgstr "生態域找不到！"
+
+msgid "Biome does not exist!"
+msgstr "生態域不存在！"
+
+msgid "List all biomes"
+msgstr "列出所有生態域"
+
+msgid "No biomes."
+msgstr "沒有生態域。"
+

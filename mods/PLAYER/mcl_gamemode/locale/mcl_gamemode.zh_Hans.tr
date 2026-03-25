@@ -1,0 +1,6 @@
+# textdomain: mcl_gamemode
+[<gamemode>] [<player>]=[<游戏模式>] [<玩家>]
+Change gamemode (survival/creative) for yourself or player=为你自己或其他玩家更改游戏模式（生存模式/创造模式）
+Player not online=玩家离线
+Failed to set Gamemode @1 for player @2=未能为玩家@2设置游戏模式@1
+Gamemode for player @1: @2=玩家@1的游戏模式：@2

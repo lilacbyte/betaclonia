@@ -1,0 +1,327 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Luanti textdomain mobs_mc x.x.x\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"X-Generator: mtt_convert 0.1.1\n"
+
+msgid "Axolotl"
+msgstr ""
+
+msgid "Bat"
+msgstr "Kelelawar"
+
+msgid "Blaze"
+msgstr ""
+
+msgid "Chicken"
+msgstr "Ayam"
+
+msgid "Cod"
+msgstr "Ikan kod"
+
+msgid "Cow"
+msgstr "Sapi"
+
+msgid "Mooshroom"
+msgstr ""
+
+msgid "Creeper"
+msgstr ""
+
+msgid "Charged Creeper"
+msgstr "Creeper Menyala"
+
+msgid "Dolphin"
+msgstr "Lumba-lumba"
+
+msgid "Ender Dragon"
+msgstr "Naga Ender"
+
+msgid "Enderman"
+msgstr ""
+
+msgid "Endermite"
+msgstr ""
+
+msgid "Ghast"
+msgstr ""
+
+msgid "Ghast Fireball"
+msgstr ""
+
+msgid "Guardian"
+msgstr "Penjaga"
+
+msgid "Elder Guardian"
+msgstr "Tetua Penjaga"
+
+msgid "Hoglin"
+msgstr ""
+
+msgid "Zoglin"
+msgstr ""
+
+msgid "Baby Hoglin"
+msgstr "Bayi Hoglin"
+
+msgid "Horse"
+msgstr "Kuda"
+
+msgid "Skeleton Horse"
+msgstr "Kuda Tengkorak"
+
+msgid "Zombie Horse"
+msgstr "Kuda Zombi"
+
+msgid "Donkey"
+msgstr "Keledai"
+
+msgid "Mule"
+msgstr "Bagal"
+
+msgid "Sneak to dismount"
+msgstr "Menyelinap untuk turun"
+
+msgid "Iron Golem"
+msgstr "Golem Besi"
+
+msgid "Llama"
+msgstr "Ilama"
+
+msgid "Ocelot"
+msgstr "Oselot"
+
+msgid "Cat"
+msgstr "Kucing"
+
+msgid "Parrot"
+msgstr "Burung Beo"
+
+msgid "Pig"
+msgstr "Babi"
+
+msgid "Piglin"
+msgstr ""
+
+msgid "Zombiefied Piglin"
+msgstr "Piglin Zombifikasi"
+
+msgid "Piglin Brute"
+msgstr "Piglin Brutal"
+
+msgid "Zombie Piglin"
+msgstr "Piglin Zombi"
+
+msgid "Pillager"
+msgstr "Penjarah"
+
+msgid "Polar Bear"
+msgstr "Beruang Kutub"
+
+msgid "Rabbit"
+msgstr "Kelinci"
+
+msgid "Killer Bunny"
+msgstr "Kelinci Pembunuh"
+
+msgid "Salmon"
+msgstr ""
+
+msgid "Sheep"
+msgstr "Domba"
+
+msgid "Shulker"
+msgstr ""
+
+msgid "Silverfish"
+msgstr "Gegat"
+
+msgid "Skeleton"
+msgstr "Tengkorak"
+
+msgid "Stray"
+msgstr ""
+
+msgid "Wither Skeleton"
+msgstr "Tengkorak Layu"
+
+msgid "Slime - big"
+msgstr "Slime - besar"
+
+msgid "Slime - small"
+msgstr "Slime - kecil"
+
+msgid "Slime - tiny"
+msgstr "Slime - mini"
+
+msgid "Magma Cube - big"
+msgstr "Kubus Magma - besar"
+
+msgid "Magma Cube - small"
+msgstr "Kubus Magma - kecil"
+
+msgid "Magma Cube - tiny"
+msgstr "Kubus Magma - mini"
+
+msgid "Magma Cube"
+msgstr "Kubus Magma"
+
+msgid "Slime"
+msgstr ""
+
+msgid "Snow Golem"
+msgstr "Golem Salju"
+
+msgid "Spider"
+msgstr "Laba-laba"
+
+msgid "Cave Spider"
+msgstr "Laba-laba Goa"
+
+msgid "Squid"
+msgstr "Cumi-cumi"
+
+msgid "Glow Squid"
+msgstr "Cumi-cumi Bersinar"
+
+msgid "Strider"
+msgstr ""
+
+msgid "Baby Strider"
+msgstr "Bayi Strider"
+
+msgid "Tropical Fish"
+msgstr "Ikan Tropis"
+
+msgid "Tropical fish"
+msgstr "Ikan tropis"
+
+msgid "Vex"
+msgstr ""
+
+msgid "Villager"
+msgstr "Penduduk"
+
+msgid "Evoker"
+msgstr ""
+
+msgid "Illusioner"
+msgstr "Ilusionis"
+
+msgid "Vindicator"
+msgstr "Pembela"
+
+msgid "Zombie Villager"
+msgstr "Zombi Penduduk"
+
+msgid "@1 sleeps here"
+msgstr "@1 tidur disini"
+
+msgid "A villager sleeps here"
+msgstr "Penduduk tidur disini"
+
+msgid "@1 works here"
+msgstr "@1 bekerja disini"
+
+msgid "A villager works here"
+msgstr "Penduduk bekerja disini"
+
+msgid "Unemployed"
+msgstr "Pengangguran"
+
+msgid "Farmer"
+msgstr "Petani"
+
+msgid "Fisherman"
+msgstr "Nelayan"
+
+msgid "Fletcher"
+msgstr ""
+
+msgid "Shepherd"
+msgstr "Gembala"
+
+msgid "Librarian"
+msgstr "Pustakawan"
+
+msgid "Cartographer"
+msgstr "Kartogram"
+
+msgid "Armorer"
+msgstr "Pandai Besi Zirah"
+
+msgid "Leatherworker"
+msgstr "Pengrajin Kulit"
+
+msgid "Butcher"
+msgstr "Tukang Daging"
+
+msgid "Weapon Smith"
+msgstr "Empu"
+
+msgid "Tool Smith"
+msgstr "Pandai Besi Alat"
+
+msgid "Cleric"
+msgstr "Pendeta"
+
+msgid "Mason"
+msgstr "Tukang Batu"
+
+msgid "Nitwit"
+msgstr "Dungu"
+
+msgid "Wandering Trader"
+msgstr "Pengembara"
+
+msgid "Novice"
+msgstr "Pemula"
+
+msgid "Apprentice"
+msgstr "Magang"
+
+msgid "Journeyman"
+msgstr "Ahli"
+
+msgid "Expert"
+msgstr "Pakar"
+
+msgid "Master"
+msgstr "Sepuh"
+
+msgid "Witch"
+msgstr "Penyihir"
+
+msgid "Wither"
+msgstr "Layu"
+
+msgid "Wolf"
+msgstr "Serigala"
+
+msgid "Dog"
+msgstr "Anjing"
+
+msgid "Zombie"
+msgstr "Zombi"
+
+msgid "Baby Zombie"
+msgstr "Bayi Zombi"
+
+msgid "Husk"
+msgstr "Sekam"
+
+msgid "Baby Husk"
+msgstr "Bayi Sekam"
+
+msgid "Zombified Piglin"
+msgstr "Zombifikasi Piglin"
+

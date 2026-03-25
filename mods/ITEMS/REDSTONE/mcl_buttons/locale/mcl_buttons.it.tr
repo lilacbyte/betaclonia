@@ -1,0 +1,9 @@
+# textdomain: mcl_buttons
+Provides redstone power when pushed=Fornisce la corrente di pietrarossa quando viene premuto
+Push duration: @1s=Durata di pressione: @1s
+Pushable by arrow=
+Use the button to push it.=Utilizzare il pulsante per premerlo.
+Stone Button=Pulsante di pietra
+A stone button is a redstone component made out of stone which can be pushed to provide redstone power. When pushed, it powers adjacent redstone components for 1 second.=
+Polished Blackstone Button=Pulsante di pietranera levigata
+A polished blackstone button is a redstone component made out of polished blackstone which can be pushed to provide redstone power. When pushed, it powers adjacent redstone components for 1 second.=

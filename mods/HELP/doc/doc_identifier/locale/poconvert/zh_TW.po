@@ -1,0 +1,66 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Luanti textdomain doc_identifier x.x.x\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"X-Generator: mtt_convert 0.1.1\n"
+
+msgid "No help entry for this item could be found."
+msgstr "找不到此物品的幫助條目。"
+
+msgid "No help entry for this block could be found."
+msgstr "找不到此方塊的幫助條目。"
+
+msgid "Error: This node, item or object is undefined. This is always an error."
+msgstr "錯誤：該方塊、物品或實體未定義。這總是一個錯誤。"
+
+msgid "This can happen for the following reasons:"
+msgstr "發生這種情況的原因有機會是："
+
+msgid "• The mod which is required for it is not enabled"
+msgstr "• 未啟用所需的MOD"
+
+msgid "• The author of the game or a mod has made a mistake"
+msgstr "• 遊戲或mod的作者犯了一個錯誤"
+
+msgid "It appears to originate from the mod “@1”, which is enabled."
+msgstr "它似乎來自以啟用的mod「@1」。"
+
+msgid "It appears to originate from the mod “@1”, which is not enabled!"
+msgstr "它似乎來自沒啟用的mod「@1」！"
+
+msgid "Its identifier is “@1”."
+msgstr "其標識符為「@1」。"
+
+msgid "This block cannot be identified because the world has not materialized at this point yet. Try again in a few seconds."
+msgstr "方塊所在的區塊未加載，請等一下在試一次。"
+
+msgid "No help entry for this object could be found."
+msgstr "找不到此實體的幫助條目。"
+
+msgid "This is a player."
+msgstr "這是一個玩家。"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Lookup Tool"
+msgstr "幫助工具"
+
+msgid "Show help for pointed thing"
+msgstr "顯示選中方塊的資訊"
+
+msgid "This useful little helper can be used to quickly learn more about about one's closer environment. It identifies and analyzes blocks, items and other things and it shows extensive information about the thing on which it is used."
+msgstr "這個有用的小幫手可以用來快速了解自己所處的近距離環境。它可以識別和分析區塊、物品和其他事物。當你對着一個方塊、物品或實體使用它時，可以顯示出那個事物的大量信息。"
+
+msgid "Punch any block, item or other thing about you wish to learn more about. This will open up the appropriate help entry. The tool comes in two modes which are changed by using. In liquid mode, this tool points to liquids as well while in solid mode this is not the case."
+msgstr "擊打任何你想了解更多的方塊、物品或其他事情。這將打開相應的幫助條目。該工具有兩種模式，可以通過使用來改變。在液體模式下，這個工具也會指向液體，而在固體模式下則不會這樣。"
+

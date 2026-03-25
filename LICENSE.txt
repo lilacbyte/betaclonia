@@ -1,0 +1,7 @@
+GPL-3.0-only for code
+CC-BY-SA-4.0 for media. 
+
+see LEGAL.md file for further nformation
+
+text of the GNU General Public License version 3 is in the file "GNU GPL v3 license text.txt"
+text of the CC-BY-SA-4.0 license in file CC-BY-SA-4.0.txt

@@ -1,0 +1,4 @@
+--minetest.register_alias("mcl_flowerpots:flower_pot_crimson fungus", "mcl_flowerpots:flower_pot_crimson_fungus")--removed
+--minetest.register_alias("mcl_flowerpots:flower_pot_crimson roots", "mcl_flowerpots:flower_pot_crimson_roots")--removed
+--minetest.register_alias("mcl_flowerpots:flower_pot_warped fungus", "mcl_flowerpots:flower_pot_warped_fungus")--removed
+--minetest.register_alias("mcl_flowerpots:flower_pot_warped roots", "mcl_flowerpots:flower_pot_warped_roots")--removed

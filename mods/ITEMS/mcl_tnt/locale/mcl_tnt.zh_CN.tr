@@ -1,0 +1,7 @@
+# textdomain: mcl_tnt
+An explosive device. When it explodes, it will hurt living beings and destroy blocks around it. TNT has an explosion radius of @1. With a small chance, blocks may drop as an item (as if being mined) rather than being destroyed. TNT can be ignited by tools, explosions, fire, lava and redstone signals.=一种爆炸装置。当其爆炸时，会对生物造成伤害并破坏周围的方块。TNT的爆炸半径为@1。有较小的几率，方块可能会作为物品掉落（就好像是被开采过一样），而不是直接被摧毁。TNT可以通过工具、爆炸、火焰、岩浆以及红石信号来引爆。
+An explosive device. When it explodes, it will hurt living beings. TNT has an explosion radius of @1. TNT can be ignited by tools, explosions, fire, lava and redstone signals.=一种爆炸装置。当其爆炸时，会对生物造成伤害。TNT的爆炸半径为@1。TNT可以通过工具、爆炸、火焰、岩浆以及红石信号来引爆。
+TNT=TNT（炸药）
+Ignited by tools, explosions, fire, lava, redstone power=可由工具、爆炸、火焰、岩浆、红石能量来引燃
+Explosion radius: @1=爆炸半径：@1
+Place the TNT and ignite it with one of the methods above. Quickly get in safe distance. The TNT will start to be affected by gravity and explodes in 4 seconds.=放置好TNT，然后用上述方法之一将其引燃。迅速撤离到安全距离之外。TNT将开始受重力影响，并在4秒后爆炸。

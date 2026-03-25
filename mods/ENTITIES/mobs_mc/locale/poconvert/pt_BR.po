@@ -1,0 +1,327 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Luanti textdomain mobs_mc x.x.x\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"X-Generator: mtt_convert 0.1.1\n"
+
+msgid "Axolotl"
+msgstr "Axolote"
+
+msgid "Bat"
+msgstr "Morcego"
+
+msgid "Blaze"
+msgstr "Blaze"
+
+msgid "Chicken"
+msgstr "Galinha"
+
+msgid "Cod"
+msgstr "Bacalhau"
+
+msgid "Cow"
+msgstr "Vaca"
+
+msgid "Mooshroom"
+msgstr "Coguvaca"
+
+msgid "Creeper"
+msgstr "Creeper"
+
+msgid "Charged Creeper"
+msgstr ""
+
+msgid "Dolphin"
+msgstr "Golfinho"
+
+msgid "Ender Dragon"
+msgstr "Dragão do Fim"
+
+msgid "Enderman"
+msgstr "Enderman"
+
+msgid "Endermite"
+msgstr "Endermite"
+
+msgid "Ghast"
+msgstr "Ghast"
+
+msgid "Ghast Fireball"
+msgstr ""
+
+msgid "Guardian"
+msgstr "Guardião"
+
+msgid "Elder Guardian"
+msgstr "Guardião Ancião"
+
+msgid "Hoglin"
+msgstr "Hoglin"
+
+msgid "Zoglin"
+msgstr "Zoglin"
+
+msgid "Baby Hoglin"
+msgstr ""
+
+msgid "Horse"
+msgstr "Cavalo"
+
+msgid "Skeleton Horse"
+msgstr "Cavalo Esqueleto"
+
+msgid "Zombie Horse"
+msgstr "Cavalo Zumbi"
+
+msgid "Donkey"
+msgstr "Burro"
+
+msgid "Mule"
+msgstr "Mula"
+
+msgid "Sneak to dismount"
+msgstr ""
+
+msgid "Iron Golem"
+msgstr "Golem de Ferro"
+
+msgid "Llama"
+msgstr "Lhama"
+
+msgid "Ocelot"
+msgstr "Jaguatirica"
+
+msgid "Cat"
+msgstr "Gato"
+
+msgid "Parrot"
+msgstr "Papagaio"
+
+msgid "Pig"
+msgstr "Porco"
+
+msgid "Piglin"
+msgstr "Piglin"
+
+msgid "Zombiefied Piglin"
+msgstr ""
+
+msgid "Piglin Brute"
+msgstr "Piglin Barbáro"
+
+msgid "Zombie Piglin"
+msgstr "Piglin Zumbi"
+
+msgid "Pillager"
+msgstr "Saqueador"
+
+msgid "Polar Bear"
+msgstr "Urso Polar"
+
+msgid "Rabbit"
+msgstr "Coelho"
+
+msgid "Killer Bunny"
+msgstr "Coelho Assassino"
+
+msgid "Salmon"
+msgstr "Salmão"
+
+msgid "Sheep"
+msgstr "Ovelha"
+
+msgid "Shulker"
+msgstr "Shulker"
+
+msgid "Silverfish"
+msgstr "Traça"
+
+msgid "Skeleton"
+msgstr "Esqueleto"
+
+msgid "Stray"
+msgstr "Esqueleto Errante"
+
+msgid "Wither Skeleton"
+msgstr "Esqueleto Wither"
+
+msgid "Slime - big"
+msgstr ""
+
+msgid "Slime - small"
+msgstr ""
+
+msgid "Slime - tiny"
+msgstr ""
+
+msgid "Magma Cube - big"
+msgstr ""
+
+msgid "Magma Cube - small"
+msgstr ""
+
+msgid "Magma Cube - tiny"
+msgstr ""
+
+msgid "Magma Cube"
+msgstr "Cubo de Magma"
+
+msgid "Slime"
+msgstr "Slime"
+
+msgid "Snow Golem"
+msgstr "Golem de Neve"
+
+msgid "Spider"
+msgstr "Aranha"
+
+msgid "Cave Spider"
+msgstr "Aranha de Caverna"
+
+msgid "Squid"
+msgstr "Lula"
+
+msgid "Glow Squid"
+msgstr "Lula Brilhante"
+
+msgid "Strider"
+msgstr "Lavagante"
+
+msgid "Baby Strider"
+msgstr ""
+
+msgid "Tropical Fish"
+msgstr ""
+
+msgid "Tropical fish"
+msgstr "Peixe Tropical"
+
+msgid "Vex"
+msgstr "Vex"
+
+msgid "Villager"
+msgstr "Aldeão"
+
+msgid "Evoker"
+msgstr "Invocador"
+
+msgid "Illusioner"
+msgstr "Ilusionista"
+
+msgid "Vindicator"
+msgstr "Vingador"
+
+msgid "Zombie Villager"
+msgstr "Aldeão Zumbi"
+
+msgid "@1 sleeps here"
+msgstr ""
+
+msgid "A villager sleeps here"
+msgstr ""
+
+msgid "@1 works here"
+msgstr ""
+
+msgid "A villager works here"
+msgstr ""
+
+msgid "Unemployed"
+msgstr ""
+
+msgid "Farmer"
+msgstr "Fazendeiro"
+
+msgid "Fisherman"
+msgstr "Pescador"
+
+msgid "Fletcher"
+msgstr "Flecheiro"
+
+msgid "Shepherd"
+msgstr "Pastor"
+
+msgid "Librarian"
+msgstr "Bibliotecário"
+
+msgid "Cartographer"
+msgstr "Cartógrafo"
+
+msgid "Armorer"
+msgstr "Armoreiro"
+
+msgid "Leatherworker"
+msgstr "Coureiro"
+
+msgid "Butcher"
+msgstr "Açougueiro"
+
+msgid "Weapon Smith"
+msgstr "Armeiro"
+
+msgid "Tool Smith"
+msgstr "Ferramenteiro"
+
+msgid "Cleric"
+msgstr "Clérigo"
+
+msgid "Mason"
+msgstr ""
+
+msgid "Nitwit"
+msgstr "Palerma"
+
+msgid "Wandering Trader"
+msgstr ""
+
+msgid "Novice"
+msgstr ""
+
+msgid "Apprentice"
+msgstr ""
+
+msgid "Journeyman"
+msgstr ""
+
+msgid "Expert"
+msgstr ""
+
+msgid "Master"
+msgstr ""
+
+msgid "Witch"
+msgstr "Bruxa"
+
+msgid "Wither"
+msgstr "Wither"
+
+msgid "Wolf"
+msgstr "Lobo"
+
+msgid "Dog"
+msgstr ""
+
+msgid "Zombie"
+msgstr "Zumbi"
+
+msgid "Baby Zombie"
+msgstr "Zumbi Bebê"
+
+msgid "Husk"
+msgstr "Zumbi-Múmia"
+
+msgid "Baby Husk"
+msgstr "Zumbi-Múmia Bebê"
+
+msgid "Zombified Piglin"
+msgstr ""
+

@@ -1,0 +1,8 @@
+# textdomain: mcl_daylight_detector
+Daylight Sensor=Sensore di luce diurna
+Provides redstone power when in sunlight=Fornisce la corrente di pietrarossa quando è alla luce del sole
+Can be inverted=Può essere invertito
+Daylight detectors are redstone components which provide redstone power when they are in sunlight and no power otherwise. They can also be inverted.=
+In inverted state, they provide redstone power when they are not in sunlight and no power otherwise.=
+Use the daylight detector to toggle its state.=
+Inverted Daylight Sensor=

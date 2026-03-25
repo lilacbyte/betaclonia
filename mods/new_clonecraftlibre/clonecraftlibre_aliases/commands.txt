@@ -1,0 +1,2 @@
+sed -e 's/^/minetest.register_alias("/' lines > newfile
+sed -e 's/$/", "mcl_core:stone")/' newfile > newfile2
