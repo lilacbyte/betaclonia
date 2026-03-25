@@ -5,6 +5,54 @@ local S = minetest.get_translator(modname)
 mcl_tools = {}
 mcl_tools.sets = {}
 
+mcl_reinforced = rawget(_G, "mcl_reinforced") or {}
+mcl_reinforced.keep_chance = mcl_reinforced.keep_chance or {
+	[1] = 0.50, -- Reinforced I
+	[3] = 1.5/3,  -- Reinforced III (close to Unbreaking II)
+	[5] = 5/6,  -- Reinforced V
+}
+
+function mcl_reinforced.get_tier(itemname)
+	local seen = {}
+	while itemname and minetest.registered_aliases[itemname] and not seen[itemname] do
+		seen[itemname] = true
+		itemname = minetest.registered_aliases[itemname]
+	end
+	local def = itemname and minetest.registered_items[itemname]
+	local groups = def and def.groups
+	if not groups then
+		return nil
+	end
+	if (groups.reinforced_5 or 0) > 0 then
+		return 5
+	end
+	if (groups.reinforced_3 or 0) > 0 then
+		return 3
+	end
+	if (groups.reinforced_1 or 0) > 0 then
+		return 1
+	end
+	return nil
+end
+
+function mcl_reinforced.adjust_wear(itemstack, wear)
+	if not itemstack or itemstack:is_empty() or not wear or wear <= 0 then
+		return wear
+	end
+	local tier = mcl_reinforced.get_tier(itemstack:get_name())
+	if not tier then
+		return wear
+	end
+	local keep = mcl_reinforced.keep_chance[tier] or 0
+	if keep <= 0 then
+		return wear
+	end
+	if math.random() < keep then
+		return 0
+	end
+	return wear
+end
+
 mcl_tools.commondefs = {
 	["axe"] = {
 		longdesc = S("An axe is your tool of choice to cut down trees, wood-based blocks and other blocks. Axes deal a lot of damage as well, but they are rather slow. Axes can be used to strip bark and hyphae from trunks. They can also be used to scrape blocks made of copper, reducing their oxidation stage or removing wax from waxed variants."),
@@ -112,13 +160,17 @@ local function on_tool_place(itemstack, placer, pointed_thing, tool)
 		-- Add wear using the usages of the tool defined in
 		-- _mcl_diggroups. This assumes the tool only has one diggroups
 		-- (which is the case in Mineclone).
-		local tdef = minetest.registered_tools[itemstack:get_name()]
-		if tdef and tdef._mcl_diggroups then
-			for group, _ in pairs(tdef._mcl_diggroups) do
-				itemstack:add_wear(mcl_autogroup.get_wear(itemstack:get_name(), group))
-				return itemstack
+			local tdef = minetest.registered_tools[itemstack:get_name()]
+			if tdef and tdef._mcl_diggroups then
+				for group, _ in pairs(tdef._mcl_diggroups) do
+					local wear = mcl_autogroup.get_wear(itemstack:get_name(), group)
+					wear = mcl_reinforced.adjust_wear(itemstack, wear)
+					if wear and wear > 0 then
+						itemstack:add_wear(wear)
+					end
+					return itemstack
+				end
 			end
-		end
 		return itemstack
 	end
 
@@ -170,7 +222,7 @@ local function register_tool(setname, materialdefs, toolname, tooldefs, override
 	local mod = minetest.get_current_modname()
 	local itemstring = mod..":"..toolname.."_"..setname
 	local commondefs = mcl_tools.commondefs[toolname]
-	local effect_desc = tooldefs.effect_desc
+	local effect_desc = tooldefs.effect_desc or materialdefs.effect_desc
 	local tt_help = tooldefs._tt_help
 	local longdesc = commondefs.longdesc
 	if effect_desc and effect_desc ~= "" then
@@ -287,6 +339,56 @@ minetest.register_craft({
 		{ "mcl_core:iron_ingot", "" },
 	}
 })
+
+local function resolve_alias(name)
+	local seen = {}
+	while name and minetest.registered_aliases[name] and not seen[name] do
+		seen[name] = true
+		name = minetest.registered_aliases[name]
+	end
+	return name
+end
+
+-- Engine applies dig wear directly from toolcaps. Reinforced tools refund
+-- wear based on their tier chance after each successful dig.
+minetest.register_on_dignode(function(_, oldnode, digger)
+	if not digger or not digger:is_player() or not oldnode then
+		return
+	end
+	local player_name = digger:get_player_name()
+	if player_name == "" or minetest.is_creative_enabled(player_name) then
+		return
+	end
+
+	local wield = digger:get_wielded_item()
+	if wield:is_empty() then
+		return
+	end
+	local tool_name = resolve_alias(wield:get_name())
+	local tier = mcl_reinforced.get_tier(tool_name)
+	if not tier then
+		return
+	end
+
+	local tdef = minetest.registered_tools[tool_name]
+	local ndef = minetest.registered_nodes[oldnode.name]
+	if not tdef or not ndef or not tdef._mcl_diggroups or not ndef.groups then
+		return
+	end
+
+	for group, _ in pairs(tdef._mcl_diggroups) do
+		if ndef.groups[group] then
+			local wear = mcl_autogroup.get_wear(tool_name, group)
+			local adjusted = mcl_reinforced.adjust_wear(wield, wear)
+			local refund = (wear or 0) - (adjusted or 0)
+			if refund > 0 then
+				wield:set_wear(math.max(0, wield:get_wear() - refund))
+				digger:set_wielded_item(wield)
+			end
+			return
+		end
+	end
+end)
 
 --dofile(modpath.."/mace.lua")--removed
 dofile(modpath.."/register.lua")

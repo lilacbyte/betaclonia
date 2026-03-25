@@ -323,6 +323,12 @@ local function wear_hitter_weapon(hitter)
 	end
 
 	local wear = math.max(1, math.floor(65535 / uses))
+	if mcl_reinforced and mcl_reinforced.adjust_wear then
+		wear = mcl_reinforced.adjust_wear(weapon, wear)
+	end
+	if wear <= 0 then
+		return
+	end
 	weapon:add_wear(wear)
 	hitter:set_wielded_item(weapon)
 end
@@ -355,6 +361,13 @@ minetest.register_on_dieplayer(function(player, mt_reason)
 	  local meta = player:get_meta ()
 	  meta:set_float ("mcl_health", 0)
 	  mcl_damage.run_death_callbacks(player, mcl_damage.from_mt(mt_reason))
+end)
+
+minetest.register_on_respawnplayer(function(player)
+	local hp_max = (player:get_properties() and player:get_properties().hp_max) or 20
+	local meta = player:get_meta()
+	meta:set_float("mcl_health", hp_max)
+	player:set_hp(hp_max, { type = "set_hp", mcl_damage = true })
 end)
 
 minetest.register_on_mods_loaded(function()

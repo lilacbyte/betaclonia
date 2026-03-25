@@ -6,8 +6,7 @@ minetest.register_craftitem("mcl_fishing:fish_raw", {
 	inventory_image = "mcl_fishing_fish_raw.png",
 	on_place = minetest.item_eat(2),
 	on_secondary_use = minetest.item_eat(2),
-	groups = { food=2, eatable = 2, smoker_cookable = 1, campfire_cookable = 1 },
-	_mcl_saturation = 0.4,
+	groups = { eatable = 2, smoker_cookable = 1, campfire_cookable = 1 },
 	_mcl_cooking_output = "mcl_fishing:fish_cooked"
 })
 
@@ -17,8 +16,7 @@ minetest.register_craftitem("mcl_fishing:fish_cooked", {
 	inventory_image = "mcl_fishing_fish_cooked.png",
 	on_place = minetest.item_eat(5),
 	on_secondary_use = minetest.item_eat(5),
-	groups = { food=2, eatable=5 },
-	_mcl_saturation = 6,
+	groups = { eatable=5 },
 })
 
 --[[minetest.register_craftitem("mcl_fishing:salmon_raw", {
@@ -27,8 +25,7 @@ minetest.register_craftitem("mcl_fishing:fish_cooked", {
 	inventory_image = "mcl_fishing_salmon_raw.png",
 	on_place = minetest.item_eat(2),
 	on_secondary_use = minetest.item_eat(2),
-	groups = { food=2, eatable = 2, smoker_cookable = 1, campfire_cookable = 1 },
-	_mcl_saturation = 0.4,
+	groups = { eatable = 2, smoker_cookable = 1, campfire_cookable = 1 },
 	_mcl_cooking_output = "mcl_fishing:salmon_cooked"
 })
 
@@ -38,8 +35,7 @@ minetest.register_craftitem("mcl_fishing:salmon_cooked", {
 	inventory_image = "mcl_fishing_salmon_cooked.png",
 	on_place = minetest.item_eat(6),
 	on_secondary_use = minetest.item_eat(6),
-	groups = { food=2, eatable=6 },
-	_mcl_saturation = 9.6,
+	groups = { eatable=6 },
 })
 
 minetest.register_craftitem("mcl_fishing:clownfish_raw", {
@@ -48,26 +44,51 @@ minetest.register_craftitem("mcl_fishing:clownfish_raw", {
 	inventory_image = "mcl_fishing_clownfish_raw.png",
 	on_place = minetest.item_eat(1),
 	on_secondary_use = minetest.item_eat(1),
-	groups = { food=2, eatable = 1 },
-	_mcl_saturation = 0.2,
+	groups = { eatable = 1 },
 })]]--removed
 
 local function eat_pufferfish(itemstack, placer, pointed_thing)
 	local rc = mcl_util.call_on_rightclick(itemstack, placer, pointed_thing)
 	if rc then return rc end
 
-	return minetest.item_eat(1)(itemstack, placer, pointed_thing)
+	return minetest.item_eat(0)(itemstack, placer, pointed_thing)
 end
 minetest.register_craftitem("mcl_fishing:pufferfish_raw", {
 	description = S("Pufferfish"),
-	_tt_help = minetest.colorize(mcl_colors.YELLOW, S("Very poisonous")),
-	_doc_items_longdesc = S("Pufferfish are a common species of fish and can be obtained by fishing. They can technically be eaten, but they are very bad for humans. Eating a pufferfish only restores 1 hunger point and will poison you very badly (which drains your health non-fatally) and causes serious food poisoning (which increases your hunger)."),
+	_tt_help = minetest.colorize(mcl_colors.YELLOW, S("Very harmful")),
+	_doc_items_longdesc = S("Pufferfish are a common species of fish and can be obtained by fishing. You can eat one, but there's a 60% chance it will deal heavy damage."),
 	inventory_image = "mcl_fishing_pufferfish_raw.png",
 	on_place = eat_pufferfish,
 	on_secondary_use = eat_pufferfish,
-	groups = { food=2, eatable=1, brewitem = 1 },
-	_mcl_saturation = 0.2,
+	groups = { eatable=0, brewitem = 1 },
 })
+
+minetest.register_on_item_eat(function(_, _, itemstack, user)
+	if not user or not user:is_player() then
+		return
+	end
+	if itemstack:get_name() ~= "mcl_fishing:pufferfish_raw" then
+		return
+	end
+	if math.random() > 0.6 then
+		return
+	end
+
+	local damage = math.random(8, 14) -- 4 to 7 hearts
+	local player_name = user:get_player_name()
+	minetest.after(0, function()
+		local player = minetest.get_player_by_name(player_name)
+		if not player or player:get_hp() <= 0 then
+			return
+		end
+		if mcl_damage and mcl_damage.damage_player then
+			mcl_damage.damage_player(player, damage, { type = "generic" })
+		else
+			player:set_hp(math.max(0, player:get_hp() - damage), { type = "set_hp" })
+			minetest.sound_play("player_damage", { to_player = player_name, gain = 0.5 }, true)
+		end
+	end)
+end)
 
 minetest.register_craft({
 	output = "mcl_fishing:fishing_rod",

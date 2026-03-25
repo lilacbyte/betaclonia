@@ -278,8 +278,12 @@ function mcl_armor.update(obj)
 	info.points = math.max(0, math.floor(info.points + 0.5))
 	-- Material passives are durability-weighted by condition.
 	info.leather_speed = 1 + math.min(0.5, info.leather_power * 0.125)
-	info.gold_fall_reduction = math.min(0.5, info.gold_power * 0.125)
-	info.copper_fire_reduction = math.min(0.4, info.copper_power * 0.10)
+	info.gold_fall_reduction = math.min(0.75, info.gold_power * 0.20)
+	-- Full copper set target:
+	-- - 50% fire/lava damage reduction
+	-- - 25% reduced burn duration
+	info.copper_fire_reduction = math.min(0.5, info.copper_power * 0.125)
+	info.copper_burn_time_reduction = math.min(0.25, info.copper_power * 0.0625)
 	info.texture = info.texture or "blank.png"
 
 	if obj:is_player() then

@@ -61,7 +61,7 @@ cclregisterdefaultnodes("mcl_core:stone_with_coal", "default:stone_with_coal", {
 
 cclregisterdefaultnodes("mcl_core:stone_with_iron", "default:stone_with_iron", {
 	_doc_items_longdesc = S("Some iron contained in stone, it is prety common and can be found below sea level."),
-	groups = {pickaxey=3, building_block=1, material_stone=1, blast_furnace_smeltable=1},
+	groups = {pickaxey=4, building_block=1, material_stone=1, blast_furnace_smeltable=1},
 	_mcl_blast_resistance = 3,
 	_mcl_hardness = 3,
 	_mcl_silk_touch_drop = true,
@@ -70,7 +70,7 @@ cclregisterdefaultnodes("mcl_core:stone_with_iron", "default:stone_with_iron", {
 }, {
 	description = S("Iron Ore"),
 	tiles = {"mcl_core_iron_ore.png"},
-	drop = "mcl_raw_ores:raw_iron",
+	drop = "mcl_core:raw_iron",
 	sounds = mcl_sounds.node_sound_stone_defaults(),
 })
 
@@ -85,7 +85,7 @@ cclregisterdefaultnodes("mcl_core:stone_with_gold", "default:stone_with_gold", {
 }, {
 	description = S("Gold Ore"),
 	tiles = {"mcl_core_gold_ore.png"},
-	drop = "mcl_raw_ores:raw_gold",
+	drop = "mcl_core:raw_gold",
 	sounds = mcl_sounds.node_sound_stone_defaults(),
 })
 
@@ -682,6 +682,7 @@ cclregisterdefaultnodes("mcl_core:coalblock", "default:coalblock", {
 cclregisterdefaultnodes("mcl_core:ironblock", "default:steelblock", {
 	_doc_items_longdesc = S("A block of iron is mostly a decorative block but also useful as a compact storage of iron ingots."),
 	groups = {pickaxey=2, building_block=1},
+	drop = "mcl_core:raw_iron 9",
 	_mcl_blast_resistance = 6,
 	_mcl_hardness = 5,
 }, {

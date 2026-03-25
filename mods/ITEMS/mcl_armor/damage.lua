@@ -97,13 +97,23 @@ mcl_damage.register_modifier(function(obj, damage, reason)
 	if reason and reason.type == "fall" then
 		local fall_reduction = math.max(0, math.min(0.8, meta:get_float("mcl_armor:gold_fall_reduction") or 0))
 		if fall_reduction > 0 then
+			-- Preserve pre-mitigation fall damage so durability wear can scale
+			-- with fall severity in a later modifier.
+			reason._gold_fall_pre_damage = damage
+			reason._gold_fall_reduction = fall_reduction
 			damage = damage * (1 - fall_reduction)
 		end
 	end
 
-	if reason and reason.flags and reason.flags.is_fire then
+	local fire_type = reason and (reason.type == "in_fire" or reason.type == "on_fire" or reason.type == "lava" or reason.type == "hot_floor")
+	local fire_flag = reason and reason.flags and reason.flags.is_fire
+	if fire_type or fire_flag then
 		local fire_reduction = math.max(0, math.min(0.8, meta:get_float("mcl_armor:copper_fire_reduction") or 0))
 		if fire_reduction > 0 then
+			-- Preserve pre-mitigation fire damage so durability wear can scale
+			-- with fire severity in a later modifier.
+			reason._copper_fire_pre_damage = damage
+			reason._copper_fire_reduction = fire_reduction
 			damage = damage * (1 - fire_reduction)
 		end
 	end
@@ -118,12 +128,42 @@ mcl_damage.register_modifier(function(obj, damage, reason)
 		return damage
 	end
 	local flags = (reason and reason.flags) or {}
-	if not flags.bypasses_armor or flags.bypasses_magic then
+	local is_fire = flags.is_fire == true
+		or (reason and (reason.type == "in_fire" or reason.type == "on_fire" or reason.type == "lava" or reason.type == "hot_floor"))
+	if flags.bypasses_magic then
+		return damage
+	end
+	if not flags.bypasses_armor and not is_fire then
 		return damage
 	end
 
 	local inv = mcl_util.get_inventory(obj)
 	local uses = math.max(1, math.floor(damage / 4))
+	if reason and reason.type == "fall" then
+		local pre_damage = tonumber(reason._gold_fall_pre_damage) or damage
+		local gold_reduction = math.max(0, math.min(0.8, tonumber(reason._gold_fall_reduction) or 0))
+		if gold_reduction > 0 then
+			-- Gold armor trade-off: larger falls consume much more durability.
+			-- Base wear follows fall size before mitigation, then scales further
+			-- with how much fall protection gold is currently providing.
+			local severity = math.max(0, pre_damage - 20)
+			uses = math.max(uses, math.floor(pre_damage / 3))
+			uses = uses + math.floor(severity * gold_reduction * 0.35)
+			uses = math.max(1, math.ceil(uses * 3.5))
+		end
+	end
+	if is_fire then
+		local pre_damage = tonumber(reason and reason._copper_fire_pre_damage) or damage
+		local copper_reduction = math.max(0, math.min(0.8, tonumber(reason and reason._copper_fire_reduction) or 0))
+		if copper_reduction > 0 then
+			-- Copper armor trade-off: fire protection costs extra durability.
+			-- Extra wear grows with incoming fire damage and protection amount.
+			local extra = math.max(1, math.floor(pre_damage * (0.2 + copper_reduction * 0.3)))
+			local hotspot = math.max(0, pre_damage - 4)
+			extra = extra + math.floor(hotspot * copper_reduction * 0.2)
+			uses = uses + extra
+		end
+	end
 	if wear_combat_armor(obj, inv, uses) then
 		mcl_armor.update(obj)
 	end

@@ -268,8 +268,7 @@ minetest.register_craftitem("mcl_farming:pumpkin_pie", {
 	wield_image = "mcl_farming_pumpkin_pie.png",
 	on_place = minetest.item_eat(8),
 	on_secondary_use = minetest.item_eat(8),
-	groups = {food = 2, eatable = 8, compostability = 100},
-	_mcl_saturation = 4.8,
+	groups = {eatable = 8, compostability = 100},
 })
 
 minetest.register_craft({

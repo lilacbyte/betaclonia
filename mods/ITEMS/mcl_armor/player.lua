@@ -62,6 +62,45 @@ mcl_player.player_register_model("mcl_armor_character_female.b3d", {
 	},
 })
 
+local leather_tradeoff_timers = {}
+local LEATHER_TRADEOFF_INTERVAL = 10
+
+local function apply_leather_tradeoff_wear(player)
+	if not player or not player.is_player or not player:is_player() then
+		return false
+	end
+	if minetest.is_creative_enabled(player:get_player_name()) then
+		return false
+	end
+	local inv = player:get_inventory()
+	if not inv then
+		return false
+	end
+
+	local changed = false
+	local wear_chance = 0.20
+
+	for _, element in pairs(mcl_armor.elements) do
+		local stack = inv:get_stack("armor", element.index)
+		if not stack:is_empty() then
+			local itemname = stack:get_name()
+			if minetest.get_item_group(itemname, "armor_leather") > 0 and minetest.get_item_group(itemname, "non_combat_armor") == 0 then
+				if math.random() < wear_chance then
+					local def = stack:get_definition()
+					mcl_util.use_item_durability(stack, 1)
+					if stack:is_empty() and def and def._on_break then
+						stack = def._on_break(player) or stack
+					end
+					inv:set_stack("armor", element.index, stack)
+					changed = true
+				end
+			end
+		end
+	end
+
+	return changed
+end
+
 function mcl_armor.update_player(player, info)
 	mcl_player.player_set_armor(player, info.texture)
 
@@ -69,6 +108,7 @@ function mcl_armor.update_player(player, info)
 	meta:set_int("mcl_armor:armor_points", info.points)
 	meta:set_float("mcl_armor:gold_fall_reduction", info.gold_fall_reduction or 0)
 	meta:set_float("mcl_armor:copper_fire_reduction", info.copper_fire_reduction or 0)
+	meta:set_float("mcl_armor:copper_burn_time_reduction", info.copper_burn_time_reduction or 0)
 
 	if playerphysics and playerphysics.add_physics_factor and playerphysics.remove_physics_factor then
 		local speed_factor = tonumber(info.leather_speed) or 1
@@ -181,5 +221,21 @@ minetest.register_on_leaveplayer(function(player)
 	if playerphysics and playerphysics.remove_physics_factor then
 		playerphysics.remove_physics_factor(player, "speed", "mcl_armor:leather_speed")
 	end
+	leather_tradeoff_timers[player] = nil
 	mcl_armor.player_view_range_factors[player] = nil
+end)
+
+minetest.register_globalstep(function(dtime)
+	for player in mcl_util.connected_players() do
+			local timer = (leather_tradeoff_timers[player] or 0) + dtime
+		if timer >= LEATHER_TRADEOFF_INTERVAL then
+			timer = timer - LEATHER_TRADEOFF_INTERVAL
+			local vel = player:get_velocity() or {x = 0, y = 0, z = 0}
+			local is_moving = math.abs(vel.x) + math.abs(vel.z) > 0.1
+			if is_moving and apply_leather_tradeoff_wear(player) then
+				mcl_armor.update(player)
+			end
+		end
+		leather_tradeoff_timers[player] = timer
+	end
 end)

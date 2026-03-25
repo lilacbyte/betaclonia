@@ -11,6 +11,26 @@ local enable_pathfinding = true
 
 local TIME_TO_FORGET_TARGET = 15
 
+local function resolve_alias_name(name)
+	local seen = {}
+	while name and minetest.registered_aliases[name] and not seen[name] do
+		seen[name] = true
+		name = minetest.registered_aliases[name]
+	end
+	return name
+end
+
+local function is_copper_sword_item(name)
+	if not name or name == "" then
+		return false
+	end
+	if name == "mcl_tools:sword_copper" or name == "mcl_copper:sword_copper" or name == "mcl_tools:copper_sword" then
+		return true
+	end
+	local resolved = resolve_alias_name(name)
+	return resolved == "mcl_tools:sword_copper" or resolved == "mcl_copper:sword_copper"
+end
+
 local function atan(x)
 	if not x or minetest.is_nan(x) then
 		return 0
@@ -406,8 +426,8 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir)
 
 	if weapon then
 		local fire_aspect_level = 0
-		-- Hardcoded special behavior: copper sword has a small chance to ignite mobs.
-		if weapon:get_name() == "mcl_tools:sword_copper" and math.random(1, 100) <= 12 then
+		-- Hardcoded special behavior: copper sword has a chance to ignite mobs.
+		if is_copper_sword_item(weapon:get_name()) and math.random(1, 100) <= 35 then
 			fire_aspect_level = 1
 		end
 		if fire_aspect_level > 0 then
@@ -435,8 +455,13 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir)
 	and tool_capabilities.punch_attack_uses > 0 then
 		local weapon = hitter:get_wielded_item()
 		local wear = math.floor(65535/tool_capabilities.punch_attack_uses)
-		weapon:add_wear(wear)
-		hitter:set_wielded_item(weapon)
+		if mcl_reinforced and mcl_reinforced.adjust_wear then
+			wear = mcl_reinforced.adjust_wear(weapon, wear)
+		end
+		if wear > 0 then
+			weapon:add_wear(wear)
+			hitter:set_wielded_item(weapon)
+		end
 	end
 
 	local die = false

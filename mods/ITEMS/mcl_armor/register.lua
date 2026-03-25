@@ -19,7 +19,7 @@ mcl_armor.register_set({
 	cook_material = "mcl_core:gold_nugget",
 	sound_equip = "mcl_armor_equip_iron",
 	sound_unequip = "mcl_armor_unequip_iron",
-	effect_desc = S("While worn: Reduces fall damage."),
+	effect_desc = S("While worn: Strongly reduces fall damage"),
 	groups = {
 		golden = 1,
 	},
@@ -33,7 +33,7 @@ mcl_armor.register_set({
 		legs = S("Iron Leggings"),
 		feet = S("Iron Boots"),
 	},
-	durability = 240,
+	durability = 200,
 	points = {
 		head = 2,
 		torso = 3,
@@ -43,8 +43,7 @@ mcl_armor.register_set({
 	craft_material = "mcl_core:iron_ingot",
 	cook_material = "mcl_core:iron_ingot",
 	sound_equip = "mcl_armor_equip_iron",
-	sound_unequip = "mcl_armor_unequip_iron",
-	effect_desc
+	sound_unequip = "mcl_armor_unequip_iron"
 })
 
 if minetest.get_modpath("mcl_copper") then
@@ -67,9 +66,8 @@ mcl_armor.register_set({
 	cook_material = "mcl_copper:copper_nugget",
 	sound_equip = "mcl_armor_equip_iron",
 	sound_unequip = "mcl_armor_unequip_iron",
-	effect_desc = S("While worn: Reduces fire damage."),
-	groups = { blast_furnace_smeltable = 1 },
-})
+		effect_desc = S("While worn: Reduces fire damage.")
+	})
 end
 
 mcl_armor.register_set({
@@ -80,7 +78,7 @@ mcl_armor.register_set({
 		legs = S("Diamond Leggings"),
 		feet = S("Diamond Boots"),
 	},
-	durability = 528,
+	durability = 420,
 	points = {
 		head = 2,
 		torso = 4,
@@ -91,6 +89,5 @@ mcl_armor.register_set({
 	craft_material = "mcl_core:diamond",
 	sound_equip = "mcl_armor_equip_diamond",
 	sound_unequip = "mcl_armor_unequip_diamond",
-	effect_desc,
 	_mcl_upgradable = false
 })

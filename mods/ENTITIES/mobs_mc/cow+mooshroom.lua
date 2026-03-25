@@ -35,7 +35,7 @@ local cow_def = {
 		{name = "mcl_mobitems:leather",
 		chance = 1,
 		min = 0,
-		max = 2,
+		max = 1,
 		looting = "common",},
 	},
 	runaway = true,

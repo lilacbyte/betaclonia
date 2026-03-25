@@ -105,7 +105,7 @@ local function snowball_on_step(self, dtime)
 			return
 		end
 	end
-	if check_object_hit(self, pos, {snowball_vulnerable = 3}) then
+	if check_object_hit(self, pos, {snowball_vulnerable = 1}) then
 		minetest.sound_play("mcl_throwing_snowball_impact_soft", { pos = pos, max_hear_distance=16, gain=0.7 }, true)
 		snowball_particles(pos, vel)
 		self.object:remove()

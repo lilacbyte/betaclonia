@@ -32,20 +32,20 @@ minetest.register_on_dieplayer(function(player)
 			if #dropspots == 0 then
 				table.insert(dropspots,pos)
 			end
-			if inv then
-				for _, stack in ipairs(inv:get_list(listname)) do
-					local p = vector.offset(dropspots[math.random(#dropspots)],math.random()-0.5,math.random()-0.5,math.random()-0.5)
-						if not void_deadly and drop then
-							local def = minetest.registered_items[stack:get_name()]
-							if def and def.on_drop then
-								stack = def.on_drop(stack, player, p)
-						end
-						minetest.add_item(p, stack)
+				if inv then
+					local list = inv:get_list(listname) or {}
+					for i = 1, #list do
+						local stack = list[i]
+							if stack and not stack:is_empty() then
+								local p = vector.offset(dropspots[math.random(#dropspots)], math.random() - 0.5, math.random() - 0.5, math.random() - 0.5)
+								if not void_deadly and drop then
+									minetest.add_item(p, ItemStack(stack))
+								end
+								inv:set_stack(listname, i, ItemStack(""))
+							end
 					end
 				end
-				inv:set_list(listname, {})
 			end
-		end
-		mcl_armor.update(player)
+			mcl_armor.update(player)
 	end
 end)

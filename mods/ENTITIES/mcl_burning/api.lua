@@ -46,6 +46,18 @@ function mcl_burning.get_touching_nodes(obj, nodenames, storage)
 	return nodes
 end
 
+local function get_player_copper_burn_reduction(player)
+	if not player or not player.is_player or not player:is_player() then
+		return 0
+	end
+	local meta = player:get_meta()
+	if not meta then
+		return 0
+	end
+	local reduction = meta:get_float("mcl_armor:copper_burn_time_reduction") or 0
+	return math.max(0, math.min(0.25, reduction))
+end
+
 -- Manages the fire animation on a burning player's HUD
 --
 -- Parameters:
@@ -102,21 +114,12 @@ function mcl_burning.set_on_fire(obj, burn_time)
 
 	if obj:is_player() and not enable_damage then
 		return
-	else
-		local max_fire_prot_lvl = 0
-		local inv = mcl_util.get_inventory(obj)
-		local armor_list = inv and inv:get_list("armor")
+	end
 
-			if armor_list then
-				for _, stack in pairs(armor_list) do
-					local fire_prot_lvl = 0
-					if fire_prot_lvl > max_fire_prot_lvl then
-						max_fire_prot_lvl = fire_prot_lvl
-					end
-			end
-		end
-		if max_fire_prot_lvl > 0 then
-			burn_time = burn_time - math.floor(burn_time * max_fire_prot_lvl * 0.15)
+	if obj:is_player() then
+		local burn_time_reduction = get_player_copper_burn_reduction(obj)
+		if burn_time_reduction > 0 then
+			burn_time = burn_time * (1 - burn_time_reduction)
 		end
 	end
 
@@ -171,9 +174,20 @@ function mcl_burning.tick(obj, dtime, storage)
 			return true
 		else
 			storage.fire_damage_timer = storage.fire_damage_timer + dtime
+			local fire_tick_interval = 1
+			if obj:is_player() then
+				local burn_time_reduction = get_player_copper_burn_reduction(obj)
+				if burn_time_reduction > 0 then
+					-- While submerged in lava, slow fire damage tick rate.
+					local in_lava = #mcl_burning.get_touching_nodes(obj, "group:lava", storage) > 0
+					if in_lava then
+						fire_tick_interval = 1 + burn_time_reduction
+					end
+				end
+			end
 
-			if storage.fire_damage_timer >= 1 then
-				storage.fire_damage_timer = 0
+			if storage.fire_damage_timer >= fire_tick_interval then
+				storage.fire_damage_timer = storage.fire_damage_timer - fire_tick_interval
 
 				local luaentity = obj:get_luaentity()
 

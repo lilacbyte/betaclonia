@@ -3,7 +3,7 @@
 #!#!#!#Released under CC Attribution-ShareAlike 3.0 Unported #!#!#
 ]]--
 
-local CAKE_HUNGER_POINTS = 2
+local CAKE_HEAL_POINTS = 2
 
 local S = minetest.get_translator(minetest.get_current_modname())
 
@@ -33,9 +33,9 @@ minetest.register_craft({
 
 minetest.register_node("mcl_cake:cake", {
 	description = S("Cake"),
-	_tt_help = S("With 7 tasty slices!").."\n"..S("Hunger points: +@1 per slice", CAKE_HUNGER_POINTS),
-	_doc_items_longdesc = S("Cakes can be placed and eaten to restore hunger points. A cake has 7 slices. Each slice restores 2 hunger points and 0.4 saturation points. Cakes will be destroyed when dug or when the block below them is broken."),
-	_doc_items_usagehelp = S("Place the cake anywhere, then rightclick it to eat a single slice. You can't eat from the cake when your hunger bar is full."),
+	_tt_help = S("With 7 tasty slices!").."\n"..S("Heals: 1 heart per slice"),
+	_doc_items_longdesc = S("Cakes can be placed and eaten to restore health. A cake has 7 slices. Each slice heals 1 heart. Cakes are destroyed when dug or when the block below is broken."),
+	_doc_items_usagehelp = S("Place the cake anywhere, then rightclick it to eat a single slice."),
 	tiles = {"cake_top.png","cake_bottom.png","cake_side.png","cake_side.png","cake_side.png","cake_side.png"},
 	use_texture_alpha = minetest.features.use_texture_alpha_string_modes and "opaque" or false,
 	inventory_image = "cake.png",
@@ -54,7 +54,7 @@ minetest.register_node("mcl_cake:cake", {
 	stack_max = 1,
 	groups = {
 		handy = 1, attached_node = 1, dig_by_piston = 1, comparator_signal = 14,
-		cake = 7, food = 2, no_eat_delay = 1, compostability = 100, unsticky = 1
+		cake = 7, no_eat_delay = 1, compostability = 100, unsticky = 1
 	},
 	drop = "",
 	on_rightclick = function(pos, node, clicker)
@@ -73,7 +73,6 @@ minetest.register_node("mcl_cake:cake", {
 	sounds = mcl_sounds.node_sound_leaves_defaults(),
 
 	_food_particles = false,
-	_mcl_saturation = 0.4,
 	_mcl_blast_resistance = 0.5,
 	_mcl_hardness = 0.5,
 })
@@ -92,7 +91,7 @@ local register_slice = function(level, nodebox, desc)
 			-- Check if we were allowed to eat
 			if node.name == this or minetest.is_creative_enabled(clicker:get_player_name()) then
 				minetest.add_node(pos,{type="node",name=after_eat,param2=0})
-				minetest.do_item_eat(CAKE_HUNGER_POINTS, ItemStack(), ItemStack(this), clicker, {type="nothing"})
+				minetest.do_item_eat(CAKE_HEAL_POINTS, ItemStack(), ItemStack(this), clicker, {type="nothing"})
 			end
 		end
 	else
@@ -107,7 +106,7 @@ local register_slice = function(level, nodebox, desc)
 			if node.name == this or minetest.is_creative_enabled(clicker:get_player_name()) then
 				minetest.remove_node(pos)
 				minetest.check_for_falling(pos)
-				minetest.do_item_eat(CAKE_HUNGER_POINTS, ItemStack(), ItemStack("mcl_cake:cake_1"), clicker, {type="nothing"})
+				minetest.do_item_eat(CAKE_HEAL_POINTS, ItemStack(), ItemStack("mcl_cake:cake_1"), clicker, {type="nothing"})
 			end
 		end
 	end
@@ -130,15 +129,13 @@ local register_slice = function(level, nodebox, desc)
 			},
 		groups = {
 			handy = 1, attached_node = 1, not_in_creative_inventory = 1,
-			dig_by_piston = 1, cake = level, comparator_signal = level * 2,
-			food = 2, no_eat_delay = 1, unsticky = 1
+			dig_by_piston = 1, cake = level, comparator_signal = level * 2, no_eat_delay = 1, unsticky = 1
 		},
 		drop = "",
 		on_rightclick = on_rightclick,
 		sounds = mcl_sounds.node_sound_leaves_defaults(),
 
 		_food_particles = false,
-		_mcl_saturation = 0.4,
 		_mcl_blast_resistance = 0.5,
 		_mcl_hardness = 0.5,
 	})

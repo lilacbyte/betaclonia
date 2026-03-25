@@ -134,8 +134,7 @@ minetest.register_craftitem("mcl_farming:cookie", {
 	description = S("Cookie"),
 	_doc_items_longdesc = S("This is a food item which can be eaten."),
 	inventory_image = "farming_cookie.png",
-	groups = {food = 2, eatable = 2, compostability = 85},
-	_mcl_saturation = 0.4,
+	groups = {eatable = 2, compostability = 85},
 	on_place = minetest.item_eat(2),
 	on_secondary_use = minetest.item_eat(2),
 })
@@ -145,8 +144,7 @@ minetest.register_craftitem("mcl_farming:bread", {
 	description = S("Bread"),
 	_doc_items_longdesc = S("This is a food item which can be eaten."),
 	inventory_image = "farming_bread.png",
-	groups = {food = 2, eatable = 5, compostability = 85},
-	_mcl_saturation = 6.0,
+	groups = {eatable = 5, compostability = 85},
 	on_place = minetest.item_eat(5),
 	on_secondary_use = minetest.item_eat(5),
 })

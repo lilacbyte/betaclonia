@@ -83,12 +83,28 @@ cclregisterdefaultcraftitems("mcl_core:iron_ingot", "default:steel_ingot", {
 	inventory_image = "default_steel_ingot.png",
 })
 
+minetest.register_craftitem("mcl_core:raw_iron", {
+	description = S("Raw Iron"),
+	_doc_items_longdesc = S("Unrefined iron chunk. Smelt it into an iron ingot."),
+	inventory_image = "mcl_raw_ores_raw_iron.png",
+	groups = { craftitem = 1, blast_furnace_smeltable = 1 },
+	_mcl_cooking_output = "mcl_core:iron_ingot",
+})
+
 cclregisterdefaultcraftitems("mcl_core:gold_ingot", "default:gold_ingot", {
 	_doc_items_longdesc = S("Molten gold. It is used to craft armor, tools, and whatnot."),
 	groups = { craftitem=1 },
 }, {
 	description = S("Gold Ingot"),
 	inventory_image = "default_gold_ingot.png",
+})
+
+minetest.register_craftitem("mcl_core:raw_gold", {
+	description = S("Raw Gold"),
+	_doc_items_longdesc = S("Unrefined gold chunk. Smelt it into a gold ingot."),
+	inventory_image = "mcl_raw_ores_raw_gold.png",
+	groups = { craftitem = 1, blast_furnace_smeltable = 1 },
+	_mcl_cooking_output = "mcl_core:gold_ingot",
 })
 
 minetest.register_craftitem("mcl_core:lapis", {
@@ -132,16 +148,15 @@ minetest.register_craftitem("mcl_core:bowl",{
 cclregisterdefaultcraftitems("mcl_core:apple", "default:apple", {
 	_doc_items_longdesc = S("Apples are food items which can be eaten."),
 	wield_image = "default_apple.png",
-	on_secondary_use = minetest.item_eat(4),
-	groups = { food = 2, eatable = 4, compostability = 65 },
-	_mcl_saturation = 2.4,
+	on_secondary_use = minetest.item_eat(10),
+	groups = { eatable = 10, compostability = 65 },
 }, {
 	description = S("Apple"),
 	inventory_image = "default_apple.png",
-	on_place = minetest.item_eat(4),
+	on_place = minetest.item_eat(10),
 })
 
-local gapple_hunger_restore = minetest.item_eat(4)
+local gapple_hunger_restore = minetest.item_eat(20)
 
 local function eat_gapple(itemstack, placer, pointed_thing)
 	local rc = mcl_util.call_on_rightclick(itemstack, placer, pointed_thing)
@@ -155,13 +170,11 @@ local function eat_gapple(itemstack, placer, pointed_thing)
 end
 
 minetest.register_craftitem("mcl_core:apple_gold", {
-	-- TODO: Add special highlight color
 	description = S("Golden Apple"),
 	_doc_items_longdesc = S("Golden apples are precious food items which can be eaten."),
 	wield_image = "mcl_core_apple_golden.png",
 	inventory_image = "mcl_core_apple_golden.png",
 	on_place = eat_gapple,
 	on_secondary_use = eat_gapple,
-	groups = { food = 2, eatable = 4, can_eat_when_full = 1 },
-	_mcl_saturation = 9.6,
+	groups = { eatable = 20, can_eat_when_full = 1, rarity = 2 },
 })

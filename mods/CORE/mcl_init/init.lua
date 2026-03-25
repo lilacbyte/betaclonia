@@ -28,11 +28,10 @@ minetest.register_on_mods_loaded(function()
 	-- Force all food to stack size 1.
 	for name, def in pairs(minetest.registered_items) do
 		local groups = def.groups or {}
-		if (groups.food and groups.food > 0) or (groups.eatable and groups.eatable > 0) then
+		if groups.eatable and groups.eatable > 0 then
 			local sounds = table.copy(def.sound or {})
 			if not sounds.eat then
-				-- Match Mineclonia-style consume SFX without bringing hunger back.
-				sounds.eat = (groups.food == 3) and "survival_thirst_drink" or "mcl_hunger_bite"
+				sounds.eat = "mcl_hunger_bite"
 			end
 			minetest.override_item(name, {
 				stack_max = 1,

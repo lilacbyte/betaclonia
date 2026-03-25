@@ -1,5 +1,4 @@
 local S = minetest.get_translator(minetest.get_current_modname())
-local C = minetest.colorize
 
 minetest.register_craftitem("mcl_mobitems:beef", {
 	description = S("Raw Meat"),
@@ -8,8 +7,7 @@ minetest.register_craftitem("mcl_mobitems:beef", {
 	wield_image = "mcl_mobitems_beef_raw.png",
 	on_place = minetest.item_eat(3),
 	on_secondary_use = minetest.item_eat(3),
-	groups = { food = 2, eatable = 3, smoker_cookable = 1, campfire_cookable = 1 },
-	_mcl_saturation = 1.8,
+	groups = { eatable = 3, smoker_cookable = 1, campfire_cookable = 1 },
 	_mcl_cooking_output = "mcl_mobitems:cooked_beef"
 })
 
@@ -20,32 +18,16 @@ minetest.register_craftitem("mcl_mobitems:cooked_beef", {
 	wield_image = "mcl_mobitems_beef_cooked.png",
 	on_place = minetest.item_eat(8),
 	on_secondary_use = minetest.item_eat(8),
-	groups = { food = 2, eatable = 8 },
-	_mcl_saturation = 12.8,
+	groups = { eatable = 8 },
 })
-
-
--- Reset food poisoning and status effects
-local function drink_milk(itemstack, player, pointed_thing)
-	local bucket = minetest.do_item_eat(0, "mcl_buckets:bucket_empty", itemstack, player, pointed_thing)
-	-- Check if we were allowed to drink this (eat delay check)
-	if mcl_hunger.active and (bucket:get_name() ~= "mcl_mobitems:milk_bucket" or minetest.is_creative_enabled(player:get_player_name())) then
-		mcl_hunger.stop_poison(player)
-	end
-	return bucket
-end
 
 minetest.register_craftitem("mcl_mobitems:milk_bucket", {
 	description = S("Milk"),
-	_tt_help = C(mcl_colors.GREEN, S("Stops food poisoning")),
-	_doc_items_longdesc = S("Milk is very refreshing and can be obtained by using a bucket on a cow. Drinking it stops food poisoning, but restores no hunger points."),
-	_doc_items_usagehelp = S("Use the placement key to drink the milk."),
+	_doc_items_longdesc = S("Milk can be obtained by using a bucket on a cow. Used as a crafting ingredient."),
 	inventory_image = "mcl_mobitems_bucket_milk.png",
 	wield_image = "mcl_mobitems_bucket_milk.png",
-	on_place = drink_milk,
-	on_secondary_use = drink_milk,
 	stack_max = 1,
-	groups = { food = 3, can_eat_when_full = 1 },
+	groups = { craftitem = 1 },
 })
 
 minetest.register_craftitem("mcl_mobitems:bone", {

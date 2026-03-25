@@ -586,7 +586,13 @@ end
 
 function mcl_util.use_item_durability(itemstack, n)
 	local uses = mcl_util.calculate_durability(itemstack)
-	itemstack:add_wear(65535 / uses * n)
+	local wear = 65535 / uses * n
+	if mcl_reinforced and mcl_reinforced.adjust_wear then
+		wear = mcl_reinforced.adjust_wear(itemstack, wear)
+	end
+	if wear and wear > 0 then
+		itemstack:add_wear(wear)
+	end
 end
 
 function mcl_util.deal_damage(target, damage, mcl_reason)

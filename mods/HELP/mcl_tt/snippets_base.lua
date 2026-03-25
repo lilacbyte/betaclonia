@@ -34,6 +34,17 @@ local function newline(str)
 	return str
 end
 
+local function format_hearts_from_eatable(eatable)
+	local whole = math.floor(eatable / 2)
+	if eatable % 2 == 0 then
+		return tostring(whole)
+	end
+	if whole == 0 then
+		return "0.5"
+	end
+	return tostring(whole) .. ".5"
+end
+
 -- Digging capabilities of tool
 tt.register_snippet(function(itemstring, toolcaps)
 	local def = minetest.registered_items[itemstring]
@@ -162,10 +173,15 @@ tt.register_snippet(function(itemstring)
 	local def = minetest.registered_items[itemstring]
 	local desc
 	if def._tt_food then
+		local groups = def.groups or {}
 		desc = S("Food item")
-		if def._tt_food_hp then
-			local msg = S("+@1 food points", def._tt_food_hp)
-			desc = desc .. "\n" .. msg
+		if groups.eatable and groups.eatable > 0 then
+			local hearts = format_hearts_from_eatable(groups.eatable)
+			if hearts == "1" then
+				desc = desc .. "\n" .. S("Heals: 1 heart")
+			else
+				desc = desc .. "\n" .. S("Heals: @1 hearts", hearts)
+			end
 		end
 	end
 	return desc
@@ -243,4 +259,3 @@ tt.register_snippet(function(itemstring)
 
 	return desc ~= "" and desc or nil, false
 end)
-

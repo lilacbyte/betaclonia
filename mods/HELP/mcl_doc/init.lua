@@ -1,5 +1,16 @@
 local S = minetest.get_translator(minetest.get_current_modname())
 
+local function format_hearts_from_eatable(eatable)
+	local whole = math.floor(eatable / 2)
+	if eatable % 2 == 0 then
+		return tostring(whole)
+	end
+	if whole == 0 then
+		return "0.5"
+	end
+	return tostring(whole) .. ".5"
+end
+
 -- Disable built-in factoids; it is planned to add custom ones as replacements
 doc.sub.items.disable_core_factoid("node_mining")
 doc.sub.items.disable_core_factoid("tool_capabilities")
@@ -97,27 +108,11 @@ end)
 
 -- Comestibles
 doc.sub.items.register_factoid(nil, "use", function(_, def)
+	local groups = def.groups or {}
 	local s = ""
-	if def.groups.eatable and not def._doc_items_usagehelp then
-		if def.groups.food == 2 then
-			s = s .. S("To eat it, wield it, then rightclick.")
-			if def.groups.can_eat_when_full == 1 then
-				s = s .. "\n" .. S("You can eat this even when your hunger bar is full.")
-			else
-				s = s .. "\n" .. S("You cannot eat this when your hunger bar is full.")
-			end
-		elseif def.groups.food == 3 then
-			s = s .. S("To drink it, wield it, then rightclick.")
-			if def.groups.can_eat_when_full ~= 1 then
-				s = s .. "\n" .. S("You cannot drink this when your hunger bar is full.")
-			end
-		else
-			s = s .. S("To consume it, wield it, then rightclick.")
-			if def.groups.can_eat_when_full ~= 1 then
-				s = s .. "\n" .. S("You cannot consume this when your hunger bar is full.")
-			end
-		end
-		if def.groups.no_eat_delay ~= 1 then
+	if groups.eatable and not def._doc_items_usagehelp then
+		s = s .. S("To consume it, wield it, then rightclick.")
+		if groups.no_eat_delay ~= 1 then
 			s = s .. "\n" .. S("You have to wait for about 2 seconds before you can eat or drink again.")
 		end
 	end
@@ -125,14 +120,14 @@ doc.sub.items.register_factoid(nil, "use", function(_, def)
 end)
 
 doc.sub.items.register_factoid(nil, "groups", function(_, def)
-	local s = ""
-	if def.groups.eatable and def.groups.eatable > 0 then
-		s = s .. S("Hunger points restored: @1", def.groups.eatable)
+	local groups = def.groups or {}
+	if groups.eatable and groups.eatable > 0 then
+		local hearts = format_hearts_from_eatable(groups.eatable)
+		if hearts == "1" then
+			return S("Heals: 1 heart")
+		end
+		return S("Heals: @1 hearts", hearts)
 	end
-	if def._mcl_saturation and def._mcl_saturation > 0 then
-		s = s .. "\n" .. S("Saturation points restored: @1%", string.format("%.1f", def._mcl_saturation))
-	end
-	return s
 end)
 
 -- Armor
@@ -408,4 +403,3 @@ doc.sub.items.register_factoid("tools", "misc", function(_, def)
 	end
 	return formstring
 end)
-

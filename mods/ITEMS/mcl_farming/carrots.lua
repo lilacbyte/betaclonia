@@ -101,15 +101,14 @@ minetest.register_craftitem("mcl_farming:carrot_item", {
 	_doc_items_longdesc = S("Carrots can be eaten and planted. Pigs and rabbits like carrots."),
 	_doc_items_usagehelp = S("Hold it in your hand and rightclick to eat it. Place it on top of farmland to plant the carrot. It grows in sunlight and grows faster on hydrated farmland. Rightclick an animal to feed it."),
 	inventory_image = "farming_carrot.png",
-	groups = {food = 2, eatable = 3, compostability = 65},
-	_mcl_saturation = 3.6,
-	on_secondary_use = minetest.item_eat(3),
+	groups = {eatable = 1, compostability = 65},
+	on_secondary_use = minetest.item_eat(1),
 	on_place = function(itemstack, placer, pointed_thing)
 		local new = mcl_farming:place_seed(itemstack, placer, pointed_thing, "mcl_farming:carrot_1")
 		if new then
 			return new
 		else
-			return minetest.do_item_eat(3, nil, itemstack, placer, pointed_thing)
+			return minetest.do_item_eat(1, nil, itemstack, placer, pointed_thing)
 		end
 	end,
 })
@@ -120,8 +119,7 @@ minetest.register_craftitem("mcl_farming:carrot_item_gold", {
 	inventory_image = "farming_carrot_gold.png",
 	on_place = minetest.item_eat(6),
 	on_secondary_use = minetest.item_eat(6),
-	groups = { brewitem = 1, food = 2, eatable = 6 },
-	_mcl_saturation = 14.4,
+	groups = { brewitem = 1, eatable = 6 },
 })
 
 minetest.register_craft({

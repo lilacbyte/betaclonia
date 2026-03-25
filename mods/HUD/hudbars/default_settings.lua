@@ -49,7 +49,7 @@ else
 	-- Beta HUD layout:
 	-- - Armor occupies the former hunger row
 	-- - Breath bubbles appear one row above armor
-	hb.settings.sorting = { ["health"] = 0, ["armor"] = 1, ["breath"] = 2, ["hunger"] = 3, ["exhaustion"] = 4, ["saturation"] = 5 }
+		hb.settings.sorting = { ["health"] = 0, ["armor"] = 1, ["breath"] = 2, ["hunger"] = 3, ["exhaustion"] = 4 }
 	hb.settings.sorting_reverse = {}
 	for k,v in pairs(hb.settings.sorting) do
 		hb.settings.sorting_reverse[tonumber(v)] = k

@@ -138,10 +138,9 @@ minetest.register_craftitem("mcl_farming:melon_item", {
 	description = S("Melon Slice"),
 	_doc_items_longdesc = S("This is a food item which can be eaten."),
 	inventory_image = "farming_melon.png",
-	on_place = minetest.item_eat(2),
-	on_secondary_use = minetest.item_eat(2),
-	groups = {food = 2, eatable = 2, compostability = 50},
-	_mcl_saturation = 1.2,
+	on_place = minetest.item_eat(1),
+	on_secondary_use = minetest.item_eat(1),
+	groups = {eatable = 1, compostability = 50},
 })
 
 minetest.register_craft({

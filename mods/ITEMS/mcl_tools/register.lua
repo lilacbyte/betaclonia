@@ -92,11 +92,12 @@ mcl_tools.register_set("stone", {
 mcl_tools.register_set("iron", {
     craftable = true,
     material = "mcl_core:iron_ingot",
-    uses = 251,
+    uses = 220,
     level = 4,
     speed = 6,
     max_drop_level = 4,
-    groups = { dig_class_speed = 4, enchantability = 14 }
+    groups = { dig_class_speed = 4, enchantability = 14, reinforced_1 = 1 },
+    effect_desc = S("Effect: Reinforced I")
 }, {
     ["pick"] = {
         description = S("Iron Pickaxe"),
@@ -181,11 +182,12 @@ mcl_tools.register_set("gold", {
 mcl_tools.register_set("diamond", {
     craftable = true,
     material = "mcl_core:diamond",
-    uses = 1562,
+    uses = 1200,
     level = 5,
     speed = 8,
     max_drop_level = 5,
-    groups = { dig_class_speed = 5, enchantability = 10 }
+    groups = { dig_class_speed = 5, enchantability = 10, reinforced_3 = 1 },
+    effect_desc = S("Effect: Reinforced III")
 }, {
     ["pick"] = {
         description = S("Diamond Pickaxe"),

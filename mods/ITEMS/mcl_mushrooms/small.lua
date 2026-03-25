@@ -141,12 +141,11 @@ end
 
 minetest.register_craftitem("mcl_mushrooms:mushroom_stew", {
 	description = S("Mushroom Stew"),
-	_doc_items_longdesc = S("Mushroom stew is a healthy soup which can be consumed to restore some hunger points."),
+	_doc_items_longdesc = S("Mushroom stew is a healthy soup which can be consumed to heal a small amount of health."),
 	inventory_image = "farming_mushroom_stew.png",
-	on_place = minetest.item_eat(6, "mcl_core:bowl"),
-	on_secondary_use = minetest.item_eat(6, "mcl_core:bowl"),
-	groups = { food = 3, eatable = 6 },
-	_mcl_saturation = 7.2,
+	on_place = minetest.item_eat(4, "mcl_core:bowl"),
+	on_secondary_use = minetest.item_eat(4, "mcl_core:bowl"),
+	groups = { eatable = 4 },
 	stack_max = 1,
 })
 

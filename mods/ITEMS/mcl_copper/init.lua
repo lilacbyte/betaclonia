@@ -36,16 +36,6 @@ minetest.register_node("mcl_copper:stone_with_copper", {
 	_mcl_cooking_output = "mcl_copper:copper_ingot",
 })
 
-minetest.register_node("mcl_copper:block_raw", {
-	description = S("Block of Raw Copper"),
-	_doc_items_longdesc = S("A storage block made from raw copper."),
-	tiles = {"mcl_copper_block_raw.png"},
-	groups = {pickaxey = 3, building_block = 1, material_stone = 1},
-	sounds = mcl_sounds.node_sound_stone_defaults(),
-	_mcl_blast_resistance = 6,
-	_mcl_hardness = 5,
-})
-
 minetest.register_node("mcl_copper:block", {
 	description = S("Block of Copper"),
 	_doc_items_longdesc = S("A storage block made from copper ingots."),
@@ -84,20 +74,6 @@ minetest.register_craft({
 	recipe = {{"mcl_copper:copper_ingot"}}
 })
 
-minetest.register_craft({
-	output = "mcl_copper:block_raw",
-	recipe = {
-		{"mcl_copper:raw_copper", "mcl_copper:raw_copper", "mcl_copper:raw_copper"},
-		{"mcl_copper:raw_copper", "mcl_copper:raw_copper", "mcl_copper:raw_copper"},
-		{"mcl_copper:raw_copper", "mcl_copper:raw_copper", "mcl_copper:raw_copper"},
-	}
-})
-
-minetest.register_craft({
-	output = "mcl_copper:raw_copper 9",
-	recipe = {{"mcl_copper:block_raw"}}
-})
-
 local tools_registered = false
 local function register_copper_tools()
 	if tools_registered then
@@ -111,9 +87,9 @@ local function register_copper_tools()
 		craftable = true,
 		material = "mcl_copper:copper_ingot",
 		uses = 180,
-		level = 3,
+		level = 4,
 		speed = 5,
-		max_drop_level = 3,
+		max_drop_level = 4,
 		groups = { dig_class_speed = 3, enchantability = 10 }
 	}, {
 		["pick"] = {
@@ -136,7 +112,7 @@ local function register_copper_tools()
 			["sword"] = {
 				description = S("Copper Sword"),
 				inventory_image = "mcl_copper_tool_sword.png",
-				effect_desc = S("Effect: Small chance to ignite mobs on hit."),
+				effect_desc = S("Effect: A chance to ignite mobs on hit."),
 				tool_capabilities = {
 					full_punch_interval = 0.625,
 					damage_groups = { fleshy = 5 }
@@ -192,8 +168,8 @@ local function resolve_alias(name)
 	return name
 end
 
-local explosive_chance = 0.22
-local explosive_max_extra = 3
+local explosive_chance = 0.08
+local explosive_max_extra = 2
 local explosive_guard = {}
 
 minetest.register_on_dignode(function(pos, oldnode, digger)

@@ -1,5 +1,16 @@
 local S = minetest.get_translator(minetest.get_current_modname())
 
+local function format_hearts_from_eatable(eatable)
+	local whole = math.floor(eatable / 2)
+	if eatable % 2 == 0 then
+		return tostring(whole)
+	end
+	if whole == 0 then
+		return "0.5"
+	end
+	return tostring(whole) .. ".5"
+end
+
 -- Armor
 tt.register_snippet(function(itemstring)
 	--local def = minetest.registered_items[itemstring]
@@ -46,17 +57,14 @@ end)
 
 tt.register_snippet(function(itemstring)
 	local def = minetest.registered_items[itemstring]
-	local s = ""
-	if def.groups.eatable and def.groups.eatable > 0 then
-		s = s .. S("Hunger points: +@1", def.groups.eatable)
-	end
-	if def._mcl_saturation and def._mcl_saturation > 0 then
-		if s ~= "" then
-			s = s .. "\n"
+	local groups = def.groups or {}
+	if groups.eatable and groups.eatable > 0 then
+		local hearts = format_hearts_from_eatable(groups.eatable)
+		if hearts == "1" then
+			return S("Heals: 1 heart")
 		end
-		s = s .. S("Saturation points: +@1", string.format("%.1f", def._mcl_saturation))
+		return S("Heals: @1 hearts", hearts)
 	end
-	return s ~= "" and s or nil
 end)
 
 tt.register_snippet(function(itemstring)

@@ -105,8 +105,7 @@ minetest.register_craftitem("mcl_farming:potato_item", {
 	_doc_items_longdesc = S("Potatoes are food items which can be eaten, cooked in the furnace and planted. Pigs like potatoes."),
 	_doc_items_usagehelp = S("Hold it in your hand and rightclick to eat it. Place it on top of farmland to plant it. It grows in sunlight and grows faster on hydrated farmland. Rightclick an animal to feed it."),
 	inventory_image = "farming_potato.png",
-	groups = {food = 2, eatable = 1, compostability = 65, smoker_cookable = 1, campfire_cookable = 1},
-	_mcl_saturation = 0.6,
+	groups = {eatable = 1, compostability = 65, smoker_cookable = 1, campfire_cookable = 1},
 	_mcl_cooking_output = "mcl_farming:potato_item_baked",
 	on_secondary_use = minetest.item_eat(1),
 	on_place = function(itemstack, placer, pointed_thing)
@@ -125,19 +124,17 @@ minetest.register_craftitem("mcl_farming:potato_item_baked", {
 	inventory_image = "farming_potato_baked.png",
 	on_place = minetest.item_eat(5),
 	on_secondary_use = minetest.item_eat(5),
-	groups = {food = 2, eatable = 5, compostability = 85},
-	_mcl_saturation = 6.0,
+	groups = {eatable = 5, compostability = 85},
 })
 
 minetest.register_craftitem("mcl_farming:potato_item_poison", {
 	description = S("Poisonous Potato"),
 	_tt_help = minetest.colorize(mcl_colors.YELLOW, S("60% chance to hurt you")),
-	_doc_items_longdesc = S("This potato doesn't look too healthy. You can eat it to restore hunger points, but there's a 60% chance it will hurt you."),
+	_doc_items_longdesc = S("This potato doesn't look too healthy. It restores the same health as a potato, but has a 60% chance to hurt you."),
 	inventory_image = "farming_potato_poison.png",
-	on_place = minetest.item_eat(2),
-	on_secondary_use = minetest.item_eat(2),
-	groups = { food = 2, eatable = 2 },
-	_mcl_saturation = 1.2,
+	on_place = minetest.item_eat(1),
+	on_secondary_use = minetest.item_eat(1),
+	groups = { eatable = 1 },
 })
 
 mcl_farming:add_plant("plant_potato", "mcl_farming:potato", {"mcl_farming:potato_1", "mcl_farming:potato_2", "mcl_farming:potato_3", "mcl_farming:potato_4", "mcl_farming:potato_5", "mcl_farming:potato_6", "mcl_farming:potato_7"}, 19.75, 20)
@@ -154,10 +151,17 @@ minetest.register_on_item_eat(function(_, _, itemstack, user)
 	end
 
 	local damage = math.random(1, 6) -- 0.5 to 3 hearts
-	if mcl_damage and mcl_damage.damage_player then
-		mcl_damage.damage_player(user, damage, { type = "generic" })
-	else
-		user:set_hp(math.max(0, user:get_hp() - damage), { type = "set_hp" })
-		minetest.sound_play("player_damage", { to_player = user:get_player_name(), gain = 0.5 }, true)
-	end
+	local player_name = user:get_player_name()
+	minetest.after(0, function()
+		local player = minetest.get_player_by_name(player_name)
+		if not player or player:get_hp() <= 0 then
+			return
+		end
+		if mcl_damage and mcl_damage.damage_player then
+			mcl_damage.damage_player(player, damage, { type = "generic" })
+		else
+			player:set_hp(math.max(0, player:get_hp() - damage), { type = "set_hp" })
+			minetest.sound_play("player_damage", { to_player = player_name, gain = 0.5 }, true)
+		end
+	end)
 end)
