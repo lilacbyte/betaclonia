@@ -30,34 +30,34 @@ local function set_np(name, np)
 	end
 end
 
--- Beta-like terrain profile: disable modern mountain/ridge river shaping.
+-- Beta-like terrain profile for v7: no giant mountains, but keep ridges for cliffy hills.
 if mg_name == "v7" then
-	minetest.set_mapgen_setting("mgv7_spflags", "nomountains,noridges,nofloatlands,caverns", true)
-	-- Keep v7 but flatten terrain to avoid huge mountain walls.
+	-- Keep big mountain walls disabled, but allow ridges for beta-like cliffs/hills.
+	minetest.set_mapgen_setting("mgv7_spflags", "nomountains,nofloatlands,caverns", true)
 	set_np("mgv7_np_terrain_base", {
-		offset = 2,
-		scale = 28,
-		spread = {x = 600, y = 600, z = 600},
+		offset = 3,
+		scale = 38,
+		spread = {x = 480, y = 480, z = 480},
 		seed = 82341,
 		octaves = 5,
-		persist = 0.60,
+		persist = 0.62,
 		lacunarity = 2.0,
 		flags = "defaults",
 	})
 	set_np("mgv7_np_terrain_alt", {
 		offset = 2,
-		scale = 10,
-		spread = {x = 600, y = 600, z = 600},
+		scale = 18,
+		spread = {x = 420, y = 420, z = 420},
 		seed = 5934,
 		octaves = 5,
-		persist = 0.60,
+		persist = 0.63,
 		lacunarity = 2.0,
 		flags = "defaults",
 	})
 	set_np("mgv7_np_height_select", {
-		offset = -4,
-		scale = 8,
-		spread = {x = 500, y = 500, z = 500},
+		offset = -2,
+		scale = 15,
+		spread = {x = 380, y = 380, z = 380},
 		seed = 4213,
 		octaves = 6,
 		persist = 0.70,

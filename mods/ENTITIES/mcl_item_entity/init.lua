@@ -140,12 +140,12 @@ function minetest.handle_node_drops(pos, drops, digger)
 	* table: Drop every itemstring in this table when dug by shears _mcl_silk_touch_drop
 	]]
 
-		local enchantments = {}
-		local tool_name = tool and tool:get_name() or ""
-		-- Hardcoded special behavior: golden pickaxe always behaves like Silk Touch.
-		if tool_name == "mcl_tools:pick_gold" then
-			enchantments.silk_touch = true
-		end
+	local enchantments = {}
+	local tool_name = tool and tool:get_name() or ""
+	-- Hardcoded special behavior: golden pickaxe always behaves like Silk Touch.
+	if tool_name == "mcl_tools:pick_gold" then
+		enchantments.silk_touch = true
+	end
 
 	local silk_touch_drop = false
 	local nodedef = minetest.registered_nodes[dug_node.name]
@@ -157,7 +157,7 @@ function minetest.handle_node_drops(pos, drops, digger)
 		else
 			drops = nodedef._mcl_shears_drop
 		end
-	elseif tool and not is_book and enchantments.silk_touch and nodedef._mcl_silk_touch_drop then
+	elseif tool and not is_book and enchantments.silk_touch and nodedef._mcl_silk_touch_drop and dug_node.name ~= "mcl_mobspawners:spawner" then
 		silk_touch_drop = true
 		if nodedef._mcl_silk_touch_drop == true then
 			drops = { dug_node.name }

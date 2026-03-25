@@ -245,9 +245,20 @@ local function add_groupcaps(toolname, groupcaps, groupcaps_def, efficiency)
 	end
 end
 
+local function resolve_alias(name)
+	local seen = {}
+	while name and minetest.registered_aliases[name] and not seen[name] do
+		seen[name] = true
+		name = minetest.registered_aliases[name]
+	end
+	return name
+end
+
 -- Checks if the given node would drop its useful drop if dug by a given tool.
 -- Returns true if it will yield its useful drop, false otherwise.
 function mcl_autogroup.can_harvest(nodename, toolname, player)
+	nodename = resolve_alias(nodename)
+	toolname = resolve_alias(toolname)
 	local ndef = minetest.registered_nodes[nodename]
 
 	if not ndef then

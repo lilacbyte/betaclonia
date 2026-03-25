@@ -119,6 +119,7 @@ local function register_copper_tools()
 		["pick"] = {
 			description = S("Copper Pickaxe"),
 			inventory_image = "mcl_copper_tool_pick.png",
+				effect_desc = S("Effect: Explosive. Chance to break nearby blocks."),
 			tool_capabilities = {
 				full_punch_interval = 0.83333333,
 				damage_groups = { fleshy = 3 }
@@ -159,16 +160,94 @@ minetest.register_on_mods_loaded(function()
 	register_copper_tools()
 end)
 
-local y_min = mcl_vars.mg_overworld_min
-local y_max = math.min(mcl_vars.mg_overworld_max, 64)
+-- Copper spawns a bit higher than iron, while staying underground.
+minetest.register_ore({
+	ore_type = "scatter",
+	ore = "mcl_copper:stone_with_copper",
+	wherein = "mcl_core:stone",
+	clust_scarcity = 700,
+	clust_num_ores = 5,
+	clust_size = 3,
+	y_min = mcl_vars.mg_overworld_min,
+	y_max = mcl_worlds.layer_to_y(47),
+})
 
 minetest.register_ore({
 	ore_type = "scatter",
 	ore = "mcl_copper:stone_with_copper",
 	wherein = "mcl_core:stone",
-	clust_scarcity = 14 * 14 * 14,
-	clust_num_ores = 6,
-	clust_size = 4,
-	y_min = y_min,
-	y_max = y_max,
+	clust_scarcity = 1400,
+	clust_num_ores = 4,
+	clust_size = 2,
+	y_min = mcl_worlds.layer_to_y(48),
+	y_max = mcl_worlds.layer_to_y(75),
 })
+
+local function resolve_alias(name)
+	local seen = {}
+	while name and minetest.registered_aliases[name] and not seen[name] do
+		seen[name] = true
+		name = minetest.registered_aliases[name]
+	end
+	return name
+end
+
+local explosive_chance = 0.22
+local explosive_max_extra = 3
+local explosive_guard = {}
+
+minetest.register_on_dignode(function(pos, oldnode, digger)
+	if not digger or not digger:is_player() or not oldnode then
+		return
+	end
+	local player_name = digger:get_player_name()
+	if player_name == "" or explosive_guard[player_name] then
+		return
+	end
+	local wield = digger:get_wielded_item()
+	local tool_name = resolve_alias(wield:get_name())
+	if tool_name ~= "mcl_copper:pick_copper" then
+		return
+	end
+	if math.random() >= explosive_chance then
+		return
+	end
+
+	local candidates = {}
+	for dx = -1, 1 do
+		for dy = -1, 1 do
+			for dz = -1, 1 do
+				if not (dx == 0 and dy == 0 and dz == 0) then
+					local npos = vector.offset(pos, dx, dy, dz)
+					local node = minetest.get_node_or_nil(npos)
+					if node and node.name == oldnode.name then
+						table.insert(candidates, npos)
+					end
+				end
+			end
+		end
+	end
+
+	if #candidates == 0 then
+		return
+	end
+	table.shuffle(candidates)
+
+	explosive_guard[player_name] = true
+	local broken = 0
+	for i = 1, #candidates do
+		if broken >= explosive_max_extra then
+			break
+		end
+		local npos = candidates[i]
+		local node = minetest.get_node_or_nil(npos)
+		if node and node.name == oldnode.name and not minetest.is_protected(npos, player_name) then
+			local ndef = minetest.registered_nodes[node.name]
+			if ndef and ndef.diggable ~= false then
+				minetest.node_dig(npos, node, digger)
+				broken = broken + 1
+			end
+		end
+	end
+	explosive_guard[player_name] = nil
+end)

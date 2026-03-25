@@ -29,7 +29,15 @@ minetest.register_on_mods_loaded(function()
 	for name, def in pairs(minetest.registered_items) do
 		local groups = def.groups or {}
 		if (groups.food and groups.food > 0) or (groups.eatable and groups.eatable > 0) then
-			minetest.override_item(name, { stack_max = 1 })
+			local sounds = table.copy(def.sound or {})
+			if not sounds.eat then
+				-- Match Mineclonia-style consume SFX without bringing hunger back.
+				sounds.eat = (groups.food == 3) and "survival_thirst_drink" or "mcl_hunger_bite"
+			end
+			minetest.override_item(name, {
+				stack_max = 1,
+				sound = sounds,
+			})
 		end
 	end
 

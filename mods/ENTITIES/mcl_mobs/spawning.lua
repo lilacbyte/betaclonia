@@ -10,8 +10,10 @@ local overworld_threshold = 0
 local overworld_sky_threshold = 7
 local overworld_passive_threshold = 7
 
-local PASSIVE_INTERVAL = 20
+local PASSIVE_INTERVAL = tonumber(minetest.settings:get("betaclonia_passive_spawn_interval")) or 6
 local HOSTILE_INTERVAL = 10
+local PASSIVE_CHANCE_MULT = tonumber(minetest.settings:get("betaclonia_passive_spawn_weight")) or 6
+local ANIMAL_LOCAL_CAP = tonumber(minetest.settings:get("betaclonia_animal_local_cap")) or 8
 local dbg_spawn_attempts = 0
 local dbg_spawn_succ = 0
 local dbg_spawn_counts = {}
@@ -27,7 +29,7 @@ local random_despawn_range = 32
 
 local mob_cap = {
 	monster = tonumber(minetest.settings:get("mcl_mob_cap_monster")) or 70,
-	animal = tonumber(minetest.settings:get("mcl_mob_cap_animal")) or 10,
+	animal = tonumber(minetest.settings:get("mcl_mob_cap_animal")) or 15,
 	ambient = tonumber(minetest.settings:get("mcl_mob_cap_ambient")) or 15,
 	water = tonumber(minetest.settings:get("mcl_mob_cap_water")) or 5,
 	water_ambient = tonumber(minetest.settings:get("mcl_mob_cap_water_ambient")) or 20,
@@ -128,6 +130,9 @@ function mcl_mobs.spawn_setup(def)
 	def.max_light        = def.max_light or mob_def.max_light or (mob_def.spawn_class == "hostile" and 7)
 	def.min_height       = def.min_height or mcl_vars["mg_"..def.dimension.."_min"]
 	def.max_height       = def.max_height or mcl_vars["mg_"..def.dimension.."_max"]
+	if mob_def.spawn_class == "passive" and PASSIVE_CHANCE_MULT > 1 then
+		def.chance = math.max(1, math.floor(def.chance * PASSIVE_CHANCE_MULT))
+	end
 
 	table.insert(spawn_dictionary, def)
 end
@@ -278,7 +283,8 @@ local function spawn_check(pos,spawn_def,ignore_caps)
 	end
 
 	if ( mob_count_wide >= (mob_cap[mob_type] or 15) ) then return false,"mob cap wide full" end
-	if ( mob_count >= 5 ) then return false, "local mob cap full" end
+	local local_cap = (mob_type == "animal") and ANIMAL_LOCAL_CAP or 5
+	if ( mob_count >= local_cap ) then return false, "local mob cap full" end
 
 	return true, ""
 end
@@ -358,8 +364,6 @@ local function check_timer(spawn_def)
 	if mob_def and mob_def.spawn_class == "passive" then
 		if passive_timer > 0 then
 			return false
-		else
-			passive_timer = PASSIVE_INTERVAL
 		end
 	end
 	return true
@@ -480,24 +484,29 @@ if mobs_spawn then
 			local spawn_def = mob_library_worker_table[mob_index]
 			--minetest.log(spawn_def.name.." "..step_chance.. " "..mob_chance)
 			if spawn_def and spawn_def.name and minetest.registered_entities[spawn_def.name] then
-				local spawn_in_group = minetest.registered_entities[spawn_def.name].spawn_in_group or 4
-				local spawn_in_group_min = minetest.registered_entities[spawn_def.name].spawn_in_group_min or 1
-				local mob_type = minetest.registered_entities[spawn_def.name].type
+				local entity_def = minetest.registered_entities[spawn_def.name]
+				local spawn_in_group = entity_def.spawn_in_group or 4
+				local spawn_in_group_min = entity_def.spawn_in_group_min or 1
+				local mob_type = entity_def.type
 				if spawn_check(spawning_position,spawn_def) then
 
 					if can_spawn(spawn_def,spawning_position) and check_timer(spawn_def) then
 						--everything is correct, spawn mob
+						local spawned_obj
 						if spawn_in_group and ( mob_type ~= "monster" or math.random(5) == 1 ) then
 							if logging then
 								minetest.log("action", "[mcl_mobs] A group of mob " .. spawn_def.name .. " spawns on " ..minetest.get_node(vector.offset(spawning_position,0,-1,0)).name .." at " .. minetest.pos_to_string(spawning_position, 1))
 							end
-							spawn_group(spawning_position,spawn_def,{minetest.get_node(vector.offset(spawning_position,0,-1,0)).name},spawn_in_group,spawn_in_group_min)
+							spawned_obj = spawn_group(spawning_position,spawn_def,{minetest.get_node(vector.offset(spawning_position,0,-1,0)).name},spawn_in_group,spawn_in_group_min)
 
 						else
 							if logging then
 								minetest.log("action", "[mcl_mobs] Mob " .. spawn_def.name .. " spawns on " ..minetest.get_node(vector.offset(spawning_position,0,-1,0)).name .." at ".. minetest.pos_to_string(spawning_position, 1))
 							end
-							mcl_mobs.spawn(spawning_position, spawn_def.name)
+							spawned_obj = mcl_mobs.spawn(spawning_position, spawn_def.name)
+						end
+						if spawned_obj and entity_def.spawn_class == "passive" then
+							passive_timer = PASSIVE_INTERVAL
 						end
 					end
 				end

@@ -115,8 +115,15 @@ mcl_gamemode.register_on_gamemode_change(mcl_meshhand.update_player)
 -- with random items in hand in survival mode
 minetest.override_item("", {
 	tool_capabilities = mcl_meshhand.survival_hand_tool_caps,
-	on_place = function(_, placer, pointed_thing)
-		if minetest.is_creative_enabled(placer:get_player_name()) then
+	on_place = function(itemstack, placer, pointed_thing)
+		if not placer or not placer:is_player() then
+			return itemstack
+		end
+		local rc = mcl_util.call_on_rightclick(itemstack, placer, pointed_thing)
+		if rc then
+			return rc
+		end
+		if pointed_thing and pointed_thing.type == "node" and minetest.is_creative_enabled(placer:get_player_name()) then
 			local name = minetest.get_node(pointed_thing.under).name
 			local stack = ItemStack(name)
 			local def = stack:get_definition()
@@ -135,5 +142,6 @@ minetest.override_item("", {
 			end
 			return istack
 		end
+		return itemstack
 	end,
 })

@@ -1,4 +1,6 @@
-# Betaclonia
+# Betaclonia (fork of 'clonecraftlibre')
+
+(Yes, this is a fork on top of a fork on top of 2 to 3 other forks... Lots of forks....)
 
 Betaclonia is a heavily customized Mineclonia fork focused on Minecraft b1.7.3 style. This project intentionally removes or rewires large chunks of post-Beta gameplay and content.
 
