@@ -94,21 +94,25 @@ local loottable_overworld =
 }
 
 local loottable_nether = {
-	{
-		stacks_min = 1,
-		stacks_max = 4,
-		items = {
-			{ itemstring = "mcl_nether:nether_wart_item", weight = 30, amount_min = 2, amount_max = 6 },
-			{ itemstring = "mcl_core:gold_ingot", weight = 12, amount_min = 1, amount_max = 4 },
-			{ itemstring = "mcl_core:iron_ingot", weight = 8, amount_min = 1, amount_max = 3 },
-			{ itemstring = "mcl_core:coal_lump", weight = 10, amount_min = 1, amount_max = 4 },
-			{ itemstring = "mcl_mobitems:bone", weight = 10, amount_min = 1, amount_max = 8 },
-			{ itemstring = "mcl_mobitems:string", weight = 10, amount_min = 1, amount_max = 8 },
-			{ itemstring = "mcl_jukebox:record_3", weight = 3 },
-			{ itemstring = "mcl_jukebox:record_6", weight = 2 },
-			-- Bastion-style jackpot for nether dungeons: intentionally very rare.
-			{ itemstring = "mcl_jukebox:record_8", weight = 1 },
-			{ itemstring = "mcl_jukebox:record_pigstep", weight = 1 },
+		{
+			stacks_min = 1,
+			stacks_max = 4,
+			items = {
+				{ itemstring = "mcl_nether:nether_wart_item", weight = 30, amount_min = 2, amount_max = 6 },
+				{ itemstring = "mcl_core:gold_ingot", weight = 12, amount_min = 1, amount_max = 4 },
+				{ itemstring = "mcl_core:iron_ingot", weight = 8, amount_min = 1, amount_max = 3 },
+				{ itemstring = "mcl_core:coal_lump", weight = 10, amount_min = 1, amount_max = 4 },
+				{ itemstring = "mcl_mobitems:bone", weight = 10, amount_min = 1, amount_max = 8 },
+				{ itemstring = "mcl_mobitems:string", weight = 10, amount_min = 1, amount_max = 8 },
+				{ itemstring = "mcl_armor:helmet_chain", weight = 3 },
+				{ itemstring = "mcl_armor:chestplate_chain", weight = 2 },
+				{ itemstring = "mcl_armor:leggings_chain", weight = 2 },
+				{ itemstring = "mcl_armor:boots_chain", weight = 3 },
+				{ itemstring = "mcl_jukebox:record_3", weight = 3 },
+				{ itemstring = "mcl_jukebox:record_6", weight = 2 },
+				-- Bastion-style jackpot for nether dungeons: intentionally very rare.
+				{ itemstring = "mcl_jukebox:record_8", weight = 1 },
+				{ itemstring = "mcl_jukebox:record_pigstep", weight = 1 },
 		},
 	},
 }

@@ -40,7 +40,7 @@ mcl_armor.register_set({
 		legs = 2,
 		feet = 1,
 	},
-	craft_material = "mcl_core:iron_ingot",
+	repair_material = "mcl_core:iron_ingot",
 	cook_material = "mcl_core:iron_ingot",
 	sound_equip = "mcl_armor_equip_chainmail",
 	sound_unequip = "mcl_armor_unequip_chainmail",
