@@ -19,9 +19,34 @@ mcl_armor.register_set({
 	cook_material = "mcl_core:gold_nugget",
 	sound_equip = "mcl_armor_equip_iron",
 	sound_unequip = "mcl_armor_unequip_iron",
-	effect_desc = S("While worn: Strongly reduces fall damage"),
+	effect_desc = S("While worn: Reduces fall damage"),
 	groups = {
 		golden = 1,
+	},
+})
+
+mcl_armor.register_set({
+	name = "chain",
+	descriptions = {
+		head = S("Chainmail Helmet"),
+		torso = S("Chainmail Chestplate"),
+		legs = S("Chainmail Leggings"),
+		feet = S("Chainmail Boots"),
+	},
+	durability = 220,
+	points = {
+		head = 1,
+		torso = 2,
+		legs = 2,
+		feet = 1,
+	},
+	craft_material = "mcl_core:iron_ingot",
+	cook_material = "mcl_core:iron_ingot",
+	sound_equip = "mcl_armor_equip_chainmail",
+	sound_unequip = "mcl_armor_unequip_chainmail",
+	effect_desc = S("While worn: Extra protection"),
+	groups = {
+		chainmail = 1,
 	},
 })
 
@@ -66,7 +91,7 @@ mcl_armor.register_set({
 	cook_material = "mcl_copper:copper_nugget",
 	sound_equip = "mcl_armor_equip_iron",
 	sound_unequip = "mcl_armor_unequip_iron",
-		effect_desc = S("While worn: Reduces fire damage.")
+		effect_desc = S("While worn: Reduces fire damage")
 	})
 end
 

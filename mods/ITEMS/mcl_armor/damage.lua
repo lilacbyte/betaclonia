@@ -56,6 +56,7 @@ mcl_damage.register_modifier(function(obj, damage, reason)
 
 	local points = 0
 	local toughness = 0
+	local chain_reduction = 0
 
 	local inv = mcl_util.get_inventory(obj)
 
@@ -69,6 +70,9 @@ mcl_damage.register_modifier(function(obj, damage, reason)
 					local condition = mcl_armor.get_piece_condition(itemstack, itemname)
 					points = points + minetest.get_item_group(itemname, "mcl_armor_points") * condition
 					toughness = toughness + minetest.get_item_group(itemname, "mcl_armor_toughness") * condition
+					if minetest.get_item_group(itemname, "armor_chain") > 0 then
+						chain_reduction = chain_reduction + (0.10 * condition)
+					end
 
 					use_durability(obj, inv, element.index, itemstack, uses)
 				end
@@ -78,6 +82,9 @@ mcl_damage.register_modifier(function(obj, damage, reason)
 
 	-- https The OG Game gamepedia.com/Armor#Damage_protection
 	damage = damage * (1 - math.min(20, math.max((points / 5), points - damage / (2 + (toughness / 4)))) / 25)
+	if chain_reduction > 0 then
+		damage = damage * (1 - math.min(0.40, chain_reduction))
+	end
 
 	mcl_armor.update(obj)
 	return damage

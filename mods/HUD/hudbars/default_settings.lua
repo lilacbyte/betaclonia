@@ -47,9 +47,17 @@ if sorting then
 else
 	-- Modified in MCL2!
 	-- Beta HUD layout:
-	-- - Armor occupies the former hunger row
-	-- - Breath bubbles appear one row above armor
-		hb.settings.sorting = { ["health"] = 0, ["armor"] = 1, ["breath"] = 2, ["hunger"] = 3, ["exhaustion"] = 4 }
+	-- - Armor aligns beside hearts
+	-- - Breath bubbles appear above armor
+	-- - Stamina remains on the left row above hearts
+	hb.settings.sorting = {
+		["health"] = 0,
+		["armor"] = 1,
+		["stamina"] = 2,
+		["breath"] = 3,
+		["hunger"] = 4,
+		["exhaustion"] = 5,
+	}
 	hb.settings.sorting_reverse = {}
 	for k,v in pairs(hb.settings.sorting) do
 		hb.settings.sorting_reverse[tonumber(v)] = k

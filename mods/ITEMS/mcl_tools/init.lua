@@ -366,9 +366,6 @@ minetest.register_on_dignode(function(_, oldnode, digger)
 	end
 	local tool_name = resolve_alias(wield:get_name())
 	local tier = mcl_reinforced.get_tier(tool_name)
-	if not tier then
-		return
-	end
 
 	local tdef = minetest.registered_tools[tool_name]
 	local ndef = minetest.registered_nodes[oldnode.name]
@@ -376,18 +373,33 @@ minetest.register_on_dignode(function(_, oldnode, digger)
 		return
 	end
 
+	local matched_group = nil
 	for group, _ in pairs(tdef._mcl_diggroups) do
-		if ndef.groups[group] then
-			local wear = mcl_autogroup.get_wear(tool_name, group)
+		if (ndef.groups[group] or 0) > 0 then
+			matched_group = group
+			break
+		end
+	end
+
+	if matched_group then
+		-- Proper tool-group dig:
+		-- engine already applied wear; reinforced tiers partially refund it.
+		if tier then
+			local wear = mcl_autogroup.get_wear(tool_name, matched_group)
 			local adjusted = mcl_reinforced.adjust_wear(wield, wear)
 			local refund = (wear or 0) - (adjusted or 0)
 			if refund > 0 then
 				wield:set_wear(math.max(0, wield:get_wear() - refund))
 				digger:set_wielded_item(wield)
 			end
-			return
 		end
+		return
 	end
+
+	-- Wrong-tool dig:
+	-- if a tool still breaks a block outside its dig groups, consume durability.
+	mcl_util.use_item_durability(wield, 1)
+	digger:set_wielded_item(wield)
 end)
 
 --dofile(modpath.."/mace.lua")--removed

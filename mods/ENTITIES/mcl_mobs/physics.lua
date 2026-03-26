@@ -7,6 +7,58 @@ local DEATH_DELAY = 0.5
 local PATHFINDING = "gowp"
 local mobs_drop_items = minetest.settings:get_bool("mobs_drop_items") ~= false
 
+local function resolve_killer_player(cmi_cause)
+	if not cmi_cause then
+		return nil
+	end
+
+	local direct = cmi_cause.direct or cmi_cause.puncher or cmi_cause.source or cmi_cause.shooter or cmi_cause.killer
+	if direct and direct.is_player and direct:is_player() then
+		return direct
+	end
+
+	if direct and direct.get_luaentity then
+		local lua = direct:get_luaentity()
+		if lua then
+			local shooter = lua._shooter
+			if shooter and shooter.is_player and shooter:is_player() then
+				return shooter
+			end
+			local owner_name = lua._owner or lua.owner or lua.owner_name or lua._shooter_name
+			if owner_name and owner_name ~= "" then
+				return minetest.get_player_by_name(owner_name)
+			end
+		end
+	end
+
+	return nil
+end
+
+local function award_kill_points(self, cmi_cause)
+	if not mcl_points or not mcl_points.add_points then
+		return
+	end
+
+	local player = resolve_killer_player(cmi_cause)
+	if not player then
+		return
+	end
+
+	local points_min = tonumber(self.xp_min) or 0
+	local points_max = tonumber(self.xp_max) or points_min
+	if points_max < points_min then
+		points_max = points_min
+	end
+
+	local points = points_min
+	if points_max > points_min then
+		points = math.random(points_min, points_max)
+	end
+	if points > 0 then
+		mcl_points.add_points(player, points)
+	end
+end
+
 -- check if within physical map limits (-30911 to 30927)
 local function within_limits(pos, radius)
 	local wmin, wmax = -30912, 30928
@@ -474,6 +526,8 @@ function mob_class:check_for_death(cause, cmi_cause)
 	if self.object then
 		self.object:set_acceleration(vector.new(0, self.fall_speed, 0))
 	end
+
+	award_kill_points(self, cmi_cause)
 
 	local length
 	-- default death function and die animation (if defined)

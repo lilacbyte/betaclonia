@@ -101,6 +101,9 @@ function mcl_furnaces.give_xp(pos, player)
 	local xp = meta:get_int("xp")
 	if xp > 0 then
 		meta:set_int("xp", 0)
+		if player and player.is_player and player:is_player() and mcl_points and mcl_points.add_points then
+			mcl_points.add_points(player, xp)
+		end
 	end
 end
 
