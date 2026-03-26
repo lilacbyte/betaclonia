@@ -16,32 +16,19 @@ It is being shaped into a Beta-flavored experience with:
 - flatter / less extreme terrain profile
 - dungeon-first loot progression for selected items
 - fewer high-overhead generation systems
-
-## Current Beta Conversion (Implemented)
-
-### Global gameplay rules
-
-- Hunger is disabled (`mcl_hunger.active = false`).
-- Food stack size is forced to `1`.
-- Golden apple crafting is removed.
-- chest boats are disabled (items/crafts/entities).
-- End progression is removed.
-- Legacy custom beta terrain generators are force-unregistered at startup (to avoid slow generation regressions).
-
-### Removed
-
--  horses and horse armor 
-- ender chests
-- slime blocks
+- food stack size is forced to `1`
+- golden apple crafting is removed
 
 ### Combat, durability and armor
 
+- sprinting has a stamina bar  ([texture credit](https://content.luanti.org/packages/drkwv/minetest_wadsprint/))
 - armor HUD uses a classic 10-icon / 20-point bar and updates from armor state
 - armor points are durability-weighted by remaining condition
 - armor effects :
   - leather: movement speed bonus
   - gold: reduced fall damage
   - copper: reduced fire damage
+  - chainmail: extra protection
 - weapon durability is consumed on:
   - block break flows (existing logic)
   - mob hits
@@ -54,7 +41,7 @@ special tool effects:
 
 ### drops
 
-- Zombie drops 1 feather
+- zombie drops 1 feather
 - chicken drops 1 feather
 - zombified piglin is active in Nether and drops a feather
 - pig drops are set to `0..2` raw meat
