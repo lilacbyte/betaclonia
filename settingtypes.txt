@@ -51,6 +51,10 @@ mcl_superflat_classic (Classic superflat map generation) bool false
 # This setting is only read at startup.
 enable_bed_respawn (Respawn at bed) bool true
 
+# If disabled, beds cannot be used to sleep.
+# Bed explosions in the Nether/End are unaffected.
+mcl_enable_bed_sleep (Allow bed sleeping) bool true
+
 # How many players have to sleep to skip the night, in percent.
 # Setting to 0 will mean 1 player is always enough to skip the night.
 # Setting above 100 will prevent skipping the night.
@@ -256,4 +260,3 @@ mcl_logging_structures (Log structure generation) bool true
 
 # Debug logging for mcl_events.
 mcl_logging_event_api (Debug logging for mcl_events) bool false
-

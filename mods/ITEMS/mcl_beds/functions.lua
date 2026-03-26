@@ -26,6 +26,10 @@ local function players_in_bed_setting()
 	return tonumber(minetest.settings:get("mcl_playersSleepingPercentage")) or 100
 end
 
+local function bed_sleep_enabled()
+	return minetest.settings:get_bool("mcl_enable_bed_sleep", true)
+end
+
 local function is_night_skip_enabled()
 	return players_in_bed_setting() <= 100
 end
@@ -358,6 +362,10 @@ function mcl_beds.on_rightclick(pos, player, is_top)
 		minetest.remove_node(pos)
 		minetest.remove_node(string.sub(node.name, -4) == "_top" and vector.subtract(pos, dir) or vector.add(pos, dir))
 		mcl_explosions.explode(pos, 5, {fire = true})
+		return
+	end
+	if not bed_sleep_enabled() then
+		mcl_title.set(player, "actionbar", {text = S("Sleeping in beds is disabled."), color = "white", stay = 60})
 		return
 	end
 	local name = player:get_player_name()
