@@ -40,15 +40,11 @@ minetest.register_on_mods_loaded(function()
 		end
 	end
 
-	-- Remove post-Beta items/nodes/crafts.
-	local beta_removed_items = {
-		"mcl_mobitems:leather_horse_armor",
-		"mcl_mobitems:iron_horse_armor",
-		"mcl_mobitems:gold_horse_armor",
-		"mcl_mobitems:diamond_horse_armor",
-		"mcl_farming:carrot_item_gold",
-		"mcl_fire:fire_charge",
-		"mcl_chests:ender_chest",
+		-- Remove post-Beta items/nodes/crafts.
+		local beta_removed_items = {
+			"mcl_farming:carrot_item_gold",
+			"mcl_fire:fire_charge",
+			"mcl_chests:ender_chest",
 		"mcl_chests:ender_chest_small",
 		"mcl_core:slimeblock",
 		"mcl_core:podzol",
@@ -176,7 +172,7 @@ minetest.register_on_mods_loaded(function()
 		end
 	end
 
-	minetest.log("action", "[mcl_init] beta gameplay rules active: no golden-apple crafting, food stack=1, no chest boats/horses/horse armor/golden carrot/fire charge/ender chest")
+		minetest.log("action", "[mcl_init] beta gameplay rules active: no golden-apple crafting, food stack=1, no chest boats/horses/golden carrot/fire charge/ender chest")
 end)
 mcl_hunger = rawget(_G, "mcl_hunger") or {}
 mcl_hunger.active = false

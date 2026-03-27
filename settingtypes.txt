@@ -2,10 +2,8 @@
 # minetest.conf
 
 [betaclonia new settings]
-betaclonia.enablefallentrees (generate fallen trees) bool false
 betaclonia.enablecatspawnegg (enable cat spawn egg) bool false
 betaclonia.enablesnowmanspawnegg (enable snwoman spawn egg) bool false
-betaclonia.showcopper (show copper in creative inventory) bool false
 betaclonia.allow_copper_generation (allow copper to be generated) bool false
 betaclonia.copper_clust_scarcity (copper clust scarcity, higher number means less copper) int 11
 betaclonia.copper_min (copper minimum height) int -256
@@ -85,10 +83,6 @@ mcl_hand_range (Hand range) float 4.5 1 128
 # Default: 10
 mcl_hand_range_creative (Creative mode hand range) float 10 1 128
 
-# If enabled the hunger mechanic will be active
-# If disabled eating food will heal instantly.
-mcl_enable_hunger (Hunger) bool true
-
 # If disabled, players cannot sprint and stamina UI is disabled.
 mcl_enable_sprinting (Sprinting) bool false
 
@@ -123,12 +117,6 @@ mobs_drop_items (Mob drops) bool true
 # If enabled, mobs can take, place, change and
 # destroy blocks around them.
 mobs_griefing (Mob griefing) bool true
-
-# Should wither follow the player who spawned him around
-wither_follow_spawner (Wither follows his spawner) bool true
-
-# Should wither strafe while in combat
-wither_strafes (Wither strafes) bool true
 
 # How far from players should mobs stop moving
 # Larger values will have a larger performance impact
@@ -179,18 +167,11 @@ mcl_inv_nodes_movable (Movable inventory nodes) bool true
 # villagers teleport home when the night is skipped.
 mcl_mob_allow_nav_hacks (Mob navigation hacks) bool false
 
-# Allow players to create The OG Game-like maps.
-enable_real_maps (Real maps) bool true
-
 # Place bonus chest near players' initial spawn point
 mcl_bonus_chest (Bonus chest) bool false
 
 # Allow re-editing signs after they are placed
 mcl_signs_editable (Editable signs) bool false
-
-# Change size of vault memory. By default a vault remembers the last 128 players
-# that looted that vault and prevents them from looting the same vault again.
-mcl_vaults_looter_list_length (Vault memory size) int 128 1 1024
 
 [Graphics]
 # Whether to animate chests when open / close
@@ -202,31 +183,11 @@ mcl_nether_dust (Nether dust particles) bool true
 # If enabled, mobs will emit damage particles when they get hurt
 mcl_damage_particles (Damage particles) bool true
 
-# The maximum number of boss bars to simultaneously display on the screen
-mcl_max_bossbars (Maximum boss bars) int 5
-
 # How many vertical animation frames the fire
 # texture (fire_basic_flame_animated.png) has.
 # This may vary depending on the texture pack you use.
 # Form: Image height / Image width
 fire_animation_frames (Fire animation frames) int 8
-
-[Villages]
-# Minimum number of job sites which are placed during village generation
-mcl_villages_min_jobs (Minimum number of jobs in village) int 1
-
-# Maximum number of job sites which are placed during village generation
-mcl_villages_max_jobs (Maximum number of jobs in village) int 12
-
-# 1 in X chance a village will spawn in a valid chunk.
-# Set to 0 to disable village generation.
-mcl_villages_village_chance (Village chance) int 100
-
-# This controls how job sites and houses are placed during village generation
-# random: shuffles the buildings so they get placed in any order
-# jobs: places the job sites first so they tend to be closer to the bell
-# houses: places the houses first so the tend to be closer to the bell
-mcl_villages_placement_priority (Buildings closest to the bell) enum random random,jobs,houses
 
 [Redstone]
 
@@ -240,16 +201,7 @@ mcl_redstone_time_budget (Redstone time budget) float 0.2
 # (16 nodes). Only has effect on multiplayer servers.
 mcl_redstone_update_range (Redstone update range) int 8
 
-# The maximum number of queued redstone events. If exceeded redstone circuits will stop working.
-mcl_redstone_event_max (Maximum queued redstone events) int 65535
-
 [Experimental]
-# If disabled, command blocks will be unusable (but still present).
-mcl_enable_commandblocks (Command blocks) bool true
-
-# This is fine for players, but expect all the villagers to die very quickly
-mcl_villages_allow_water_villages (Spawn village buildings on top of water) bool false
-
 # Display mob icons in inventory instead of The OG Game-like spawn eggs.
 # Note that mob icons does not exist for all mobs.
 mcl_old_spawn_icons (Old spawn icons instead of eggs) bool false
@@ -260,6 +212,3 @@ mcl_logging_mapgen (Log chunk generation) bool false
 
 # If enabled generated structures will be logged
 mcl_logging_structures (Log structure generation) bool true
-
-# Debug logging for mcl_events.
-mcl_logging_event_api (Debug logging for mcl_events) bool false

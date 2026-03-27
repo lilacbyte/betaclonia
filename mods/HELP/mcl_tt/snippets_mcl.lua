@@ -47,14 +47,6 @@ tt.register_snippet(function(itemstring, _, itemstack)
 	end
 	return s ~= "" and s or nil
 end)
--- Horse armor
-tt.register_snippet(function(itemstring)
-	local armor_g = minetest.get_item_group(itemstring, "horse_armor")
-	if armor_g and armor_g > 0 then
-		return S("Protection: @1%", 100 - armor_g)
-	end
-end)
-
 tt.register_snippet(function(itemstring)
 	local def = minetest.registered_items[itemstring]
 	local groups = def.groups or {}

@@ -741,27 +741,6 @@ register_minecart(
 	end, nil, true
 )
 
--- Minecart with Command Block
-register_minecart(
-	"mcl_minecarts:command_block_minecart",
-	"mcl_minecarts:command_block_minecart",
-	S("Minecart with Command Block"),
-	nil, nil, nil,
-	"mcl_minecarts_minecart_block.b3d",
-	{
-		"jeija_commandblock_off.png^[verticalframe:2:0",
-		"jeija_commandblock_off.png^[verticalframe:2:0",
-		"jeija_commandblock_off.png^[verticalframe:2:0",
-		"jeija_commandblock_off.png^[verticalframe:2:0",
-		"jeija_commandblock_off.png^[verticalframe:2:0",
-		"jeija_commandblock_off.png^[verticalframe:2:0",
-		"mcl_minecarts_minecart.png",
-	},
-	"mcl_minecarts_minecart_command_block.png",
-	{"mcl_minecarts:minecart"},
-	nil, nil, false
-)
-
 if minetest.get_modpath("mcl_hoppers") then
 	-- Minecart with Hopper
 	register_minecart(
@@ -822,5 +801,4 @@ minetest.register_craft({
 if has_mcl_wip then
 	mcl_wip.register_wip_item("mcl_minecarts:chest_minecart")
 	mcl_wip.register_wip_item("mcl_minecarts:furnace_minecart")
-	mcl_wip.register_wip_item("mcl_minecarts:command_block_minecart")
 end

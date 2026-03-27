@@ -259,33 +259,6 @@ msgstr "Сердце моря"
 msgid "The Heart of the Sea is used to craft a conduit. They can be obtained by finding them in a buried treasure chest."
 msgstr "Сердце моря используется при создании морского проводника. Их можно найти в закопанных сундуках с сокровищем."
 
-msgid "Place it on a horse to put on the horse armor. Donkeys and mules can't wear horse armor."
-msgstr "Используйте конскую броню на лошади чтобы надеть её. Ослы и мулы не могут носить конскую броню."
-
-msgid "Leather Horse Armor"
-msgstr "Кожаные конские доспехи"
-
-msgid "Leather horse armor can be worn by horses to increase their protection from harm a little."
-msgstr "Кожаные доспехи можно надевать на лошадей, чтобы немного усилить их защиту от урона."
-
-msgid "Iron Horse Armor"
-msgstr "Железная конская броня"
-
-msgid "Iron horse armor can be worn by horses to increase their protection from harm a bit."
-msgstr "Железную конскую броню можно надеть на лошадь чтобы немного увеличить её защиту от урона."
-
-msgid "Golden Horse Armor"
-msgstr "Золотая конская броня"
-
-msgid "Golden horse armor can be worn by horses to increase their protection from harm."
-msgstr "Золотую конскую броню можно надеть на лошадь чтобы увеличить её защиту от урона."
-
-msgid "Diamond Horse Armor"
-msgstr "Алмазная конская броня"
-
-msgid "Diamond horse armor can be worn by horses to greatly increase their protection from harm."
-msgstr "Алмазную конскую броню можно надеть на лошадь чтобы значительно увеличить её защиту от урона."
-
 msgid "Glow Ink Sac"
 msgstr "Светящийся чернильный мешок"
 

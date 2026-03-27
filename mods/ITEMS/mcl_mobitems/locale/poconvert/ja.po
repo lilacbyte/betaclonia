@@ -259,33 +259,6 @@ msgstr "海洋の心"
 msgid "The Heart of the Sea is used to craft a conduit. They can be obtained by finding them in a buried treasure chest."
 msgstr "海洋の心は、コンジットをクラフトするのに使えます。 それは埋められた宝箱の中から見つけることで入手できます。"
 
-msgid "Place it on a horse to put on the horse armor. Donkeys and mules can't wear horse armor."
-msgstr "ウマに被せると、馬鎧を着せることができます。ロバとラバには、馬鎧を着せられません。"
-
-msgid "Leather Horse Armor"
-msgstr ""
-
-msgid "Leather horse armor can be worn by horses to increase their protection from harm a little."
-msgstr ""
-
-msgid "Iron Horse Armor"
-msgstr "鉄の馬鎧"
-
-msgid "Iron horse armor can be worn by horses to increase their protection from harm a bit."
-msgstr "鉄の馬鎧は、ウマに装着することで、危害から守る力を少し高めることができます。"
-
-msgid "Golden Horse Armor"
-msgstr "金の馬鎧"
-
-msgid "Golden horse armor can be worn by horses to increase their protection from harm."
-msgstr "金の馬鎧は、ウマに装着することで、危害から守る力を高めることができます。"
-
-msgid "Diamond Horse Armor"
-msgstr "ダイヤモンドの馬鎧"
-
-msgid "Diamond horse armor can be worn by horses to greatly increase their protection from harm."
-msgstr "ダイヤモンドの馬鎧は、ウマに装着することで、危害から守る力を大幅に高めることができます。"
-
 msgid "Glow Ink Sac"
 msgstr ""
 

@@ -48,10 +48,10 @@ minetest.register_on_mods_loaded(function()
 			local function is_weapon_or_armor(def)
 				return def.groups.weapon or def.groups.weapon_ranged or def.groups.ammo or def.groups.combat_item or
 					(
-						(
-							def.groups.armor_head or def.groups.armor_torso or def.groups.armor_legs or def.groups.armor_feet or
-							def.groups.horse_armor) and def.groups.non_combat_armor ~= 1)
-			end
+							(
+								def.groups.armor_head or def.groups.armor_torso or def.groups.armor_legs or def.groups.armor_feet) and
+							def.groups.non_combat_armor ~= 1)
+				end
 
 			-- Is set to true if it was added in any category besides misc
 			local nonmisc = false

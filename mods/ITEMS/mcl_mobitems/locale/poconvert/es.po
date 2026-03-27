@@ -259,33 +259,6 @@ msgstr "Corazón del mar"
 msgid "The Heart of the Sea is used to craft a conduit. They can be obtained by finding them in a buried treasure chest."
 msgstr "El Corazón del Mar se utiliza para crear canalizadores. Se pueden obtener en un cofre del tesoro."
 
-msgid "Place it on a horse to put on the horse armor. Donkeys and mules can't wear horse armor."
-msgstr "Colóquelo en un caballo para ponerle la armadura de caballo. Los burros y las mulas no pueden usar armadura de caballo."
-
-msgid "Leather Horse Armor"
-msgstr "Armadura de cuero para caballos"
-
-msgid "Leather horse armor can be worn by horses to increase their protection from harm a little."
-msgstr "Los caballos pueden usar armaduras de cuero para aumentar un poco su protección contra daños."
-
-msgid "Iron Horse Armor"
-msgstr "Armadura de hierro para caballo"
-
-msgid "Iron horse armor can be worn by horses to increase their protection from harm a bit."
-msgstr "Los caballos pueden usar armadura de caballo de hierro para aumentar un poco su protección contra el daño."
-
-msgid "Golden Horse Armor"
-msgstr "Armadura de oro para caballo"
-
-msgid "Golden horse armor can be worn by horses to increase their protection from harm."
-msgstr "Los caballos pueden usar armadura de caballo de oro para aumentar su protección contra el daño."
-
-msgid "Diamond Horse Armor"
-msgstr "Armadura de diamante para caballo"
-
-msgid "Diamond horse armor can be worn by horses to greatly increase their protection from harm."
-msgstr "Los caballos pueden usar armadura de caballo de diamante para aumentar en gran medida su protección contra el daño."
-
 msgid "Glow Ink Sac"
 msgstr "Saco de tinta brillante"
 

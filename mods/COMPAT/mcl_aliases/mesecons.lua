@@ -30,8 +30,6 @@ minetest.register_alias("mesecons_button:button_stone_off", "mcl_buttons:button_
 minetest.register_alias("mesecons_button:button_stone_on", "mcl_buttons:button_stone_on")
 --minetest.register_alias("mesecons_button:button_warped_off", "mcl_buttons:button_warped_off")--removed
 --minetest.register_alias("mesecons_button:button_warped_on", "mcl_buttons:button_warped_on")--removed
-minetest.register_alias("mesecons_commandblock:commandblock_off", "mcl_commandblock:commandblock_off")
-minetest.register_alias("mesecons_commandblock:commandblock_on", "mcl_commandblock:commandblock_on")
 minetest.register_alias("mesecons_delayer:delayer_off_1", "mcl_repeaters:repeater_off_1")
 minetest.register_alias("mesecons_delayer:delayer_off_2", "mcl_repeaters:repeater_off_2")
 minetest.register_alias("mesecons_delayer:delayer_off_3", "mcl_repeaters:repeater_off_3")

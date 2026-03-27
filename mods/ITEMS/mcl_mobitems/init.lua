@@ -114,70 +114,6 @@ minetest.register_tool("mcl_mobitems:carrot_on_a_stick", {
 	_mcl_toollike_wield = true,
 })
 
-local horse_armor_use = S("Place it on a horse to put on the horse armor. Donkeys and mules can't wear horse armor.")
-
--- https://The OG Game wiki/w/Armor#Damage_reduction
-
-minetest.register_craftitem("mcl_mobitems:leather_horse_armor", {
-	description = S("Leather Horse Armor"),
-	_doc_items_longdesc = S("Leather horse armor can be worn by horses to increase their protection from harm a little."),
-	_doc_items_usagehelp = horse_armor_use,
-	inventory_image = "mcl_mobitems_leather_horse_armor.png",
-	_horse_overlay_image = "mcl_mobitems_horse_armor_leather.png",
-	sounds = {
-		_mcl_armor_equip = "mcl_armor_equip_leather",
-	},
-	stack_max = 1,
-	groups = { horse_armor = 88, armor_leather = 2 },
-})
-
-
-minetest.register_craftitem("mcl_mobitems:iron_horse_armor", {
-	description = S("Iron Horse Armor"),
-	_doc_items_longdesc = S("Iron horse armor can be worn by horses to increase their protection from harm a bit."),
-	_doc_items_usagehelp = horse_armor_use,
-	inventory_image = "mcl_mobitems_iron_horse_armor.png",
-	_horse_overlay_image = "mcl_mobitems_horse_armor_iron.png",
-	sounds = {
-		_mcl_armor_equip = "mcl_armor_equip_iron",
-	},
-	stack_max = 1,
-	groups = { horse_armor = 85 },
-	_mcl_cooking_output = "mcl_core:iron_ingot"
-})
-
-
-minetest.register_craftitem("mcl_mobitems:gold_horse_armor", {
-	description = S("Golden Horse Armor"),
-	_doc_items_longdesc = S("Golden horse armor can be worn by horses to increase their protection from harm."),
-	_doc_items_usagehelp = horse_armor_use,
-	inventory_image = "mcl_mobitems_gold_horse_armor.png",
-	_horse_overlay_image = "mcl_mobitems_horse_armor_gold.png",
-	sounds = {
-		_mcl_armor_equip = "mcl_armor_equip_iron",
-	},
-	stack_max = 1,
-	groups = { horse_armor = 60 },
-	_mcl_cooking_output = "mcl_core:gold_nugget"
-})
-
-minetest.register_craftitem("mcl_mobitems:diamond_horse_armor", {
-	description = S("Diamond Horse Armor"),
-	_doc_items_longdesc = S("Diamond horse armor can be worn by horses to greatly increase their protection from harm."),
-	_doc_items_usagehelp = horse_armor_use,
-	inventory_image = "mcl_mobitems_diamond_horse_armor.png",
-	_horse_overlay_image = "mcl_mobitems_horse_armor_diamond.png",
-	sounds = {
-		_mcl_armor_equip = "mcl_armor_equip_diamond",
-	},
-	stack_max = 1,
-	groups = { horse_armor = 56 },
-})
-
-minetest.register_alias("mobs_mc:iron_horse_armor", "mcl_mobitems:iron_horse_armor")
-minetest.register_alias("mobs_mc:gold_horse_armor", "mcl_mobitems:gold_horse_armor")
-minetest.register_alias("mobs_mc:diamond_horse_armor", "mcl_mobitems:diamond_horse_armor")
-
 -----------
 -- Crafting
 -----------
@@ -204,17 +140,4 @@ minetest.register_craft({
 		{ "", "mcl_fishing:fishing_rod", },
 		{ "mcl_farming:carrot_item", "" },
 	},
-})
-
-minetest.register_craft({
-	output = "mcl_mobitems:leather_horse_armor",
-	recipe = {{"mcl_mobitems:leather","","mcl_mobitems:leather",},
-		{"mcl_mobitems:leather","mcl_mobitems:leather","mcl_mobitems:leather",},
-		{"mcl_mobitems:leather","","mcl_mobitems:leather",}},
-})
-
-minetest.register_craft({
-	output = "mcl_mobitems:leather_horse_armor",
-	type = "shapeless",
-	recipe = {"mcl_mobitems:leather_horse_armor", "group:dye" },
 })
