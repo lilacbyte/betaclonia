@@ -1,7 +1,7 @@
 local storage = minetest.get_mod_storage()
 local world_seed = tonumber(minetest.get_mapgen_setting("seed")) or 0
 
-mtl_beta_structures = rawget(_G, "mtl_beta_structures") or {}
+mcl_beta_structures = rawget(_G, "mcl_beta_structures") or {}
 
 local PYRAMID_REGION = 1000
 local PYRAMID_HALF = 63
@@ -953,10 +953,13 @@ local function try_place_pyramid(minp, maxp, key, x, z, pr)
 		return
 	end
 	local center = { x = x, y = y + 1, z = z }
-	local p1 = { x = center.x - 63, y = center.y, z = center.z - 63 }
-	local p2 = { x = center.x + 63, y = center.y + 63, z = center.z + 63 }
+	local p1, p2 = structure_bounds("brick_pyramid", center)
 	with_emerged(key, p1, p2, function()
-		return place_brick_pyramid(center, pr)
+		local placed = place_brick_pyramid(center, pr)
+		if placed then
+			record_generated_structure("brick_pyramid", center)
+		end
+		return placed
 	end)
 end
 
@@ -966,10 +969,13 @@ local function try_place_village(minp, maxp, key, x, z, pr)
 		return
 	end
 	local center = { x = x, y = y + 1, z = z }
-	local p1 = { x = center.x - 36, y = center.y - 4, z = center.z - 36 }
-	local p2 = { x = center.x + 36, y = center.y + 14, z = center.z + 36 }
+	local p1, p2 = structure_bounds("empty_village", center)
 	with_emerged(key, p1, p2, function()
-		return place_empty_village(center, pr)
+		local placed = place_empty_village(center, pr)
+		if placed then
+			record_generated_structure("empty_village", center)
+		end
+		return placed
 	end)
 end
 
@@ -977,7 +983,7 @@ local function guess_structure_y(struct_name, x, z)
 	return (minetest.get_spawn_level(x, z) or 0) + 1
 end
 
-function mtl_beta_structures.get_locatable_structures()
+function mcl_beta_structures.get_locatable_structures()
 	local out = {}
 	for i = 1, #LOCATABLE_STRUCTURES do
 		out[i] = LOCATABLE_STRUCTURES[i]
@@ -987,7 +993,7 @@ end
 
 -- Returns result table or nil,error[,extra].
 -- Result table: {name, x, y, z, distance}
-function mtl_beta_structures.locate_structure(name, pos, max_rings)
+function mcl_beta_structures.locate_structure(name, pos, max_rings)
 	local def = STRUCTURE_DEFS[name]
 	if not def then
 		return nil, "unknown_structure"
@@ -998,21 +1004,13 @@ function mtl_beta_structures.locate_structure(name, pos, max_rings)
 		return nil, "wrong_dimension", def.dimension
 	end
 
-	local x, z, y
-	local generated = locate_generated_structure(name, pos)
-	if generated then
-		x = generated.x
-		z = generated.z
-		y = generated.y
-	else
-		local found = locate_in_region_grid(pos, def.region, def.salt, def.chance, max_rings or 256)
-		if not found then
-			return nil, "not_found"
-		end
-		x = found.x
-		z = found.z
-		y = guess_structure_y(name, x, z)
+	local found = locate_in_region_grid(pos, def.region, def.salt, def.chance, max_rings or 256)
+	if not found then
+		return nil, "not_found"
 	end
+	local x = found.x
+	local z = found.z
+	local y = guess_structure_y(name, x, z)
 
 	local dx = x - pos.x
 	local dz = z - pos.z
@@ -1027,7 +1025,7 @@ end
 
 local function register_mcl_structure_defs()
 	if not mcl_structures or not mcl_structures.register_structure then
-		minetest.log("warning", "[mtl_beta_structures] mcl_structures API not available; beta structures will not auto-generate.")
+		minetest.log("warning", "[mcl_beta_structures] mcl_structures API not available; beta structures will not auto-generate.")
 		return
 	end
 
@@ -1059,10 +1057,10 @@ local function register_mcl_structure_defs()
 	}
 	mcl_structures.register_structure("brick_pyramid", pyramid_def)
 	api_registered_structures[#api_registered_structures + 1] = pyramid_def
-	register_spawn_alias("mtl_beta_structure", pyramid_def)
-	register_spawn_alias("mtl_beta-structure", pyramid_def)
-	register_spawn_alias("mtl_beta_pyramid", pyramid_def)
-	register_spawn_alias("mtl_beta_structures", pyramid_def)
+	register_spawn_alias("mcl_beta_structure", pyramid_def)
+	register_spawn_alias("mcl_beta-structure", pyramid_def)
+	register_spawn_alias("mcl_beta_pyramid", pyramid_def)
+	register_spawn_alias("mcl_beta_structures", pyramid_def)
 
 	local village_def = {
 		place_on = {"group:solid"},
@@ -1079,48 +1077,28 @@ local function register_mcl_structure_defs()
 	}
 	mcl_structures.register_structure("empty_village", village_def)
 	api_registered_structures[#api_registered_structures + 1] = village_def
-	register_spawn_alias("mtl_beta_empty_village", village_def)
+	register_spawn_alias("mcl_beta_empty_village", village_def)
 end
 
-local function beta_structures_from_mcl_notify(_, _, blockseed)
-	if not mcl_structures or not mcl_structures.place_structure then
+local function beta_structures_from_mcl_notify(_, _, _)
+	-- `get_mapgen_object("voxelmanip")` returns vm, emin, emax. We only need bounds.
+	local _, emin, emax = minetest.get_mapgen_object("voxelmanip")
+	local minp, maxp = emin, emax
+	if not minp or not maxp then
 		return
 	end
-	local gennotify = minetest.get_mapgen_object("gennotify")
-	if not gennotify then
+	if not is_dimension(minp, maxp, "overworld") then
 		return
 	end
 
-	for i = 1, #api_registered_structures do
-		local struct = api_registered_structures[i]
-		if struct.deco_id then
-			local has = false
-			local key = "decoration#" .. struct.deco_id
-			for _, pos in ipairs(gennotify[key] or {}) do
-				local pr = PcgRandom(minetest.hash_node_position(pos) + 42)
-				if struct.chunk_probability == nil or (not has and pr:next(1, struct.chunk_probability) == 1) then
-					local place_pos = vector.offset(pos, 0, 1, 0)
-					local chunk_key = "notify:" .. (struct.name or "unknown") .. ":" ..
-						floor_div(place_pos.x, 16) .. ":" .. floor_div(place_pos.y, 16) .. ":" .. floor_div(place_pos.z, 16)
-					if (not resolved(chunk_key)) and (not pending[chunk_key]) then
-						local p1, p2 = structure_bounds(struct.name, place_pos)
-						local place_pos_copy = vector.new(place_pos)
-						local blockseed_copy = blockseed
-						local pr_seed = minetest.hash_node_position(pos) + 42
-						with_emerged(chunk_key, p1, p2, function()
-							local placed = mcl_structures.place_structure(place_pos_copy, struct, PcgRandom(pr_seed), blockseed_copy)
-							if placed and struct.name then
-								record_generated_structure(struct.name, place_pos_copy)
-							end
-							return placed
-						end)
-					end
-					has = true
-				end
-			end
-		end
-	end
+	try_region_grid(minp, maxp, "brick_pyramid", PYRAMID_REGION, 100, PYRAMID_SALT, function(key, x, z, pr)
+		try_place_pyramid(minp, maxp, key, x, z, pr)
+	end)
+
+	try_region_grid(minp, maxp, "empty_village", VILLAGE_REGION, VILLAGE_CHANCE, VILLAGE_SALT, function(key, x, z, pr)
+		try_place_village(minp, maxp, key, x, z, pr)
+	end)
 end
 
 register_mcl_structure_defs()
-mcl_mapgen_core.register_generator("mtl_beta_structures", nil, beta_structures_from_mcl_notify, 999990)
+mcl_mapgen_core.register_generator("mcl_beta_structures", nil, beta_structures_from_mcl_notify, 999990)

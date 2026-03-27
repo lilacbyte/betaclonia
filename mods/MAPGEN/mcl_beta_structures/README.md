@@ -1,4 +1,4 @@
-# mtl_beta_structures
+# mcl_beta_structures
 
 Retro-inspired procedural structures for Betaclonia:
 
