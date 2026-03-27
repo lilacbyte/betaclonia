@@ -12,7 +12,24 @@ local FOV_NORMAL = 1.0
 local PARTICLE_INTERVAL = 0.12
 local DOUBLE_TAP_INTERVAL = 0.22
 
+local sprinting_enabled = minetest.settings:get_bool("mcl_enable_sprinting", true)
 local players = {}
+
+-- Returns true if the player with the given name is sprinting, false if not.
+-- Returns nil if player does not exist.
+function mcl_sprint.is_sprinting(player_name)
+	if not sprinting_enabled then
+		return false
+	end
+	if players[player_name] then
+		return players[player_name].sprinting
+	end
+	return nil
+end
+
+if not sprinting_enabled then
+	return
+end
 
 local sprint_factor_guard = false
 local function install_sprint_factor_guard()
@@ -137,15 +154,6 @@ local function can_sprint(player, data, ctrl)
 		return false
 	end
 	return player_is_moving(player)
-end
-
--- Returns true if the player with the given name is sprinting, false if not.
--- Returns nil if player does not exist.
-function mcl_sprint.is_sprinting(player_name)
-	if players[player_name] then
-		return players[player_name].sprinting
-	end
-	return nil
 end
 
 if hb and hb.register_hudbar then

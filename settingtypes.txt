@@ -89,6 +89,9 @@ mcl_hand_range_creative (Creative mode hand range) float 10 1 128
 # If disabled eating food will heal instantly.
 mcl_enable_hunger (Hunger) bool true
 
+# If disabled, players cannot sprint and stamina UI is disabled.
+mcl_enable_sprinting (Sprinting) bool true
+
 [Mobs]
 # If enabled, mobs will spawn naturally.
 # This does not affect mob spawners.
