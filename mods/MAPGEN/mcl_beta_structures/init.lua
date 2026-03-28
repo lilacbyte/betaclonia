@@ -1,7 +1,5 @@
 local storage = minetest.get_mod_storage()
 local world_seed = tonumber(minetest.get_mapgen_setting("seed")) or 0
-local modname = minetest.get_current_modname()
-local modpath = minetest.get_modpath(modname)
 
 mcl_beta_structures = rawget(_G, "mcl_beta_structures") or {}
 
@@ -73,24 +71,6 @@ local NODE = {
 	spawner = choose_node("mcl_mobspawners:spawner", "air"),
 	water = choose_node("mcl_core:water_source", "air"),
 }
-
-local pyramid_schematic_cache = nil
-local function get_pyramid_schematic()
-	if pyramid_schematic_cache then
-		return pyramid_schematic_cache
-	end
-	local ok, schem = pcall(dofile, modpath .. "/schems/pymarid.lua")
-	if not ok then
-		minetest.log("error", "[mcl_beta_structures] failed to load pymarid.lua: " .. tostring(schem))
-		return nil
-	end
-	if type(schem) ~= "table" or not schem.size or not schem.data then
-		minetest.log("error", "[mcl_beta_structures] invalid pymarid schematic table")
-		return nil
-	end
-	pyramid_schematic_cache = schem
-	return pyramid_schematic_cache
-end
 
 -- Beta 1.8.1 village piece weights and bounding sizes (from MCP ComponentVillage*).
 local VILLAGE_SCHEMATICS = {
@@ -373,7 +353,7 @@ end
 local GENERATED_PREFIX = "generated:"
 local GENERATED_LIST_LIMIT = 4096
 local GENERATION_PROFILE_KEY = "generation_profile_version"
-local GENERATION_PROFILE_VERSION = 2
+local GENERATION_PROFILE_VERSION = 4
 
 local function generated_storage_key(struct_name)
 	return GENERATED_PREFIX .. struct_name
@@ -470,41 +450,86 @@ local function locate_generated_structure(struct_name, pos)
 	return best
 end
 
+local structure_work_queue = {}
+local structure_worker_running = false
+
+local function run_next_structure_work()
+	if structure_worker_running then
+		return
+	end
+	if #structure_work_queue == 0 then
+		return
+	end
+	structure_worker_running = true
+	local job = table.remove(structure_work_queue, 1)
+	minetest.after(0, function()
+		local ok = job.fn()
+		if ok then
+			mark_done(job.key)
+		end
+		pending[job.key] = nil
+		structure_worker_running = false
+		run_next_structure_work()
+	end)
+end
+
+local function enqueue_structure_work(key, fn)
+	structure_work_queue[#structure_work_queue + 1] = {
+		key = key,
+		fn = fn,
+	}
+	run_next_structure_work()
+end
+
 local function with_emerged(key, p1, p2, fn)
 	if pending[key] then
 		return
 	end
 	pending[key] = true
-	local vm = minetest.get_voxel_manip()
-	vm:read_from_map(p1, p2)
-	local ok = fn()
-	if ok then
-		mark_done(key)
-	end
-	pending[key] = nil
+	minetest.emerge_area(p1, p2, function(_, _, calls_remaining)
+		if calls_remaining > 0 then
+			return
+		end
+		enqueue_structure_work(key, fn)
+	end)
 end
 
 local function place_brick_pyramid(center, pr)
 	-- Keep only the tip above terrain so most of the pyramid is buried.
 	local top_y = (center.y or 1) + PYRAMID_TOP_ABOVE_GROUND
 	local base_y = top_y - (PYRAMID_HEIGHT - 1)
-	local origin = {
-		x = center.x,
+	local p1 = {
+		x = center.x - PYRAMID_HALF,
 		y = base_y,
-		z = center.z,
+		z = center.z - PYRAMID_HALF,
 	}
-	local schem = get_pyramid_schematic()
-	if not schem then
-		return false
+	local p2 = {
+		x = center.x + PYRAMID_HALF,
+		y = top_y,
+		z = center.z + PYRAMID_HALF,
+	}
+
+	local vm = minetest.get_voxel_manip()
+	local emin, emax = vm:read_from_map(p1, p2)
+	local area = VoxelArea:new({ MinEdge = emin, MaxEdge = emax })
+	local data = vm:get_data()
+	local c_brick = minetest.get_content_id(NODE.brick)
+
+	for y = 0, PYRAMID_HEIGHT - 1 do
+		local yy = base_y + y
+		local r = PYRAMID_HALF - y
+		for z = center.z - r, center.z + r do
+			local vi = area:index(center.x - r, yy, z)
+			for _ = center.x - r, center.x + r do
+				data[vi] = c_brick
+				vi = vi + 1
+			end
+		end
 	end
-	minetest.place_schematic(
-		origin,
-		schem,
-		"0",
-		nil,
-		true,
-		"place_center_x,place_center_z"
-	)
+
+	vm:set_data(data)
+	vm:write_to_map()
+	vm:update_map()
 	return true
 end
 

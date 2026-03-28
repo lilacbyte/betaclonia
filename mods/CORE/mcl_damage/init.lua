@@ -333,10 +333,38 @@ local function wear_hitter_weapon(hitter)
 	hitter:set_wielded_item(weapon)
 end
 
+local function resolve_alias_name(name)
+	local seen = {}
+	while name and minetest.registered_aliases[name] and not seen[name] do
+		seen[name] = true
+		name = minetest.registered_aliases[name]
+	end
+	return name
+end
+
+local function is_copper_sword_item(name)
+	if not name or name == "" then
+		return false
+	end
+	if name == "mcl_tools:sword_copper" or name == "mcl_copper:sword_copper" or name == "mcl_tools:copper_sword" then
+		return true
+	end
+	local resolved = resolve_alias_name(name)
+	return resolved == "mcl_tools:sword_copper" or resolved == "mcl_copper:sword_copper"
+end
+
 minetest.register_on_punchplayer(function(player, hitter, _, _, _, damage)
 	-- Consume durability for any player hit (non-creative), even when final
 	-- damage is fully mitigated.
 	wear_hitter_weapon(hitter)
+
+	-- Hardcoded special behavior: copper sword always ignites player target.
+	if damage and damage > 0 and hitter and hitter.is_player and hitter:is_player() and mcl_burning and mcl_burning.set_on_fire then
+		local weapon = hitter:get_wielded_item()
+		if weapon and not weapon:is_empty() and is_copper_sword_item(weapon:get_name()) then
+			mcl_burning.set_on_fire(player, 4)
+		end
+	end
 
 	-- Inflict the Minetest-computed damage by means of mcl_damage.damage_player.
 	if damage and damage > 0 then

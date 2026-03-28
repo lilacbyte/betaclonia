@@ -69,10 +69,10 @@ local function register_copper_tools()
 			["sword"] = {
 				description = S("Copper Sword"),
 				inventory_image = "mcl_copper_tool_sword.png",
-				effect_desc = S("Effect: A chance to ignite mobs on hit."),
+				effect_desc = S("Effect: Ignites targets on hit."),
 				tool_capabilities = {
 					full_punch_interval = 0.625,
-					damage_groups = { fleshy = 5 }
+					damage_groups = { fleshy = 3.5 }
 				}
 		},
 		["axe"] = {
@@ -139,6 +139,17 @@ minetest.register_on_dignode(function(pos, oldnode, digger)
 	end
 	local wield = digger:get_wielded_item()
 	local tool_name = resolve_alias(wield:get_name())
+
+	-- Smeltery shovel effect: sand -> glass should cost 2 durability total.
+	if tool_name == "mcl_copper:shovel_copper" and not minetest.is_creative_enabled(player_name) then
+		local node_def = minetest.registered_nodes[oldnode.name]
+		if node_def and node_def._mcl_cooking_output == "mcl_core:glass" then
+			mcl_util.use_item_durability(wield, 1)
+			digger:set_wielded_item(wield)
+		end
+		return
+	end
+
 	if tool_name ~= "mcl_copper:pick_copper" then
 		return
 	end

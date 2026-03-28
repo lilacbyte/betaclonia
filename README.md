@@ -21,7 +21,7 @@ It is being shaped into a Beta-flavored experience with:
 
 ### Combat, durability and armor
 
-- sprinting has a stamina bar  ([texture credit](https://content.luanti.org/packages/drkwv/minetest_wadsprint/))
+- you can enable sprinting and it has a stamina bar ([texture credit](https://content.luanti.org/packages/drkwv/minetest_wadsprint/))
 - armor HUD uses a classic 10-icon / 20-point bar and updates from armor state
 - armor points are durability-weighted by remaining condition
 - armor effects :
@@ -36,8 +36,9 @@ It is being shaped into a Beta-flavored experience with:
 
 special tool effects:
 
-- copper sword: small chance to ignite target
-- golden pickaxe: Silk Touch-like behavior
+- copper sword: ignites target
+- golden pickaxe: silk touch
+- copper shovel: smeltery
 
 ### drops
 
@@ -47,14 +48,6 @@ special tool effects:
 - pig drops are set to `0..2` raw meat
 - sheep drop wool only
 - rabbit drops rabbit hide
-
-### Item naming and food simplification
-
-- beef item :
-  - `Raw Meat`
-  - `Meat`
-
-Dungeon generation is intentionally rarer for performance and pacing
 
 Overworld dungeons include curated Beta-style loot additions such as:
 

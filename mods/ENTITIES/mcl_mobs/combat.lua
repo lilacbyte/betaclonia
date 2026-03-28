@@ -426,8 +426,8 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir)
 
 	if weapon then
 		local fire_aspect_level = 0
-		-- Hardcoded special behavior: copper sword has a chance to ignite mobs.
-		if is_copper_sword_item(weapon:get_name()) and math.random(1, 100) <= 35 then
+		-- Hardcoded special behavior: copper sword always ignites on hit.
+		if is_copper_sword_item(weapon:get_name()) then
 			fire_aspect_level = 1
 		end
 		if fire_aspect_level > 0 then
