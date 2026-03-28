@@ -61,3 +61,6 @@ minetest.register_alias("mcl_tools:copper_pickaxe", "mcl_copper:pick_copper")
 minetest.register_alias("mcl_tools:copper_axe", "mcl_copper:axe_copper")
 minetest.register_alias("mcl_tools:copper_shovel", "mcl_copper:shovel_copper")
 minetest.register_alias("mcl_tools:copper_sword", "mcl_copper:sword_copper")
+
+-- Compatibility aliases for removed content IDs.
+dofile(minetest.get_modpath(minetest.get_current_modname()) .. "/removed_content_aliases.lua")
