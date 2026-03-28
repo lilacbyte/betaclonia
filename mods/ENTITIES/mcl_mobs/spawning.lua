@@ -133,6 +133,20 @@ function mcl_mobs.spawn_setup(def)
 	if mob_def.spawn_class == "passive" and PASSIVE_CHANCE_MULT > 1 then
 		def.chance = math.max(1, math.floor(def.chance * PASSIVE_CHANCE_MULT))
 	end
+	if type(def.biomes) == "table" then
+		local filtered = {}
+		for i = 1, #def.biomes do
+			local biome_name = def.biomes[i]
+			local biome_id = minetest.get_biome_id(biome_name)
+			if biome_id and biome_id ~= 0 and biome_id ~= -1 then
+				filtered[#filtered + 1] = biome_name
+			end
+		end
+		if #filtered == 0 then
+			return
+		end
+		def.biomes = filtered
+	end
 
 	table.insert(spawn_dictionary, def)
 end

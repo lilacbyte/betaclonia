@@ -449,7 +449,8 @@ local doc_itemstring_boat
 local doc_itemstring_chest_boat
 
 function mcl_boats.register_boat(name,item_def,object_properties,entity_overrides)
-	if name:find("_chest$", 1, true) then
+	-- Beta profile: only keep oak boat variants.
+	if name ~= "oak" and name ~= "oak_chest" then
 		return
 	end
 	local itemstring = "mcl_boats:boat_"..name

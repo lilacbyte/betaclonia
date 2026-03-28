@@ -110,6 +110,9 @@ minetest.register_node("mcl_redstone_torch:redstoneblock", {
 		connects_to = function()
 			return true
 		end,
+		get_power = function()
+			return 15, false
+		end,
 	},
 	_mcl_blast_resistance = 6,
 	_mcl_hardness = 5,

@@ -250,17 +250,7 @@ minetest.register_craft({
 
 minetest.register_craft({
 	output = "mcl_dyes:red",
-	recipe = {{"mcl_flowers:poppy"}},
-})
-
-minetest.register_craft({
-	output = "mcl_dyes:red",
 	recipe = {{"mcl_flowers:tulip_red"}},
-})
-
-minetest.register_craft({
-	output = "mcl_dyes:red 2",
-	recipe = {{"mcl_flowers:rose_bush"}},
 })
 end
 

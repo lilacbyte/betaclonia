@@ -31,7 +31,6 @@ These biomes try to resemble MC as good as possible. This means especially the f
 	* Cold Taiga M (mountain only)
 	* Taiga M (mountain only)
 	* Roofed Forest M (mountain only)
-	* Swampland M (mountain only)
 	* Extreme Hills Edge (unused in MC)
 
 	TODO:

@@ -11,12 +11,6 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	type = "shapeless",
-	output = "mcl_core:stonebrickmossy",
-	recipe = { "mcl_core:stonebrick", "mcl_core:vine" },
-})
-
-minetest.register_craft({
 	output = "mcl_core:coarse_dirt 4",
 	recipe = {
 		{"mcl_core:dirt", "mcl_core:gravel"},
@@ -40,14 +34,6 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = "mcl_core:redsandstonesmooth 4",
-	recipe = {
-		{"mcl_core:redsandstone","mcl_core:redsandstone"},
-		{"mcl_core:redsandstone","mcl_core:redsandstone"},
-	}
-})
-
-minetest.register_craft({
 	output = "mcl_core:stick 4",
 	recipe = {
 		{"group:wood"},
@@ -62,14 +48,6 @@ minetest.register_craft({
 	recipe = {
 		{"mcl_core:sand", "mcl_core:sand"},
 		{"mcl_core:sand", "mcl_core:sand"},
-	}
-})
-
-minetest.register_craft({
-	output = "mcl_core:redsandstone",
-	recipe = {
-		{"mcl_core:redsand", "mcl_core:redsand"},
-		{"mcl_core:redsand", "mcl_core:redsand"},
 	}
 })
 
@@ -104,16 +82,6 @@ minetest.register_craft({
 		{"mcl_core:stick", "", "mcl_core:stick"},
 	}
 })
-
-minetest.register_craft({
-	output = "mcl_core:stonebrick 4",
-	recipe = {
-		{"mcl_core:stone", "mcl_core:stone"},
-		{"mcl_core:stone", "mcl_core:stone"},
-	}
-})
-
-
 
 minetest.register_craft({
 	output = "mcl_core:sugar",

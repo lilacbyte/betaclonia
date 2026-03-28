@@ -250,13 +250,12 @@ function mcl_core.get_grass_block_type(pos)
 	return {name = "mcl_core:dirt_with_grass", param2 = mcl_core.get_grass_palette_index(pos)}
 end
 
-------------------------------
--- Spread grass blocks and mycelium on neighbor dirt
+-- Spread grass blocks on neighbor dirt
 ------------------------------
 minetest.register_abm({
-	label = "Grass Block and Mycelium spread",
+	label = "Grass Block spread",
 	nodenames = {"mcl_core:dirt"},
-	neighbors = {"air", "group:grass_block_no_snow", "mcl_core:mycelium"},
+	neighbors = {"air", "group:grass_block_no_snow"},
 	interval = 30,
 	chance = 20,
 	catch_up = false,
@@ -272,7 +271,7 @@ minetest.register_abm({
 		end
 		local light_self = minetest.get_node_light(above)
 		if not light_self then return end
-		--[[ Try to find a spreading dirt-type block (e.g. grass block or mycelium)
+		--[[ Try to find a spreading dirt-type block (e.g. grass block)
 		within a 3×5×3 area, with the source block being on the 2nd-topmost layer. ]]
 		local nodes = minetest.find_nodes_in_area({x=pos.x-1, y=pos.y-1, z=pos.z-1}, {x=pos.x+1, y=pos.y+3, z=pos.z+1}, "group:spreading_dirt_type")
 		local p2
@@ -289,27 +288,19 @@ minetest.register_abm({
 		if not light_source then return end
 
 		if light_self >= 4 and light_source >= 9 then
-			-- All checks passed! Let's spread the grass/mycelium!
+			-- All checks passed! Let's spread the grass!
 			local n2 = minetest.get_node(p2)
 			if minetest.get_item_group(n2.name, "grass_block") ~= 0 then
 				n2 = mcl_core.get_grass_block_type(pos)
 			end
 			minetest.swap_node(pos, n2)
-
-			-- If this was mycelium, uproot plant above
-			if n2.name == "mcl_core:mycelium" then
-				local tad = minetest.registered_nodes[minetest.get_node(above).name]
-				if tad and tad.groups and tad.groups.non_mycelium_plant then
-					minetest.dig_node(above)
-				end
-			end
 		end
 	end
 })
 
--- Grass/mycelium death in darkness
+-- Grass block death in darkness
 minetest.register_abm({
-	label = "Grass Block / Mycelium in darkness",
+	label = "Grass Block in darkness",
 	nodenames = {"group:spreading_dirt_type"},
 	interval = 8,
 	chance = 50,
@@ -317,7 +308,7 @@ minetest.register_abm({
 	action = function(pos, _)
 		local above = {x = pos.x, y = pos.y + 1, z = pos.z}
 		local name = minetest.get_node(above).name
-		-- Kill grass/mycelium when below opaque block or liquid
+		-- Kill grass blocks when below opaque block or liquid
 		if name ~= "ignore" and (minetest.get_item_group(name, "opaque") == 1 or minetest.get_item_group(name, "liquid") ~= 0) then
 			minetest.swap_node(pos, {name = "mcl_core:dirt"})
 		end
@@ -687,7 +678,7 @@ function mcl_core.bone_meal_grass(_, _, pointed_thing)
 	local flowers_table_plains = {
 		"mcl_flowers:dandelion",
 		"mcl_flowers:dandelion",
-		"mcl_flowers:poppy",
+		"mcl_flowers:tulip_red",
 
 		"mcl_flowers:oxeye_daisy",
 		"mcl_flowers:tulip_orange",
@@ -698,14 +689,11 @@ function mcl_core.bone_meal_grass(_, _, pointed_thing)
 	}
 	local flowers_table_simple = {
 		"mcl_flowers:dandelion",
-		"mcl_flowers:poppy",
-	}
-	local flowers_table_swampland = {
-		"mcl_flowers:blue_orchid",
+		"mcl_flowers:tulip_red",
 	}
 	local flowers_table_flower_forest = {
 		"mcl_flowers:dandelion",
-		"mcl_flowers:poppy",
+		"mcl_flowers:tulip_red",
 		"mcl_flowers:oxeye_daisy",
 		"mcl_flowers:tulip_orange",
 		"mcl_flowers:tulip_red",
@@ -732,9 +720,7 @@ function mcl_core.bone_meal_grass(_, _, pointed_thing)
 						else
 							local flowers_table
 							local biome = minetest.get_biome_name(minetest.get_biome_data(pos).biome)
-							if biome == "Swampland" or biome == "Swampland_shore" or biome == "Swampland_ocean" or biome == "Swampland_deep_ocean" or biome == "Swampland_underground" then
-								flowers_table = flowers_table_swampland
-							elseif biome == "FlowerForest" or biome == "FlowerForest_beach" or biome == "FlowerForest_ocean" or biome == "FlowerForest_deep_ocean" or biome == "FlowerForest_underground" then
+							if biome == "FlowerForest" or biome == "FlowerForest_beach" or biome == "FlowerForest_ocean" or biome == "FlowerForest_deep_ocean" or biome == "FlowerForest_underground" then
 								flowers_table = flowers_table_flower_forest
 							elseif biome == "Plains" or biome == "Plains_beach" or biome == "Plains_ocean" or biome == "Plains_deep_ocean" or biome == "Plains_underground" or biome == "SunflowerPlains" or biome == "SunflowerPlains_ocean" or biome == "SunflowerPlains_deep_ocean" or biome == "SunflowerPlains_underground" then
 								flowers_table = flowers_table_plains

@@ -95,7 +95,7 @@ local spider = {
 	drops = {
 		{name = "mcl_mobitems:string", chance = 1, min = 0, max = 2, looting = "common"},
 	},
-	specific_attack = { "player", "mobs_mc:iron_golem" },
+	specific_attack = { "player" },
 	animation = {
 		stand_speed = 10,
 		walk_speed = 25,

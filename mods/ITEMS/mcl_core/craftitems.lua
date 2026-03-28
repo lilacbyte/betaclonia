@@ -50,13 +50,6 @@ minetest.register_craftitem("mcl_core:charcoal_lump", {
 	_mcl_burntime = 80
 })
 
-minetest.register_craftitem("mcl_core:gold_nugget", {
-	description = S("Gold Nugget"),
-	_doc_items_longdesc = S("Gold nuggets are very small pieces of molten gold; the main purpose is to create gold ingots."),
-	inventory_image = "mcl_core_gold_nugget.png",
-	groups = { craftitem=1 },
-})
-
 cclregisterdefaultcraftitems("mcl_core:diamond", "default:diamond", {
 	_doc_items_longdesc = S("Diamonds are precious minerals and useful to create the highest tier of armor and tools."),
 	groups = { craftitem=1 },

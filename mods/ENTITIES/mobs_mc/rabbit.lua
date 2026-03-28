@@ -138,15 +138,21 @@ mcl_mobs.spawn_setup({
 	aoc = 8,
 	min_light = 9,
 	biomes = {
-		"flat",
 		"Desert",
-		"FlowerForest",
-		"Taiga",
-		"MegaSpruceTaiga",
-		"MegaTaiga",
-		"ColdTaiga",
 	},
-	chance = 40,
+	chance = 70,
+})
+
+mcl_mobs.spawn_setup({
+	name = "mobs_mc:rabbit",
+	type_of_spawning = "ground",
+	dimension = "overworld",
+	aoc = 8,
+	min_light = 9,
+	biomes = {
+		"Forest",
+	},
+	chance = 140,
 })
 
 -- Spawn egg

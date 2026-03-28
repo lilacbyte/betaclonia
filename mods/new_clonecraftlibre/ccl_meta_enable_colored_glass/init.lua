@@ -1,2 +1,0 @@
---This is a meta package that depends on mcl_core that mcl_core detects if enabled. If this mod is enabled, mcl_core will then enable the colored glass. This mod itself doesn't actually add any content
---mcl_dyes is in the optional_dependencies to suggest enabling it

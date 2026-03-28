@@ -1,11 +1,5 @@
 local S = minetest.get_translator(minetest.get_current_modname())
 
-mcl_flowers.register_simple_flower("poppy", {
-	desc = S("Poppy"),
-	image = "mcl_flowers_poppy.png",
-	selection_box = { -5/16, -0.5, -5/16, 5/16, 5/16, 5/16 },
-	potted = true,
-})
 mcl_flowers.register_simple_flower("dandelion", {
 	desc = S("Dandelion"),
 	image = "flowers_dandelion_yellow.png",
@@ -31,7 +25,7 @@ mcl_flowers.register_simple_flower("tulip_pink", {
 	potted = true,
 })
 mcl_flowers.register_simple_flower("tulip_red", {
-	desc = S("Red Tulip"),
+	desc = S("Poppy"),
 	image = "mcl_flowers_tulip_red.png",
 	selection_box = { -3/16, -0.5, -3/16, 3/16, 6/16, 3/16 },
 	potted = true,
@@ -83,16 +77,6 @@ mcl_flowers.add_large_plant("peony", {
 	is_flower = true,
 })
 
-
-mcl_flowers.add_large_plant("rose_bush", {
-	desc = S("Rose Bush"),
-	longdesc = S("A rose bush is a large plant which occupies two blocks. It is safe to touch it. Rose bushes are mainly used in dye production."),
-	tiles_bottom = { "mcl_flowers_double_plant_rose_bottom.png" },
-	tiles_top = { "mcl_flowers_double_plant_rose_top.png" },
-	selbox_radius = 5/16,
-	selbox_top_height = 1/16,
-	is_flower = true,
-})
 
 mcl_flowers.add_large_plant("lilac", {
 	desc = S("Lilac"),

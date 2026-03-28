@@ -176,7 +176,7 @@ mcl_tools.register_set("gold", {
             damage_groups = { fleshy = 7 }
         }
     }
-}, { _mcl_cooking_output = "mcl_core:gold_nugget" })
+}, { _mcl_cooking_output = "mcl_core:gold_ingot" })
 
 --Diamond set
 mcl_tools.register_set("diamond", {

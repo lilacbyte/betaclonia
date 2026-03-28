@@ -71,8 +71,6 @@ local loottable_overworld =
 			{ itemstring = "mcl_farming:melon_seeds", weight = 10, amount_min = 1, amount_max = 1 },
 			{ itemstring = "mcl_farming:pumpkin_seeds", weight = 10, amount_min = 1, amount_max = 2 },
 			{ itemstring = "mcl_farming:potato_item", weight = 10, amount_min = 1, amount_max = 2 },
-			{ itemstring = "mcl_trees:sapling_mangrove", weight = 2, amount_min = 1, amount_max = 2 },
-			{ itemstring = "mcl_trees:sapling_cherry_blossom", weight = 1,   amount_min = 1, amount_max = 2 },
 			{ itemstring = "mcl_trees:sapling_pale_oak", weight = 1,  amount_min = 1, amount_max = 2 },
 			{ itemstring = "mcl_core:iron_ingot", weight = 10, amount_min = 1, amount_max = 4 },
 			{ itemstring = "mcl_core:gold_ingot", weight = 5, amount_min = 1, amount_max = 4 },

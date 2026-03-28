@@ -191,13 +191,6 @@ mcl_hunger.item_eat = mcl_hunger.item_eat or function(_, replace_with_item)
 	end
 end
 
-mcl_maps = rawget(_G, "mcl_maps") or {}
-mcl_maps.load_map = mcl_maps.load_map or function(_, callback)
-	if callback then
-		callback("unknown_item.png")
-	end
-end
-
 --- GUI / inventory menu settings
 mcl_vars.gui_slots = "listcolors[#9990;#FFF7;#FFF0;#000;#FFF]"
 -- nonbg is added as formspec prepend in mcl_formspec_prepend

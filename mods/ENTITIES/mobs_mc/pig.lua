@@ -215,14 +215,6 @@ mcl_mobs.spawn_setup({
 		"Savanna",
 		"Savanna_beach",
 		"SavannaM",
-		"Jungle",
-		"Jungle_shore",
-		"JungleM",
-		"JungleM_shore",
-		"JungleEdge",
-		"JungleEdgeM",
-		"Swampland",
-		"Swampland_shore"
 	},
 	chance = 100,
 })

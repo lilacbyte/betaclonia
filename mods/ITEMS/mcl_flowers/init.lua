@@ -9,10 +9,7 @@ local smallflowerlongdesc = S("This is a small flower. Small flowers are mainly 
 mcl_flowers.plant_usage_help = S("It can only be placed on a block on which it would also survive.")
 
 function mcl_flowers.on_bone_meal(_, _, _ , pos, n)
-	if n.name == "mcl_flowers:rose_bush" or n.name == "mcl_flowers:rose_bush_top" then
-		minetest.add_item(pos, "mcl_flowers:rose_bush")
-		return true
-	elseif n.name == "mcl_flowers:peony" or n.name == "mcl_flowers:peony_top" then
+	if n.name == "mcl_flowers:peony" or n.name == "mcl_flowers:peony_top" then
 		minetest.add_item(pos, "mcl_flowers:peony")
 		return true
 	elseif n.name == "mcl_flowers:lilac" or n.name == "mcl_flowers:lilac_top" then
@@ -360,21 +357,24 @@ minetest.register_abm({--here
 
 -- Legacy support
 minetest.register_alias("mcl_core:tallgrass", "mcl_flowers:tallgrass")
+minetest.register_alias("mcl_flowers:poppy", "mcl_flowers:tulip_red")
+minetest.register_alias("mcl_flowers:rose_bush", "mcl_flowers:tulip_red")
+minetest.register_alias("mcl_flowers:rose_bush_top", "mcl_flowers:tulip_red")
 
 -- mcimport support: re-adds missing double_plant tops in mcimported worlds.
 local mg_name = minetest.get_mapgen_setting("mg_name")
 local mod_mcimport = minetest.get_modpath("mcimport")
 
 if mod_mcimport and mg_name == "singlenode" then
-	local flowernames = { "peony", "rose_bush", "lilac", "sunflower", "double_fern", "double_grass" }
+	local flowernames = { "peony", "lilac", "sunflower", "double_fern", "double_grass" }
 
 	minetest.register_lbm({
 		label = "Add double plant tops.",
 		name = "mcl_flowers:double_plant_topper",
 		run_at_every_load = true,
-		nodenames = { "mcl_flowers:peony", "mcl_flowers:rose_bush", "mcl_flowers:lilac", "mcl_flowers:sunflower", "mcl_flowers:double_fern", "mcl_flowers:double_grass" },
+		nodenames = { "mcl_flowers:peony", "mcl_flowers:lilac", "mcl_flowers:sunflower", "mcl_flowers:double_fern", "mcl_flowers:double_grass" },
 		action = function(pos, node)
-			for c = 1, 6 do
+			for c = 1, #flowernames do
 				local flowername = flowernames[c]
 				local bottom = pos
 				local top = { x = bottom.x, y = bottom.y + 1, z = bottom.z }

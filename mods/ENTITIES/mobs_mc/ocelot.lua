@@ -164,21 +164,6 @@ table.update(cat,{
 
 mcl_mobs.register_mob("mobs_mc:cat", cat)
 
-mcl_mobs.spawn_setup({
-	name = "mobs_mc:ocelot",
-	type_of_spawning = "ground",
-	dimension = "overworld",
-	aoc = 5,
-	min_height = mobs_mc.water_level+15,
-	biomes = {
-		"Jungle",
-		"JungleEdgeM",
-		"JungleM",
-		"JungleEdge",
-	},
-	chance = 300,
-})
-
 -- spawn eggs
 mcl_mobs.register_egg("mobs_mc:ocelot", S("Ocelot"), "#efde7d", "#564434", 0)
 if minetest.settings:get_bool("betaclonia.enablecatspawnegg") then

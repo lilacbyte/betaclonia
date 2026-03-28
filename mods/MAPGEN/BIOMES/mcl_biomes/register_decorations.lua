@@ -67,12 +67,8 @@ local function is_tree_schematic(path)
 		return false
 	end
 	return path:find("mcl_core_oak", 1, true) ~= nil
-		or path:find("mcl_core_jungle_tree", 1, true) ~= nil
-		or path:find("mcl_core_jungle_bush", 1, true) ~= nil
 		or path:find("mcl_core_spruce", 1, true) ~= nil
 		or path:find("mcl_core_birch", 1, true) ~= nil
-		or path:find("mcl_core_acacia", 1, true) ~= nil
-		or path:find("mcl_core_dark_oak", 1, true) ~= nil
 end
 
 local function is_spruce_schematic(path)
@@ -83,20 +79,11 @@ local function get_tree_type(path)
 	if type(path) ~= "string" then
 		return nil
 	end
-	if path:find("mcl_core_jungle_tree", 1, true) or path:find("mcl_core_jungle_bush", 1, true) then
-		return "jungle"
-	end
 	if path:find("mcl_core_spruce", 1, true) then
 		return "spruce"
 	end
 	if path:find("mcl_core_birch", 1, true) then
 		return "birch"
-	end
-	if path:find("mcl_core_acacia", 1, true) then
-		return "acacia"
-	end
-	if path:find("mcl_core_dark_oak", 1, true) then
-		return "dark_oak"
 	end
 	if path:find("mcl_core_oak", 1, true) then
 		return "oak"
@@ -105,12 +92,9 @@ local function get_tree_type(path)
 end
 
 local tree_biomes = {
-	oak = { Forest=true, Plains=true, Swampland=true },
-	birch = { Forest=true },
-	spruce = { Taiga=true, ColdTaiga=true, MegaTaiga=true, MegaSpruceTaiga=true, IcePlains=true },
-	jungle = { Jungle=true, JungleM=true, JungleEdge=true, JungleEdgeM=true },
-	acacia = { Savanna=true, SavannaM=true },
-	dark_oak = { RoofedForest=true, Forest=true },
+	oak = { Forest=true, Plains=true },
+	birch = { Forest=true, Plains=true },
+	spruce = { Forest=true, IcePlains=true },
 }
 
 local function constrain_tree_biomes(def)
@@ -167,6 +151,9 @@ local function reduce_tree_density(def)
 	if not def or def.deco_type ~= "schematic" or not is_tree_schematic(def.schematic) then
 		return
 	end
+	if def._no_tree_density_reduce then
+		return
+	end
 
 	-- Moderate reduction so trees still appear reliably.
 	if def.fill_ratio then
@@ -184,8 +171,10 @@ local function reduce_tree_density(def)
 		np.offset = old_offset - bias
 	end
 
+	local tree_type = get_tree_type(def.schematic)
+
 	-- Spruce should exist, but be very rare.
-	if is_spruce_schematic(def.schematic) then
+	if tree_type == "spruce" then
 		if def.fill_ratio then
 			def.fill_ratio = def.fill_ratio * 0.4
 		end
@@ -195,6 +184,16 @@ local function reduce_tree_density(def)
 				np.scale = scale * 0.5
 			end
 			np.offset = (np.offset or 0) - (math.abs(scale) * 0.35 + 0.00005)
+		end
+	end
+
+	-- Birch should be clearly less common than oak.
+	if tree_type == "birch" then
+		if def.fill_ratio then
+			def.fill_ratio = def.fill_ratio * 0.5
+		end
+		if np then
+			np.offset = (np.offset or 0) - math.abs(np.scale or 0) * 0.20
 		end
 	end
 end
@@ -358,33 +357,7 @@ end
 		flags = "place_center_x, place_center_z",
 		rotation = "random",
 	})
-		beta_register_decoration({
-			deco_type = "schematic",
-			place_on = {"group:grass_block_no_snow", "mcl_core:dirt"},
-			sidelen = 80,
-			fill_ratio = 0.0015,
-			biomes = {"Jungle", "JungleM"},
-		y_min = 1,
-		y_max = mcl_vars.mg_overworld_max,
-		schematic = mod_mcl_core.."/schematics/mcl_core_oak_classic.mts",
-		flags = "place_center_x, place_center_z",
-		rotation = "random",
-	})
-	beta_register_decoration({
-		deco_type = "schematic",
-		place_on = {"group:grass_block_no_snow", "mcl_core:dirt"},
-		sidelen = 80,
-		fill_ratio = 0.0004,
-		biomes = {"JungleEdge", "JungleEdgeM", "Savanna"},
-		y_min = 1,
-		y_max = mcl_vars.mg_overworld_max,
-		schematic = mod_mcl_core.."/schematics/mcl_core_oak_classic.mts",
-		flags = "place_center_x, place_center_z",
-		rotation = "random",
-	})
-
-
-	-- Rare balloon oak
+		-- Rare balloon oak
 	beta_register_decoration({
 		deco_type = "schematic",
 		place_on = {"group:grass_block_no_snow", "mcl_core:dirt"},
@@ -405,143 +378,19 @@ end
 		rotation = "random",
 	})
 
-	-- Swamp oak
+	-- Very rare cherry blossom trees in Plains.
 	beta_register_decoration({
 		deco_type = "schematic",
 		place_on = {"group:grass_block_no_snow", "mcl_core:dirt"},
 		sidelen = 80,
-		noise_params = {
-			offset = 0.0055,
-			scale = 0.0011,
-			spread = {x = 250, y = 250, z = 250},
-			seed = 5005,
-			octaves = 5,
-			persist = 0.6,
-		},
-		biomes = {"Swampland", "Swampland_shore"},
-		y_min = 0,
-		y_max = mcl_vars.mg_overworld_max,
-		schematic = mod_mcl_core.."/schematics/mcl_core_oak_swamp.mts",
-		flags = "place_center_x, place_center_z",
-		rotation = "random",
-	})
-
-	-- Jungle tree
-
-		-- Huge jungle tree (variants without cocoa nodes)
-		for _, i in ipairs({2, 4}) do
-		beta_register_decoration({
-			deco_type = "schematic",
-			place_on = {"group:grass_block_no_snow", "mcl_core:dirt"},
-			sidelen = 80,
-			fill_ratio = 0.00035,
-			biomes = {"Jungle"},
-			y_min = 4,
-			y_max = mcl_vars.mg_overworld_max,
-			schematic = mod_mcl_core.."/schematics/mcl_core_jungle_tree_huge_"..i..".mts",
-			flags = "place_center_x, place_center_z",
-			rotation = "random",
-		})
-		beta_register_decoration({
-			deco_type = "schematic",
-			place_on = {"group:grass_block_no_snow", "mcl_core:dirt"},
-			sidelen = 80,
-			fill_ratio = 0.003,
-			biomes = {"JungleM"},
-			y_min = 4,
-			y_max = mcl_vars.mg_overworld_max,
-			schematic = mod_mcl_core.."/schematics/mcl_core_jungle_tree_huge_"..i..".mts",
-			flags = "place_center_x, place_center_z",
-			rotation = "random",
-		})
-	end
-
-	-- Common jungle tree
-	beta_register_decoration({
-		deco_type = "schematic",
-		place_on = {"group:grass_block_no_snow", "mcl_core:dirt"},
-		sidelen = 80,
-		fill_ratio = 0.010,
-		biomes = {"Jungle"},
+		fill_ratio = 0.000002,
+		biomes = {"Plains"},
 		y_min = 1,
 		y_max = mcl_vars.mg_overworld_max,
-		schematic = mod_mcl_core.."/schematics/mcl_core_jungle_tree.mts",
+		schematic = mod_mcl_core.."/schematics/mcl_core_cherry.mts",
 		flags = "place_center_x, place_center_z",
 		rotation = "random",
 	})
-		beta_register_decoration({
-			deco_type = "schematic",
-			place_on = {"group:grass_block_no_snow", "mcl_core:dirt"},
-			sidelen = 80,
-			fill_ratio = 0.006,
-			biomes = {"Jungle"},
-			y_min = 1,
-			y_max = mcl_vars.mg_overworld_max,
-			schematic = mod_mcl_core.."/schematics/mcl_core_jungle_tree.mts",
-			flags = "place_center_x, place_center_z",
-			rotation = "random",
-		})
-		beta_register_decoration({
-			deco_type = "schematic",
-			place_on = {"group:grass_block_no_snow", "mcl_core:dirt"},
-			sidelen = 80,
-			fill_ratio = 0.002,
-			biomes = {"Jungle"},
-			y_min = 1,
-			y_max = mcl_vars.mg_overworld_max,
-			schematic = mod_mcl_core.."/schematics/mcl_core_jungle_tree.mts",
-			flags = "place_center_x, place_center_z",
-			rotation = "random",
-		})
-		beta_register_decoration({
-			deco_type = "schematic",
-			place_on = {"group:grass_block_no_snow", "mcl_core:dirt"},
-			sidelen = 80,
-			fill_ratio = 0.002,
-			biomes = {"Jungle"},
-			y_min = 1,
-			y_max = mcl_vars.mg_overworld_max,
-			schematic = mod_mcl_core.."/schematics/mcl_core_jungle_tree.mts",
-			flags = "place_center_x, place_center_z",
-			rotation = "random",
-		})
-	beta_register_decoration({
-		deco_type = "schematic",
-		place_on = {"group:grass_block_no_snow", "mcl_core:dirt"},
-		sidelen = 80,
-		fill_ratio = 0.010,
-		biomes = {"Jungle"},
-		y_min = 1,
-		y_max = mcl_vars.mg_overworld_max,
-		schematic = mod_mcl_core.."/schematics/mcl_core_jungle_tree.mts",
-		flags = "place_center_x, place_center_z",
-		rotation = "random",
-	})
-	beta_register_decoration({
-		deco_type = "schematic",
-		place_on = {"group:grass_block_no_snow", "mcl_core:dirt"},
-		sidelen = 80,
-		fill_ratio = 0.0045,
-		biomes = {"JungleEdge", "JungleEdgeM"},
-		y_min = 1,
-		y_max = mcl_vars.mg_overworld_max,
-		schematic = mod_mcl_core.."/schematics/mcl_core_jungle_tree.mts",
-		flags = "place_center_x, place_center_z",
-		rotation = "random",
-	})
-
-		beta_register_decoration({
-			deco_type = "schematic",
-			place_on = {"group:grass_block_no_snow", "mcl_core:dirt"},
-			sidelen = 80,
-			fill_ratio = 0.09,
-			biomes = {"JungleM"},
-			y_min = 1,
-			y_max = mcl_vars.mg_overworld_max,
-			schematic = mod_mcl_core.."/schematics/mcl_core_jungle_tree.mts",
-			flags = "place_center_x, place_center_z",
-			rotation = "random",
-		})
 
 	-- Huge spruce
 	mcl_quick_spruce(3000, 0.0030, "mcl_core_spruce_huge_1.mts", {"MegaSpruceTaiga"})
@@ -626,21 +475,25 @@ end
 		flags = "place_center_x, place_center_z",
 	})
 
-	-- Acacia (many variants)
-	for a=1, 7 do
-		beta_register_decoration({
-			deco_type = "schematic",
-			place_on = {"mcl_core:dirt_with_grass", "mcl_core:dirt", "mcl_core:coarse_dirt"},
-			sidelen = 16,
-			fill_ratio = 0.0002,
-			biomes = {"Savanna", "SavannaM"},
-			y_min = 1,
-			y_max = mcl_vars.mg_overworld_max,
-			schematic = mod_mcl_core.."/schematics/mcl_core_acacia_"..a..".mts",
-			flags = "place_center_x, place_center_z",
-			rotation = "random",
-		})
-	end
+	-- Rare spruce in Forest
+	beta_register_decoration({
+		deco_type = "schematic",
+		place_on = {"group:grass_block_no_snow", "mcl_core:dirt"},
+		sidelen = 16,
+		noise_params = {
+			offset = -0.0012,
+			scale = -0.0017,
+			spread = {x = 250, y = 250, z = 250},
+			seed = 2121,
+			octaves = 3,
+			persist = 0.7
+		},
+		biomes = {"Forest"},
+		y_min = 1,
+		y_max = mcl_vars.mg_overworld_max,
+		schematic = mod_mcl_core.."/schematics/mcl_core_spruce_5.mts",
+		flags = "place_center_x, place_center_z",
+	})
 
 	-- Birch
 	beta_register_decoration({
@@ -698,26 +551,47 @@ end
 		schematic = mod_mcl_core.."/schematics/mcl_core_birch.mts",
 		flags = "place_center_x, place_center_z",
 	})
-
-	-- Dark Oak
 	beta_register_decoration({
 		deco_type = "schematic",
-		place_on = {"group:grass_block_no_snow"},
+		place_on = {"group:grass_block_no_snow", "mcl_core:dirt"},
+		sidelen = 80,
+		fill_ratio = 0.006,
+		biomes = {"Plains"},
+		y_min = 1,
+		y_max = mcl_vars.mg_overworld_max,
+		schematic = mod_mcl_core.."/schematics/mcl_core_birch.mts",
+		flags = "place_center_x, place_center_z",
+		rotation = "random",
+	})
+	beta_register_decoration({
+		deco_type = "schematic",
+		place_on = {"group:grass_block_no_snow", "mcl_core:dirt"},
+		sidelen = 80,
+		fill_ratio = 0.0025,
+		biomes = {"Plains"},
+		y_min = 1,
+		y_max = mcl_vars.mg_overworld_max,
+		schematic = mod_mcl_core.."/schematics/mcl_core_birch_tall.mts",
+		flags = "place_center_x, place_center_z",
+		rotation = "random",
+	})
+	beta_register_decoration({
+		deco_type = "schematic",
+		place_on = {"group:grass_block_no_snow", "mcl_core:dirt"},
 		sidelen = 16,
 		noise_params = {
-			offset = 0.05,
-			scale = 0.0015,
-			spread = {x = 125, y = 125, z = 125},
-			seed = 223,
+			offset = 0.008,
+			scale = 0.0012,
+			spread = {x = 250, y = 250, z = 250},
+			seed = 911,
 			octaves = 3,
 			persist = 0.66
 		},
-		biomes = {"RoofedForest"},
-		y_min = 4,
+		biomes = {"Plains"},
+		y_min = 1,
 		y_max = mcl_vars.mg_overworld_max,
-		schematic = mod_mcl_core.."/schematics/mcl_core_dark_oak.mts",
+		schematic = mod_mcl_core.."/schematics/mcl_core_birch.mts",
 		flags = "place_center_x, place_center_z",
-		rotation = "random",
 	})
 
 	local ratio_mushroom = 0.0001
@@ -764,10 +638,10 @@ end
 	beta_register_decoration({
 		deco_type = "simple",
 		place_on = {"mcl_core:dirt", "mcl_core:coarse_dirt", "group:grass_block_no_snow", "group:sand", "mcl_core:podzol", "mcl_core:reeds"},
-		sidelen = 80,
+		sidelen = 16,
 		noise_params = {
-			offset = -0.95,
-			scale = 0.06,
+			offset = -0.40,
+			scale = 0.55,
 			spread = {x = 200, y = 200, z = 200},
 			seed = 2,
 			octaves = 3,
@@ -777,28 +651,28 @@ end
 		y_max = mcl_vars.mg_overworld_max,
 		decoration = "mcl_core:reeds",
 		height = 1,
-		height_max = 2,
+		height_max = 3,
 		spawn_by = { "mcl_core:water_source", "group:frosted_ice" },
 		num_spawn_by = 1,
 	})
 	beta_register_decoration({
 		deco_type = "simple",
 		place_on = {"mcl_core:dirt", "mcl_core:coarse_dirt", "group:grass_block_no_snow", "group:sand", "mcl_core:podzol", "mcl_core:reeds"},
-		sidelen = 80,
+		sidelen = 16,
 		noise_params = {
-			offset = -0.78,
-			scale = 0.10,
+			offset = -0.08,
+			scale = 0.38,
 			spread = {x = 200, y = 200, z = 200},
 			seed = 2,
 			octaves = 3,
-			persist = 0.7,
+			persist = 0.7
 		},
 		biomes = {"Swampland", "Swampland_shore"},
 		y_min = 1,
 		y_max = mcl_vars.mg_overworld_max,
 		decoration = "mcl_core:reeds",
 		height = 1,
-		height_max = 2,
+		height_max = 3,
 		spawn_by = { "mcl_core:water_source", "group:frosted_ice" },
 		num_spawn_by = 1,
 	})
@@ -882,8 +756,7 @@ end
 
 	local register_double_fern = mcl_biomes.register_double_fern
 
-	register_double_fern(0.01, 0.03, { "Jungle", "JungleM", "JungleEdge", "JungleEdgeM", "Taiga", "ColdTaiga", "MegaTaiga", "MegaSpruceTaiga" })
-	register_double_fern(0.15, 0.1, { "JungleM" })
+	register_double_fern(0.01, 0.03, { "Taiga", "ColdTaiga", "MegaTaiga", "MegaSpruceTaiga" })
 
 	-- Large flowers
 	function mcl_biomes.register_large_flower(name, biomes, seed, offset, flower_forest_offset)
@@ -934,124 +807,9 @@ end
 
 	local register_large_flower = mcl_biomes.register_large_flower
 
-	register_large_flower("rose_bush", {"Forest"}, 9350, -0.008, 0.003)
 	register_large_flower("peony", {"Forest"}, 10450, -0.008, 0.003)
 	register_large_flower("lilac", {"Forest"}, 10600, -0.007, 0.003)
 	register_large_flower("sunflower", {"SunflowerPlains"}, 2940, 0.01)
-
-	-- Jungle bush
-
-	beta_register_decoration({
-		deco_type = "schematic",
-		place_on = {"group:grass_block_no_snow", "mcl_core:dirt"},
-		sidelen = 80,
-		noise_params = {
-			offset = 0.0196,
-			scale = 0.015,
-			spread = {x = 250, y = 250, z = 250},
-			seed = 2930,
-			octaves = 4,
-			persist = 0.6,
-		},
-		biomes = {"Jungle"},
-		y_min = 3,
-		y_max = mcl_vars.mg_overworld_max,
-		schematic = mod_mcl_core.."/schematics/mcl_core_jungle_bush_oak_leaves.mts",
-		flags = "place_center_x, place_center_z",
-	})
-	beta_register_decoration({
-		deco_type = "schematic",
-		place_on = {"group:grass_block_no_snow", "mcl_core:dirt"},
-		sidelen = 80,
-		noise_params = {
-			offset = 0.0196,
-			scale = 0.005,
-			spread = {x = 250, y = 250, z = 250},
-			seed = 2930,
-			octaves = 4,
-			persist = 0.6,
-		},
-		biomes = {"Jungle"},
-		y_min = 3,
-		y_max = mcl_vars.mg_overworld_max,
-		schematic = mod_mcl_core.."/schematics/mcl_core_jungle_bush_oak_leaves_2.mts",
-		flags = "place_center_x, place_center_z",
-	})
-	beta_register_decoration({
-		deco_type = "schematic",
-		place_on = {"group:grass_block_no_snow", "mcl_core:dirt"},
-		sidelen = 80,
-		noise_params = {
-			offset = 0.05,
-			scale = 0.025,
-			spread = {x = 250, y = 250, z = 250},
-			seed = 2930,
-			octaves = 4,
-			persist = 0.6,
-		},
-		biomes = {"JungleM"},
-		y_min = 1,
-		y_max = mcl_vars.mg_overworld_max,
-		schematic = mod_mcl_core.."/schematics/mcl_core_jungle_bush_oak_leaves.mts",
-		flags = "place_center_x, place_center_z",
-	})
-	beta_register_decoration({
-		deco_type = "schematic",
-		place_on = {"group:grass_block_no_snow", "mcl_core:dirt"},
-		sidelen = 80,
-		noise_params = {
-			offset = 0.0085,
-			scale = 0.025,
-			spread = {x = 250, y = 250, z = 250},
-			seed = 2930,
-			octaves = 4,
-			persist = 0.6,
-		},
-		biomes = {"JungleEdge", "JungleEdgeM"},
-		y_min = 3,
-		y_max = mcl_vars.mg_overworld_max,
-		schematic = mod_mcl_core.."/schematics/mcl_core_jungle_bush_oak_leaves.mts",
-		flags = "place_center_x, place_center_z",
-	})
-
-	-- Lily pad
-
-	local lily_schem = {
-		{ name = "mcl_core:water_source" },
-		{ name = "mcl_flowers:waterlily" },
-	}
-
-	-- Spawn them in shallow water at ocean level in Swampland.
-	-- Tweak lilydepth to change the maximum water depth
-	local lilydepth = 2
-
-	for d=1, lilydepth do
-		local height = d + 2
-		local y = 1 - d
-		table.insert(lily_schem, 1, { name = "air", prob = 0 })
-
-		beta_register_decoration({
-			deco_type = "schematic",
-			schematic = {
-				size = { x=1, y=height, z=1 },
-				data = lily_schem,
-			},
-			place_on = "mcl_core:dirt",
-			sidelen = 16,
-			noise_params = {
-				offset = 0,
-				scale = 0.3,
-				spread = {x = 100, y = 100, z = 100},
-				seed = 503,
-				octaves = 6,
-				persist = 0.7,
-			},
-			y_min = y,
-			y_max = y,
-			biomes = { "Swampland_shore" },
-			rotation = "random",
-		})
-	end
 
 	-- Melon world generation intentionally removed.
 
@@ -1076,11 +834,11 @@ end
 	})
 
 	-- Grasses and ferns
-	local grass_forest = {"Plains", "Taiga", "Forest", "FlowerForest", "BirchForest", "BirchForestM", "RoofedForest", "Swampland" }
+	local grass_forest = {"Plains", "Taiga", "Forest", "FlowerForest", "BirchForest", "BirchForestM", "RoofedForest" }
 	local grass_mpf = {"MesaPlateauF_grasstop"}
-	local grass_plains = {"Plains", "SunflowerPlains", "JungleEdge", "JungleEdgeM" }
+	local grass_plains = {"Plains", "SunflowerPlains" }
 	local grass_savanna = {"Savanna", "SavannaM"}
-	local grass_sparse = {"ExtremeHills", "ExtremeHills+", "ExtremeHills+_snowtop", "ExtremeHillsM", "Jungle" }
+	local grass_sparse = {"ExtremeHills", "ExtremeHills+", "ExtremeHills+_snowtop", "ExtremeHillsM" }
 	local grass_mpfm = {"MesaPlateauFM_grasstop" }
 
 	local register_grass_decoration = mcl_biomes.register_grass_decoration
@@ -1102,22 +860,14 @@ end
 	register_grass_decoration("tallgrass", 0.05, -0.03, grass_sparse)
 	register_grass_decoration("tallgrass", 0.05, 0.05, grass_mpfm)
 
-	local fern_minimal = { "Jungle", "JungleM", "JungleEdge", "JungleEdgeM", "Taiga", "MegaTaiga", "MegaSpruceTaiga", "ColdTaiga" }
-	local fern_low = { "Jungle", "JungleM", "JungleEdge", "JungleEdgeM", "Taiga", "MegaTaiga", "MegaSpruceTaiga" }
-	local fern_Jungle = { "Jungle", "JungleM", "JungleEdge", "JungleEdgeM" }
-	--local fern_JungleM = { "JungleM" },
+	local fern_minimal = { "Taiga", "MegaTaiga", "MegaSpruceTaiga", "ColdTaiga" }
+	local fern_low = { "Taiga", "MegaTaiga", "MegaSpruceTaiga" }
 
 	register_grass_decoration("fern", -0.03,  0.09, fern_minimal)
 	register_grass_decoration("fern", -0.015, 0.075, fern_minimal)
 	register_grass_decoration("fern", 0,      0.06, fern_minimal)
 	register_grass_decoration("fern", 0.015,  0.045, fern_low)
 	register_grass_decoration("fern", 0.03,   0.03, fern_low)
-	register_grass_decoration("fern", 0.01, 0.05, fern_Jungle)
-	register_grass_decoration("fern", 0.03, 0.03, fern_Jungle)
-	register_grass_decoration("fern", 0.05, 0.01, fern_Jungle)
-	register_grass_decoration("fern", 0.07, -0.01, fern_Jungle)
-	register_grass_decoration("fern", 0.09, -0.03, fern_Jungle)
-	register_grass_decoration("fern", 0.12, -0.03, {"JungleM"})
 
 
 	local localiceplainstablething = minetest.registered_biomes["IcePlains"]
@@ -1170,7 +920,7 @@ end
 		-- Mushrooms next to trees
 		beta_register_decoration({
 			deco_type = "simple",
-			place_on = {"group:grass_block_no_snow", "mcl_core:dirt", "mcl_core:podzol", "mcl_core:mycelium", "mcl_core:stone"},
+			place_on = {"group:grass_block_no_snow", "mcl_core:dirt", "mcl_core:podzol", "mcl_core:stone"},
 			sidelen = 16,
 			noise_params = {
 				offset = 0,
@@ -1183,30 +933,10 @@ end
 			y_min = 1,
 			y_max = mcl_vars.mg_overworld_max,
 			decoration = mushrooms[m],
-			spawn_by = { "mcl_trees:tree_oak", "mcl_trees:tree_spruce", "mcl_trees:tree_dark_oak", "mcl_trees:tree_birch" },
+			spawn_by = { "mcl_trees:tree_oak", "mcl_trees:tree_spruce", "mcl_trees:tree_birch" },
 			num_spawn_by = 1,
 		})
 
-		-- More mushrooms in Swampland
-		beta_register_decoration({
-			deco_type = "simple",
-			place_on = {"group:grass_block_no_snow", "mcl_core:dirt", "mcl_core:podzol", "mcl_core:mycelium", "mcl_core:stone"},
-			sidelen = 16,
-			noise_params = {
-				offset = 0.05,
-				scale = 0.003,
-				spread = {x = 250, y = 250, z = 250},
-				seed = mseeds[m],
-				octaves = 3,
-				persist = 0.6,
-			},
-			y_min = 1,
-			y_max = mcl_vars.mg_overworld_max,
-			decoration = mushrooms[m],
-			biomes = { "Swampland"},
-			spawn_by = { "mcl_trees:tree_oak", "mcl_trees:tree_spruce", "mcl_trees:tree_dark_oak", "mcl_trees:tree_birch" },
-			num_spawn_by = 1,
-		})
 	end
 
 	function mcl_biomes.register_flower(name, biomes, seed, is_in_flower_forest)
@@ -1255,11 +985,9 @@ end
 
 	local register_flower = mcl_biomes.register_flower
 
-	local flower_biomes1 = {"Plains", "SunflowerPlains", "RoofedForest", "Forest", "BirchForest", "BirchForestM", "Taiga", "ColdTaiga", "Jungle", "JungleM", "JungleEdge", "JungleEdgeM", "Savanna", "SavannaM", "ExtremeHills", "ExtremeHillsM", "ExtremeHills+", "ExtremeHills+_snowtop" }
+	local flower_biomes1 = {"Plains", "SunflowerPlains", "RoofedForest", "Forest", "BirchForest", "BirchForestM", "Taiga", "ColdTaiga", "Savanna", "SavannaM", "ExtremeHills", "ExtremeHillsM", "ExtremeHills+", "ExtremeHills+_snowtop" }
 
 	register_flower("dandelion", flower_biomes1, 8)
-	register_flower("poppy", flower_biomes1, 9439)
-
 	local flower_biomes2 = {"Plains", "SunflowerPlains"}
 	register_flower("tulip_red", flower_biomes2, 436)
 	register_flower("tulip_orange", flower_biomes2, 536)
@@ -1269,7 +997,6 @@ end
 	register_flower("oxeye_daisy", flower_biomes2, 3490)
 
 	register_flower("allium", nil, 0) -- flower Forest only
-	register_flower("blue_orchid", {"Swampland"}, 64500, false)
 
 	register_flower("lily_of_the_valley", nil, 325)
 	register_flower("cornflower", flower_biomes2, 486)

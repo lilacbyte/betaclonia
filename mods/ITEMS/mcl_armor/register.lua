@@ -16,7 +16,7 @@ mcl_armor.register_set({
 		feet = 1,
 	},
 	craft_material = "mcl_core:gold_ingot",
-	cook_material = "mcl_core:gold_nugget",
+	cook_material = "mcl_core:gold_ingot",
 	sound_equip = "mcl_armor_equip_iron",
 	sound_unequip = "mcl_armor_unequip_iron",
 	effect_desc = S("While worn: Reduces fall damage"),
@@ -88,7 +88,7 @@ mcl_armor.register_set({
 		feet = 1,
 	},
 	craft_material = "mcl_copper:copper_ingot",
-	cook_material = "mcl_copper:copper_nugget",
+	cook_material = "mcl_copper:copper_ingot",
 	sound_equip = "mcl_armor_equip_iron",
 	sound_unequip = "mcl_armor_unequip_iron",
 		effect_desc = S("While worn: Reduces fire damage")

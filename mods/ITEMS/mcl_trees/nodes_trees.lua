@@ -63,62 +63,6 @@ mcl_trees.register_wood("oak",{
 	},
 })
 
-mcl_trees.register_wood("dark_oak",{
-	readable_name = "Dark Oak",
-	sign_color="#625048",
-	tree_schems_2x2 = {
-		{ file = core_schem_path.."/mcl_core_dark_oak.mts"},
-	},
-	tree = { tiles = {"mcl_core_log_big_oak_top.png", "mcl_core_log_big_oak_top.png","mcl_core_log_big_oak.png"} },
-	leaves = {
-		tiles = { "mcl_core_leaves_big_oak.png" },
-		color = "#77ab2f",
-	},
-	drop_apples = true,
-	wood = { tiles = {"mcl_core_planks_big_oak.png"}},
-	sapling = {
-		tiles = {"mcl_core_sapling_big_oak.png"},
-		inventory_image = "mcl_core_sapling_big_oak.png",
-		wield_image = "mcl_core_sapling_big_oak.png",
-	},
-	fence = {
-		tiles = { "mcl_fences_fence_big_oak.png" },
-	},
-	fence_gate = {
-		tiles = { "mcl_fences_fence_gate_big_oak.png" },
-	},
-	potted_sapling = {
-		image = "mcl_core_sapling_big_oak.png",
-	},
-})
-
-mcl_trees.register_wood("jungle",{
-	readable_name = "Jungle",
-	sign_color="#845A43",
-	tree_schems = {
-		{ file = core_schem_path.."/mcl_core_jungle_tree.mts"},
-	},
-	tree_schems_2x2 = {
-		{ file = core_schem_path.."/mcl_core_jungle_tree_huge_2.mts"},
-		{ file = core_schem_path.."/mcl_core_jungle_tree_huge_4.mts"},
-	},
-	tree = { tiles = {"default_jungletree_top.png", "default_jungletree_top.png","default_jungletree.png"} },
-	leaves = {
-		tiles = { "default_jungleleaves.png" },
-		color = "#30bb0b",
-	},
-	sapling_chances = {40, 36, 32, 24, 10},
-	wood = { tiles = {"default_junglewood.png"}},
-	sapling = {
-		tiles = {"default_junglesapling.png"},
-		inventory_image = "default_junglesapling.png",
-		wield_image = "default_junglesapling.png",
-	},
-	potted_sapling = {
-		image = "default_junglesapling.png",
-	},
-})
-
 mcl_trees.register_wood("spruce",{
 	readable_name = "Spruce",
 	sign_color="#604335",
@@ -157,35 +101,6 @@ mcl_trees.register_wood("spruce",{
 	},
 })
 
-mcl_trees.register_wood("acacia",{
-	readable_name = "Acacia",
-	sign_color="#965638",
-	tree_schems ={
-		{ file = core_schem_path.."/mcl_core_acacia_1.mts"},
-		{ file = core_schem_path.."/mcl_core_acacia_2.mts"},
-		{ file = core_schem_path.."/mcl_core_acacia_3.mts"},
-		{ file = core_schem_path.."/mcl_core_acacia_4.mts"},
-		{ file = core_schem_path.."/mcl_core_acacia_5.mts"},
-		{ file = core_schem_path.."/mcl_core_acacia_6.mts"},
-		{ file = core_schem_path.."/mcl_core_acacia_7.mts"},
-		{ file = core_schem_path.."/mcl_core_acacia_weirdo.mts"},
-	},
-	tree = { tiles = {"default_acacia_tree_top.png", "default_acacia_tree_top.png","default_acacia_tree.png"} },
-	leaves = {
-		tiles = { "default_acacia_leaves.png" },
-		color = "#aea42a",
-	},
-	wood = { tiles = {"default_acacia_wood.png"}},
-	sapling = {
-		tiles = {"default_acacia_sapling.png"},
-		inventory_image = "default_acacia_sapling.png",
-		wield_image = "default_acacia_sapling.png",
-	},
-	potted_sapling = {
-		image = "default_acacia_sapling.png",
-	},
-})
-
 mcl_trees.register_wood("birch",{
 	readable_name = "Birch",
 	sign_color="#AA907A",
@@ -214,8 +129,7 @@ mcl_trees.register_wood("cherry_blossom",{
 	sign_color = "#F29889",
 	chest_boat = false,
 	tree_schems = {
-		{ file = core_schem_path.."/mcl_core_birch.mts"},
-		{ file = core_schem_path.."/mcl_core_birch_tall.mts"},
+		{ file = core_schem_path.."/mcl_core_cherry.mts"},
 	},
 	tree = { tiles = {
 		"mcl_cherry_blossom_log_top.png",
@@ -246,10 +160,6 @@ mcl_trees.register_wood("cherry_blossom",{
 		tiles = {"mcl_cherry_blossom_sapling.png"},
 		inventory_image = "mcl_cherry_blossom_sapling.png",
 		wield_image = "mcl_cherry_blossom_sapling.png",
-		_after_grow = make_after_grow_replacer({
-			["mcl_trees:tree_birch"] = "mcl_trees:tree_cherry_blossom",
-			["mcl_trees:leaves_birch"] = "mcl_trees:leaves_cherry_blossom",
-		}),
 	},
 	potted_sapling = {
 		image = "mcl_cherry_blossom_sapling.png",
@@ -301,7 +211,9 @@ mcl_trees.register_wood("pale_oak",{
 	sign_color = "#CFCFD2",
 	chest_boat = false,
 	tree_schems = {
-		{ file = core_schem_path.."/mcl_core_dark_oak.mts"},
+		{ file = core_schem_path.."/mcl_pale_oak_1.mts"},
+		{ file = core_schem_path.."/mcl_pale_oak_2.mts"},
+		{ file = core_schem_path.."/mcl_pale_oak_3.mts"},
 	},
 	tree = { tiles = {
 		"mcl_pale_oak_log_top.png",
@@ -332,10 +244,6 @@ mcl_trees.register_wood("pale_oak",{
 		tiles = {"mcl_pale_oak_sapling_pale_oak.png"},
 		inventory_image = "mcl_pale_oak_sapling_pale_oak.png",
 		wield_image = "mcl_pale_oak_sapling_pale_oak.png",
-		_after_grow = make_after_grow_replacer({
-			["mcl_trees:tree_dark_oak"] = "mcl_trees:tree_pale_oak",
-			["mcl_trees:leaves_dark_oak"] = "mcl_trees:leaves_pale_oak",
-		}),
 	},
 	potted_sapling = {
 		image = "mcl_pale_oak_sapling_pale_oak.png",

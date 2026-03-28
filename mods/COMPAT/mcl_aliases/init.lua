@@ -21,7 +21,6 @@ dofile(modpath.."/mcl_dyes.lua")
 dofile(modpath.."/mcl_stairs.lua")
 --dofile(modpath.."/mcl_crimson.lua")--removed
 dofile(modpath.."/mcl_armor.lua")
-dofile(modpath.."/mcl_panes.lua")
 --dofile(modpath.."/mcl_bamboo.lua")--removed
 dofile(modpath.."/mesecons.lua")
 

@@ -6,8 +6,6 @@ mcl_structures = {}
 
 dofile(modpath.."/api.lua")
 
-mcl_structures.register_structure = function() return end
-
 mcl_structures.register_structure("desert_well",{
 	place_on = {"group:sand"},
 	flags = "place_center_x, place_center_z",
@@ -24,7 +22,7 @@ mcl_structures.register_structure("desert_well",{
 		local p1 = vector.offset(pos,-hl,-hl,-hl)
 		local p2 = vector.offset(pos,hl,hl,hl)
 		if minetest.registered_nodes["mcl_sus_nodes:sand"] then
-			local sus_poss = minetest.find_nodes_in_area(vector.offset(p1,0,-3,0), vector.offset(p2,0,-hl+2,0), {"mcl_core:sand","mcl_core:sandstone","mcl_core:redsand","mcl_core:redsandstone"})
+			local sus_poss = minetest.find_nodes_in_area(vector.offset(p1,0,-3,0), vector.offset(p2,0,-hl+2,0), {"mcl_core:sand","mcl_core:sandstone","mcl_core:redsand"})
 			if #sus_poss > 0 then
 				table.shuffle(sus_poss)
 				for i = 1,pr:next(1,#sus_poss) do
@@ -64,6 +62,71 @@ mcl_structures.register_structure("boulder",{
 	},
 },true) --is spawned as a normal decoration. this is just for /spawnstruct
 
+-- Re-enable natural boulder decorations for overworld life/detail.
+local boulder_biomes = {
+	"IcePlains",
+	"ColdTaiga",
+	"Taiga",
+	"MegaTaiga",
+	"MegaSpruceTaiga",
+	"StoneBeach",
+	"Plains",
+	"SunflowerPlains",
+	"Forest",
+	"FlowerForest",
+	"BirchForest",
+	"BirchForestM",
+	"RoofedForest",
+	"Savanna",
+	"SavannaM",
+}
+
+minetest.register_on_mods_loaded(function()
+	minetest.register_decoration({
+		name = "mcl_structures:boulder_small_worldgen",
+		deco_type = "schematic",
+		place_on = {
+			"mcl_core:stone",
+			"group:grass_block_no_snow",
+			"mcl_core:dirt",
+			"mcl_core:coarse_dirt",
+			"mcl_core:podzol",
+			"mcl_core:gravel",
+			"mcl_core:sand",
+		},
+		sidelen = 16,
+		fill_ratio = 0.00055,
+		biomes = boulder_biomes,
+		y_min = 1,
+		y_max = mcl_vars.mg_overworld_max,
+		schematic = modpath.."/schematics/mcl_structures_boulder_small.mts",
+		flags = "place_center_x, place_center_z",
+		rotation = "random",
+	})
+
+	minetest.register_decoration({
+		name = "mcl_structures:boulder_large_worldgen",
+		deco_type = "schematic",
+		place_on = {
+			"mcl_core:stone",
+			"group:grass_block_no_snow",
+			"mcl_core:dirt",
+			"mcl_core:coarse_dirt",
+			"mcl_core:podzol",
+			"mcl_core:gravel",
+			"mcl_core:sand",
+		},
+		sidelen = 16,
+		fill_ratio = 0.00018,
+		biomes = boulder_biomes,
+		y_min = 1,
+		y_max = mcl_vars.mg_overworld_max,
+		schematic = modpath.."/schematics/mcl_structures_boulder.mts",
+		flags = "place_center_x, place_center_z",
+		rotation = "random",
+	})
+end)
+
 mcl_structures.register_structure("ice_spike_small",{
 	filenames = { modpath.."/schematics/mcl_structures_ice_spike_small.mts"	},
 },true) --is spawned as a normal decoration. this is just for /spawnstruct
@@ -92,6 +155,7 @@ minetest.register_chatcommand("spawnstruct", {
 	description = S("Generate a pre-defined structure near your position."),
 	privs = {debug = true},
 	func = function(name, param)
+		param = (param or ""):gsub("^%s+", ""):gsub("%s+$", "")
 		local player = minetest.get_player_by_name(name)
 		if not player then return end
 		local pos = player:get_pos()
@@ -110,8 +174,22 @@ minetest.register_chatcommand("spawnstruct", {
 		else
 			for n,d in pairs(mcl_structures.registered_structures) do
 				if n == param then
-					mcl_structures.place_structure(pos,d,pr,math.random(),rot)
-					return true,message
+					-- Emerge a safety margin first to avoid placement races at chunk edges.
+					local radius = 96
+					local minp = vector.offset(pos, -radius, -48, -radius)
+					local maxp = vector.offset(pos, radius, 96, radius)
+					minetest.emerge_area(minp, maxp, function(_, _, calls_remaining)
+						if calls_remaining > 0 then
+							return
+						end
+						local placed = mcl_structures.place_structure(pos, d, pr, math.random(), rot)
+						if placed then
+							minetest.chat_send_player(name, message)
+						else
+							minetest.chat_send_player(name, S("Structure placement failed at your position."))
+						end
+					end)
+					return true, S("Preparing area for structure placement …")
 				end
 			end
 			message = S("Error: Unknown structure type. Please use “/spawnstruct <type>”.")

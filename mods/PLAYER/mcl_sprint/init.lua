@@ -12,7 +12,7 @@ local FOV_NORMAL = 1.0
 local PARTICLE_INTERVAL = 0.12
 local DOUBLE_TAP_INTERVAL = 0.22
 
-local sprinting_enabled = minetest.settings:get_bool("mcl_enable_sprinting", true)
+local sprinting_enabled = minetest.settings:get_bool("mcl_enable_sprinting", false)
 local players = {}
 
 -- Returns true if the player with the given name is sprinting, false if not.

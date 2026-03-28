@@ -3,6 +3,9 @@
 --made for MC like Survival game
 --License for code WTFPL and otherwise stated in readmes
 mobs_mc = {}
+mobs_mc.check_iron_golem_summon = function()
+	return false
+end
 
 local pr = PseudoRandom(os.time()*5)
 

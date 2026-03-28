@@ -220,53 +220,10 @@ cclregisterdefaultnodes("mcl_core:stone_with_diamond", "default:stone_with_diamo
 	sounds = mcl_sounds.node_sound_stone_defaults(),
 })
 
-cclregisterdefaultnodes("mcl_core:stonebrick", "default:stonebrick", {
-	_doc_items_longdesc = doc.sub.items.temp.build,
-	groups = {pickaxey=1, stone=1, stonebrick=1, building_block=1, material_stone=1, stonecuttable = 1},
-	_mcl_blast_resistance = 6,
-	_mcl_hardness = 1.5,
-	_mcl_stonecutter_recipes = { "mcl_core:stone" },
-	_mcl_cooking_output = "mcl_core:stonebrickcracked"
-}, {
-	description = S("Stone Bricks"),
-	tiles = {"default_stone_brick.png"},
-	sounds = mcl_sounds.node_sound_stone_defaults(),
-	is_ground_content = false,
-})
-
-minetest.register_node("mcl_core:stonebrickcarved", {
-	description = S("Chiseled Stone Bricks"),
-	_doc_items_longdesc = doc.sub.items.temp.build,
-	tiles = {"mcl_core_stonebrick_carved.png"},
-	groups = {pickaxey=1, stone=1, stonebrick=1, building_block=1, material_stone=1},
-	sounds = mcl_sounds.node_sound_stone_defaults(),
-	is_ground_content = false,
-	_mcl_blast_resistance = 6,
-	_mcl_hardness = 1.5,
-	_mcl_stonecutter_recipes = { "mcl_core:stone", "mcl_core:stonebrick" },
-})
-
-minetest.register_node("mcl_core:stonebrickcracked", {
-	description = S("Cracked Stone Bricks"),
-	_doc_items_longdesc = doc.sub.items.temp.build,
-	tiles = {"mcl_core_stonebrick_cracked.png"},
-	groups = {pickaxey=1, stone=1, stonebrick=1, building_block=1, material_stone=1},
-	sounds = mcl_sounds.node_sound_stone_defaults(),
-	is_ground_content = false,
-	_mcl_blast_resistance = 6,
-	_mcl_hardness = 1.5,
-})
-
-minetest.register_node("mcl_core:stonebrickmossy", {
-	description = S("Mossy Stone Bricks"),
-	_doc_items_longdesc = doc.sub.items.temp.build,
-	tiles = {"mcl_core_stonebrick_mossy.png"},
-	groups = {pickaxey=1, stone=1, stonebrick=1, building_block=1, material_stone=1, stonecuttable = 1},
-	sounds = mcl_sounds.node_sound_stone_defaults(),
-	is_ground_content = false,
-	_mcl_blast_resistance = 6,
-	_mcl_hardness = 1.5,
-})
+minetest.register_alias("mcl_core:stonebrick", "mcl_core:stone")
+minetest.register_alias("mcl_core:stonebrickcarved", "mcl_core:stone")
+minetest.register_alias("mcl_core:stonebrickcracked", "mcl_core:stone")
+minetest.register_alias("mcl_core:stonebrickmossy", "mcl_core:mossycobble")
 
 minetest.register_node("mcl_core:stone_smooth", {
 	description = S("Smooth Stone"),
@@ -319,56 +276,6 @@ minetest.register_node("mcl_core:dirt_with_grass", {
 })
 mcl_core.register_snowed_node("mcl_core:dirt_with_grass_snow", "mcl_core:dirt_with_grass", nil, nil, true, S("Dirt with Snow"))
 
-
-minetest.register_node("mcl_core:mycelium", {
-	description = S("Mycelium"),
-	_doc_items_longdesc = S("Mycelium is a type of dirt and the ideal soil for mushrooms. Unlike other dirt-type blocks, it can not be turned into farmland with a hoe. In light, mycelium slowly spreads over nearby dirt. Under an opaque block or a liquid, it eventually turns back into dirt."),
-	tiles = {"mcl_core_mycelium_top.png", "default_dirt.png", {name="mcl_core_mycelium_side.png", tileable_vertical=false}},
-	groups = { handy=1, shovely=1, dirt=2, spreading_dirt_type=1, enderman_takable=1, building_block=1, soil_sapling=2, soil_bamboo=1, soil_fungus=1, mycelium=1, supports_mushrooms=1, converts_to_moss=1 },
-	drop = "mcl_core:dirt",
-	sounds = mcl_sounds.node_sound_dirt_defaults({
-		footstep = {name="default_grass_footstep", gain=0.1},
-	}),
-
-	on_construct = mcl_core.on_snowable_construct,
-	_on_shovel_place = mcl_core.make_dirtpath,
-	_mcl_snowed = "mcl_core:mycelium_snow",
-	_mcl_blast_resistance = 0.6,
-	_mcl_hardness = 0.6,
-	_mcl_silk_touch_drop = true,
-})
-mcl_core.register_snowed_node("mcl_core:mycelium_snow", "mcl_core:mycelium", nil, nil, false, S("Mycelium with Snow"))
-
-local PARTICLE_ABM_DISTANCE = 16
-
---if minetest.settings:get("mcl_node_particles") == "full" then
-minetest.register_abm({
-	label = "Townaura particles",
-	nodenames = {"group:mycelium"},
-	interval = 2,
-	chance = 30,
-	action = function(pos)
-		for player in mcl_util.connected_players(pos, PARTICLE_ABM_DISTANCE) do
-			minetest.add_particlespawner({
-				time = 2,
-				amount = 5,
-				minpos = vector.offset(pos,-2,0.51,-2),
-				maxpos = vector.offset(pos,2,0.51,2),
-				minvel = vector.new(-3/10, 0, -3/10),
-				maxvel = vector.new(3/10, 10/60, 3/10),
-				minacc = vector.zero(),
-				expirationtime = 4,
-				collisiondetection = true,
-				collision_removal = true,
-				playername = player:get_player_name(),
-				size = 1,
-				texture = "mcl_core_mycelium_particle.png",
-			})
-		end
-	end,
-})
---end
-
 minetest.register_node("mcl_core:podzol", {
 	description = S("Podzol"),
 	_doc_items_longdesc = S("Podzol is a type of dirt found in taiga forests. Only a few plants are able to survive on it."),
@@ -386,7 +293,7 @@ groups = {handy=1, shovely=3, dirt=2, soil=1, soil_sapling=2, soil_sugarcane=1, 
 mcl_core.register_snowed_node("mcl_core:podzol_snow", "mcl_core:podzol", nil, nil, false, S("Podzol with Snow"))
 
 cclregisterdefaultnodes("mcl_core:dirt", "default:dirt", {
-	_doc_items_longdesc = S("Dirt acts as a soil for a few plants. When in light, this block may grow a grass or mycelium cover if such blocks are nearby."),
+	_doc_items_longdesc = S("Dirt acts as a soil for a few plants. When in light, this block may grow a grass cover if such blocks are nearby."),
 	_doc_items_hidden = false,
 	groups = {handy=1, shovely=1, dirt=1, soil=1, soil_sapling=2, soil_sugarcane=1, soil_bamboo=1, soil_fungus=1, cultivatable=2, enderman_takable=1, building_block=1, converts_to_moss=1},
 	_on_shovel_place = mcl_core.make_dirtpath,
@@ -485,17 +392,7 @@ cclregisterdefaultnodes("mcl_core:sandstonesmooth", "default:sandstone_block", {
 	is_ground_content = false,
 })
 
-minetest.register_node("mcl_core:sandstonecarved", {
-	description = S("Chiseled Sandstone"),
-	_doc_items_longdesc = S("Chiseled sandstone is a decorative building block."),
-	tiles = {"mcl_core_sandstone_top.png", "mcl_core_sandstone_bottom.png", "mcl_core_sandstone_carved.png"},
-	is_ground_content = false,
-	groups = {pickaxey=1, sandstone=1, normal_sandstone=1, building_block=1, material_stone=1},
-	sounds = mcl_sounds.node_sound_stone_defaults(),
-	_mcl_blast_resistance = 0.8,
-	_mcl_hardness = 0.8,
-	_mcl_stonecutter_recipes = { "mcl_core:sandstone" },
-})
+minetest.register_alias("mcl_core:sandstonecarved", "mcl_core:sandstone")
 
 cclregisterdefaultnodes("mcl_core:sandstonesmooth2", "default:sandstone", {
 	_doc_items_hidden = false,
@@ -524,52 +421,12 @@ minetest.register_node("mcl_core:redsand", {
 	_mcl_cooking_output = "mcl_core:glass"
 })
 
-minetest.register_node("mcl_core:redsandstone", {
-	description = S("Red Sandstone"),
-	_doc_items_longdesc = S("Red sandstone is compressed red sand and is a rather soft kind of stone."),
-	tiles = {"mcl_core_red_sandstone_top.png", "mcl_core_red_sandstone_bottom.png", "mcl_core_red_sandstone_normal.png"},
-	groups = {pickaxey=1, sandstone=1, red_sandstone=1, building_block=1, material_stone=1, stonecuttable = 1},
-	sounds = mcl_sounds.node_sound_stone_defaults(),
-	_mcl_blast_resistance = 0.8,
-	_mcl_hardness = 0.8,
-	_mcl_cooking_output = "mcl_core:redsandstonesmooth2"
-})
-
-minetest.register_node("mcl_core:redsandstonesmooth", {
-	description = S("Cut Red Sandstone"),
-	_doc_items_longdesc = S("Cut red sandstone is a decorative building block."),
-	tiles = {"mcl_core_red_sandstone_top.png", "mcl_core_red_sandstone_bottom.png", "mcl_core_red_sandstone_smooth.png"},
-	is_ground_content = false,
-	groups = {pickaxey=1, sandstone=1, red_sandstone=1, building_block=1, material_stone=1},
-	sounds = mcl_sounds.node_sound_stone_defaults(),
-	_mcl_blast_resistance = 0.8,
-	_mcl_hardness = 0.8,
-	_mcl_stonecutter_recipes = { "mcl_core:redsandstone" },
-})
-
-minetest.register_node("mcl_core:redsandstonecarved", {
-	description = S("Chiseled Red Sandstone"),
-	_doc_items_longdesc = S("Chiseled red sandstone is a decorative building block."),
-	tiles = {"mcl_core_red_sandstone_top.png", "mcl_core_red_sandstone_bottom.png", "mcl_core_red_sandstone_carved.png"},
-	is_ground_content = false,
-	groups = {pickaxey=1, sandstone=1, red_sandstone=1, building_block=1, material_stone=1},
-	sounds = mcl_sounds.node_sound_stone_defaults(),
-	_mcl_blast_resistance = 0.8,
-	_mcl_hardness = 0.8,
-	_mcl_stonecutter_recipes = { "mcl_core:redsandstone" },
-})
-
-minetest.register_node("mcl_core:redsandstonesmooth2", {
-	description = S("Smooth Red Sandstone"),
-	_doc_items_longdesc = S("Smooth red sandstone is a decorative building block."),
-	tiles = {"mcl_core_red_sandstone_top.png"},
-	is_ground_content = false,
-	groups = {pickaxey=1, sandstone=1, red_sandstone=1, building_block=1, material_stone=1},
-	sounds = mcl_sounds.node_sound_stone_defaults(),
-	_mcl_blast_resistance = 0.8,
-	_mcl_hardness = 0.8,
-	_mcl_stonecutter_recipes = { "mcl_core:redsandstone" },
-})
+minetest.register_alias("mcl_core:redsandstone", "mcl_core:sandstone")
+minetest.register_alias("mcl_core:redsandstonesmooth", "mcl_core:sandstonesmooth")
+minetest.register_alias("mcl_core:redsandstonecarved", "mcl_core:sandstone")
+minetest.register_alias("mcl_core:redsandstonesmooth2", "mcl_core:sandstonesmooth2")
+minetest.register_alias("mcl_core:mycelium", "mcl_core:dirt_with_grass")
+minetest.register_alias("mcl_core:mycelium_snow", "mcl_core:dirt_with_grass_snow")
 
 ---
 
@@ -666,43 +523,7 @@ cclregisterdefaultnodes("mcl_core:mossycobble", "default:mossycobble", {
 	sounds = mcl_sounds.node_sound_stone_defaults(),
 })
 
-cclregisterdefaultnodes("mcl_core:coalblock", "default:coalblock", {
-	_doc_items_longdesc = S("Blocks of coal are useful as a compact storage of coal and very useful as a furnace fuel. A block of coal is as efficient as 10 coal."),
-	groups = {pickaxey=1, flammable=1, building_block=1, material_stone=1, fire_encouragement=5, fire_flammability=5},
-	_mcl_blast_resistance = 6,
-	_mcl_hardness = 5,
-	_mcl_burntime = 800
-}, {
-	description = S("Block of Coal"),
-	tiles = {"default_coal_block.png"},
-	is_ground_content = false,
-	sounds = mcl_sounds.node_sound_stone_defaults(),
-})
-
-cclregisterdefaultnodes("mcl_core:ironblock", "default:steelblock", {
-	_doc_items_longdesc = S("A block of iron is mostly a decorative block but also useful as a compact storage of iron ingots."),
-	groups = {pickaxey=2, building_block=1},
-	drop = "mcl_core:raw_iron 9",
-	_mcl_blast_resistance = 6,
-	_mcl_hardness = 5,
-}, {
-	description = S("Block of Iron"),
-	tiles = {"default_steel_block.png"},
-	is_ground_content = false,
-	sounds = mcl_sounds.node_sound_metal_defaults(),
-})
-
-cclregisterdefaultnodes("mcl_core:goldblock", "default:goldblock", {
-	_doc_items_longdesc = S("A block of gold is mostly a shiny decorative block but also useful as a compact storage of gold ingots."),
-	groups = {pickaxey=4, building_block=1},
-	_mcl_blast_resistance = 6,
-	_mcl_hardness = 3,
-}, {
-	description = S("Block of Gold"),
-	tiles = {"default_gold_block.png"},
-	is_ground_content = false,
-	sounds = mcl_sounds.node_sound_metal_defaults(),
-})
+minetest.register_alias("mcl_core:coalblock", "mcl_core:stone")
 
 cclregisterdefaultnodes("mcl_core:diamondblock", "default:diamondblock", {
 	_doc_items_longdesc = S("A block of diamond is mostly a shiny decorative block but also useful as a compact storage of diamonds."),

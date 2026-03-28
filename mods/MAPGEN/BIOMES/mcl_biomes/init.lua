@@ -15,6 +15,31 @@ local overworld_fogcolor = "#C0D8FF"
 
 mcl_biomes = {}
 
+local function content_id_if_known(name)
+	if not minetest.registered_nodes[name] then
+		return nil
+	end
+	return minetest.get_content_id(name)
+end
+
+local c_water = content_id_if_known("mcl_core:water_source")
+local c_water_flowing = content_id_if_known("mcl_core:water_flowing")
+local c_river_water = content_id_if_known("mclx_core:river_water_source")
+local c_river_water_flowing = content_id_if_known("mclx_core:river_water_flowing")
+local c_dirt = minetest.get_content_id("mcl_core:dirt")
+local c_sand = minetest.get_content_id("mcl_core:sand")
+local c_gravel = minetest.get_content_id("mcl_core:gravel")
+local c_grass = minetest.get_content_id("mcl_core:dirt_with_grass")
+local c_grass_snow = minetest.get_content_id("mcl_core:dirt_with_grass_snow")
+local water_level = tonumber(minetest.get_mapgen_setting("water_level")) or 1
+
+local function is_water_cid(cid)
+	return cid == c_water
+		or cid == c_water_flowing
+		or cid == c_river_water
+		or cid == c_river_water_flowing
+end
+
 --
 -- Register biomes
 --
@@ -25,6 +50,102 @@ local stonelike = {"mcl_core:stone"}
 --[[ Special biome field: _mcl_biome_type:
 Rough categorization of biomes: One of "snowy", "cold", "medium" and "hot"
 Based off The OG Game gamepedia.com/Biomes ]]
+
+-- Replace submerged shoreline grass/dirt with sand or gravel so water edges
+-- never show grassy blocks in rivers/oceans.
+local function shoreline_cleanup(vm, data, data2, emin, emax, area, minp, maxp, blockseed) --luacheck: ignore 212
+	if maxp.y < (water_level - 8) or minp.y > water_level then
+		return false
+	end
+	local dim_pos = { x = minp.x, y = math.floor((minp.y + maxp.y) / 2), z = minp.z }
+	if mcl_worlds.pos_to_dimension(dim_pos) ~= "overworld" then
+		return false
+	end
+
+	local x0 = minp.x + 1
+	local x1 = maxp.x - 1
+	local z0 = minp.z + 1
+	local z1 = maxp.z - 1
+	if x0 > x1 or z0 > z1 then
+		return false
+	end
+
+	local y0 = math.max(minp.y, water_level - 8)
+	local y1 = math.min(maxp.y, water_level)
+	local changed = false
+
+	for y = y0, y1 do
+		for z = z0, z1 do
+			local vi = area:index(x0, y, z)
+			for x = x0, x1 do
+				local cid = data[vi]
+				if cid == c_grass or cid == c_grass_snow or cid == c_dirt then
+					local up = vi + area.ystride
+					if is_water_cid(data[up]) then
+						local west = data[vi - 1]
+						local east = data[vi + 1]
+						local north = data[vi - area.zstride]
+						local south = data[vi + area.zstride]
+						if is_water_cid(west) or is_water_cid(east) or is_water_cid(north) or is_water_cid(south) then
+							if cid == c_grass_snow or y <= (water_level - 2) then
+								data[vi] = c_gravel
+							else
+								data[vi] = c_sand
+							end
+							changed = true
+						end
+					end
+				end
+				vi = vi + 1
+			end
+		end
+	end
+
+	return changed
+end
+
+-- One-time cleanup for already-generated terrain.
+minetest.register_lbm({
+	name = "mcl_biomes:shoreline_cleanup_existing",
+	nodenames = {
+		"mcl_core:dirt_with_grass",
+		"mcl_core:dirt_with_grass_snow",
+		"mcl_core:dirt",
+	},
+	run_at_every_load = false,
+	action = function(pos, node)
+		if pos.y < (water_level - 8) or pos.y > water_level then
+			return
+		end
+		if mcl_worlds.pos_to_dimension(pos) ~= "overworld" then
+			return
+		end
+
+		local is_water_name = function(name)
+			return minetest.get_item_group(name, "water") > 0
+		end
+		local above = minetest.get_node({ x = pos.x, y = pos.y + 1, z = pos.z }).name
+		if not is_water_name(above) then
+			return
+		end
+		local west = minetest.get_node({ x = pos.x - 1, y = pos.y, z = pos.z }).name
+		local east = minetest.get_node({ x = pos.x + 1, y = pos.y, z = pos.z }).name
+		local north = minetest.get_node({ x = pos.x, y = pos.y, z = pos.z - 1 }).name
+		local south = minetest.get_node({ x = pos.x, y = pos.y, z = pos.z + 1 }).name
+		if not is_water_name(west)
+			and not is_water_name(east)
+			and not is_water_name(north)
+			and not is_water_name(south) then
+			return
+		end
+
+		if node.name == "mcl_core:dirt_with_grass_snow" or pos.y <= (water_level - 2) then
+			minetest.set_node(pos, { name = "mcl_core:gravel" })
+		else
+			minetest.set_node(pos, { name = "mcl_core:sand" })
+		end
+	end,
+})
 
 local function register_classic_superflat_biome()
 	-- Classic Superflat: bedrock (not part of biome), 2 dirt, 1 grass block
@@ -332,6 +453,7 @@ if not mcl_vars.superflat then
 
 
 	dofile(minetest.get_modpath("mcl_biomes") .. "/register_decorations.lua")
+	mcl_mapgen_core.register_generator("mcl_biomes_shoreline_cleanup", shoreline_cleanup, nil, 7000, false)
 else
 	-- Implementation of The OG Game's Superflat mapgen, classic style:
 	-- * Perfectly flat land, 1 grass biome, no decorations, no caves

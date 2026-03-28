@@ -68,16 +68,12 @@ local function noteblock_play(pos, param2)
 	local block_below_name = minetest.get_node({x=pos.x, y=pos.y-1, z=pos.z}).name
 	local pitched = false
 	local soundname, pitch
-	if block_below_name == "mcl_core:goldblock" then
-		soundname="mesecons_noteblock_bell"
-	elseif block_below_name == "mcl_core:clay" then
+	if block_below_name == "mcl_core:clay" then
 		soundname="mesecons_noteblock_flute"
 	elseif block_below_name == "mcl_core:packed_ice" then
 		soundname="mesecons_noteblock_chime"
 --	elseif block_below_name == "mcl_core:bone_block" then--removed boneblock
 --		soundname="mesecons_noteblock_xylophone_wood"--removed boneblock
-	elseif block_below_name == "mcl_core:ironblock" then
-		soundname="mesecons_noteblock_xylophone_metal"
 	elseif block_below_name == "mcl_nether:soul_sand" then
 		soundname="mesecons_noteblock_cowbell"
 	elseif block_below_name == "mcl_core:emeraldblock" then

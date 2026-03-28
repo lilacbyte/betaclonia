@@ -1,7 +1,7 @@
 -- Register aliases
 local doornames = {
 	["door"] = "wooden_door",
-	["door_jungle"] = "jungle_door",
+	["door_jungle"] = "wooden_door",
 	["door_spruce"] = "spruce_door",
 	["door_dark_oak"] = "dark_oak_door",
 	["door_birch"] = "birch_door",
@@ -19,5 +19,5 @@ end
 
 minetest.register_alias("doors:trapdoor", "mcl_trees:wood_oak")
 minetest.register_alias("doors:trapdoor_open", "mcl_trees:wood_oak")
-minetest.register_alias("doors:iron_trapdoor", "mcl_core:ironblock")
-minetest.register_alias("doors:iron_trapdoor_open", "mcl_core:ironblock")
+minetest.register_alias("doors:iron_trapdoor", "mcl_core:stone")
+minetest.register_alias("doors:iron_trapdoor_open", "mcl_core:stone")

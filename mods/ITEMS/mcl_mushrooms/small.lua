@@ -6,7 +6,7 @@ local on_place = mcl_util.generate_on_place_plant_function(function(place_pos, _
 	local snn = soil_node.name -- soil node name
 
 	-- Placement rules:
-	-- * Always allowed on podzol or mycelimu
+	-- * Always allowed on podzol
 	-- * Otherwise, must be solid, opaque and have daylight light level <= 12
 	local light = minetest.get_node_light(place_pos, 0.5)
 	local light_ok = false
@@ -20,17 +20,17 @@ local longdesc_intro_brown = S("Brown mushrooms are fungi which grow and spread 
 local longdesc_intro_red = S("Red mushrooms are fungi which grow and spread in darkness, but are sensitive to light. They are inedible as such, but they can be used to craft food items.")
 
 local longdesc_append = S("A single mushroom of this species will slowly spread over time towards a random solid opaque block with a light level of 12 or lower in a 3×3×3 cube around the mushroom. It stops spreading when there are 5 or more mushrooms of the same species within an area of 9×3×9 blocks around the mushroom.").."\n"..
-S("Mushrooms will eventually uproot at a light level of 12 or higher. On mycelium or podzol, they survive and spread at any light level.")
+S("Mushrooms will eventually uproot at a light level of 12 or higher. On podzol, they survive and spread at any light level.")
 
-local tt_help = S("Grows on podzol, mycelium and other blocks").."\n"..S("Spreads in darkness")
+local tt_help = S("Grows on podzol and other blocks").."\n"..S("Spreads in darkness")
 
-local usagehelp = S("This mushroom can be placed on mycelium and podzol at any light level. It can also be placed on blocks which are both solid and opaque, as long as the light level at daytime is not higher than 12.")
+local usagehelp = S("This mushroom can be placed on podzol at any light level. It can also be placed on blocks which are both solid and opaque, as long as the light level at daytime is not higher than 12.")
 
 local function on_bone_meal(_, _, _, pos, n)
 	if math.random(1, 100) > 40 then return end --40% chance
 
 	local bn = minetest.get_node(vector.offset(pos,0,-1,0)).name
-	if bn ~= "mcl_core:mycelium" and bn ~= "mcl_core:dirt" and minetest.get_item_group(bn, "grass_block") ~= 1 and bn ~= "mcl_core:coarse_dirt" and bn ~= "mcl_core:podzol" then
+	if bn ~= "mcl_core:dirt" and minetest.get_item_group(bn, "grass_block") ~= 1 and bn ~= "mcl_core:coarse_dirt" and bn ~= "mcl_core:podzol" then
 		return
 	end
 

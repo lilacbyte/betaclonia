@@ -135,7 +135,7 @@ mcl_armor.register_set({
 
 	--this is used to generate cooking crafts for each piece of armor
 	--if set to nil no craft will be added
-	cook_material = "mcl_core:gold_nugget", --cooking any piece of this armor will output a gold nugged
+	cook_material = "mcl_core:gold_ingot", --cooking any piece of this armor will output a gold ingot
 
 	--this is used for allowing each piece of the armor to be repaired by using an anvil with repair_material as aditionnal material
 	--it basicaly set the _repair_material item field of each piece of the armor

@@ -1,13 +1,18 @@
 local storage = minetest.get_mod_storage()
 local world_seed = tonumber(minetest.get_mapgen_setting("seed")) or 0
+local modname = minetest.get_current_modname()
+local modpath = minetest.get_modpath(modname)
 
 mcl_beta_structures = rawget(_G, "mcl_beta_structures") or {}
 
-local PYRAMID_REGION = 1000
+local PYRAMID_REGION = 4000
 local PYRAMID_HALF = 63
 local PYRAMID_HEIGHT = 64
-local VILLAGE_REGION = 2800
-local VILLAGE_CHANCE = 18
+local PYRAMID_TOP_ABOVE_GROUND = 2
+-- Beta 1.8.1 village grid: 32 chunks (=512 nodes), with 8-chunk margin.
+local VILLAGE_REGION = 32 * 16
+local VILLAGE_REGION_MARGIN = 8 * 16
+local VILLAGE_CHANCE = 100
 local VILLAGE_WORK_RADIUS = 52
 local VILLAGE_WORK_DEPTH = 32
 local VILLAGE_WORK_HEIGHT = 32
@@ -44,6 +49,7 @@ local STRUCTURE_DEFS = {
 		region = VILLAGE_REGION,
 		salt = VILLAGE_SALT,
 		chance = VILLAGE_CHANCE,
+		margin = VILLAGE_REGION_MARGIN,
 	},
 }
 
@@ -67,6 +73,24 @@ local NODE = {
 	spawner = choose_node("mcl_mobspawners:spawner", "air"),
 	water = choose_node("mcl_core:water_source", "air"),
 }
+
+local pyramid_schematic_cache = nil
+local function get_pyramid_schematic()
+	if pyramid_schematic_cache then
+		return pyramid_schematic_cache
+	end
+	local ok, schem = pcall(dofile, modpath .. "/schems/pymarid.lua")
+	if not ok then
+		minetest.log("error", "[mcl_beta_structures] failed to load pymarid.lua: " .. tostring(schem))
+		return nil
+	end
+	if type(schem) ~= "table" or not schem.size or not schem.data then
+		minetest.log("error", "[mcl_beta_structures] invalid pymarid schematic table")
+		return nil
+	end
+	pyramid_schematic_cache = schem
+	return pyramid_schematic_cache
+end
 
 -- Beta 1.8.1 village piece weights and bounding sizes (from MCP ComponentVillage*).
 local VILLAGE_SCHEMATICS = {
@@ -227,6 +251,11 @@ local function is_open(name)
 	return not def.walkable
 end
 
+local function is_liquid(name)
+	local def = minetest.registered_nodes[name]
+	return def and def.liquidtype and def.liquidtype ~= "none"
+end
+
 local function is_replaceable_cover(name)
 	if is_open(name) then
 		return true
@@ -272,10 +301,17 @@ local function rng_for_region(rx, rz, salt)
 	return PcgRandom(seed, seed + salt * 97)
 end
 
-local function region_target(rx, rz, region_size, salt)
+local function region_target(rx, rz, region_size, salt, margin)
 	local pr = rng_for_region(rx, rz, salt)
-	local x = rx * region_size + pr:next(0, region_size - 1)
-	local z = rz * region_size + pr:next(0, region_size - 1)
+	local edge = math.max(0, math.floor(margin or 0))
+	local min_off = edge
+	local max_off = region_size - 1 - edge
+	if max_off < min_off then
+		min_off = 0
+		max_off = region_size - 1
+	end
+	local x = rx * region_size + pr:next(min_off, max_off)
+	local z = rz * region_size + pr:next(min_off, max_off)
 	return x, z, pr
 end
 
@@ -309,13 +345,13 @@ local function iterate_region_ring(rx0, rz0, ring, callback)
 	end
 end
 
-local function locate_in_region_grid(pos, region_size, salt, chance, max_rings)
+local function locate_in_region_grid(pos, region_size, salt, chance, margin, max_rings)
 	local rx0 = floor_div(pos.x, region_size)
 	local rz0 = floor_div(pos.z, region_size)
 	local best
 	for ring = 0, max_rings do
 		iterate_region_ring(rx0, rz0, ring, function(rx, rz)
-			local x, z, pr = region_target(rx, rz, region_size, salt)
+			local x, z, pr = region_target(rx, rz, region_size, salt, margin)
 			if not region_roll_passes(pr, chance) then
 				return
 			end
@@ -336,6 +372,41 @@ end
 
 local GENERATED_PREFIX = "generated:"
 local GENERATED_LIST_LIMIT = 4096
+local GENERATION_PROFILE_KEY = "generation_profile_version"
+local GENERATION_PROFILE_VERSION = 2
+
+local function generated_storage_key(struct_name)
+	return GENERATED_PREFIX .. struct_name
+end
+
+local function migrate_generation_profile()
+	if storage:get_int(GENERATION_PROFILE_KEY) >= GENERATION_PROFILE_VERSION then
+		return
+	end
+
+	local t = storage:to_table()
+	local fields = t and t.fields
+	local removed = 0
+	if type(fields) == "table" then
+		for key, _ in pairs(fields) do
+			if key:sub(1, 14) == "empty_village:"
+				or key:sub(1, 14) == "brick_pyramid:" then
+				fields[key] = nil
+				removed = removed + 1
+			end
+		end
+		fields[generated_storage_key("empty_village")] = nil
+		fields[generated_storage_key("brick_pyramid")] = nil
+		fields[GENERATION_PROFILE_KEY] = tostring(GENERATION_PROFILE_VERSION)
+		storage:from_table(t)
+	else
+		storage:set_int(GENERATION_PROFILE_KEY, GENERATION_PROFILE_VERSION)
+	end
+
+	minetest.log("action", "[mcl_beta_structures] migration reset generation cache entries: " .. tostring(removed))
+end
+
+migrate_generation_profile()
 
 local function resolved(key)
 	return storage:get_int(key) ~= 0
@@ -347,10 +418,6 @@ end
 
 local function mark_skipped(key)
 	storage:set_int(key, 2)
-end
-
-local function generated_storage_key(struct_name)
-	return GENERATED_PREFIX .. struct_name
 end
 
 local function load_generated_positions(struct_name)
@@ -403,99 +470,42 @@ local function locate_generated_structure(struct_name, pos)
 	return best
 end
 
-local structure_work_queue = {}
-local structure_worker_running = false
-
-local function run_next_structure_work()
-	if structure_worker_running then
-		return
-	end
-	if #structure_work_queue == 0 then
-		return
-	end
-	structure_worker_running = true
-	local job = table.remove(structure_work_queue, 1)
-	minetest.after(0, function()
-		local ok = job.fn()
-		if ok then
-			mark_done(job.key)
-		end
-		pending[job.key] = nil
-		structure_worker_running = false
-		run_next_structure_work()
-	end)
-end
-
-local function enqueue_structure_work(key, fn)
-	structure_work_queue[#structure_work_queue + 1] = {
-		key = key,
-		fn = fn,
-	}
-	run_next_structure_work()
-end
-
 local function with_emerged(key, p1, p2, fn)
 	if pending[key] then
 		return
 	end
 	pending[key] = true
-	minetest.emerge_area(p1, p2, function(_, _, calls_remaining)
-		if calls_remaining > 0 then
-			return
-		end
-		enqueue_structure_work(key, fn)
-	end)
-end
-
-local pyramid_schematic_cache
-
-local function get_brick_pyramid_schematic()
-	if pyramid_schematic_cache then
-		return pyramid_schematic_cache
+	local vm = minetest.get_voxel_manip()
+	vm:read_from_map(p1, p2)
+	local ok = fn()
+	if ok then
+		mark_done(key)
 	end
-
-	local size = 127
-	local height = 64
-	local half = 63
-	local node_brick = { name = NODE.brick, prob = 255 }
-	local node_ignore = { name = "ignore", prob = 255 }
-	local data = {}
-
-	for y = 0, height - 1 do
-		local r = half - y
-		for z = -half, half do
-			for x = -half, half do
-				if math.max(math.abs(x), math.abs(z)) <= r then
-					data[#data + 1] = node_brick
-				else
-					data[#data + 1] = node_ignore
-				end
-			end
-		end
-	end
-
-	pyramid_schematic_cache = {
-		size = { x = size, y = height, z = size },
-		data = data,
-	}
-	return pyramid_schematic_cache
+	pending[key] = nil
 end
 
 local function place_brick_pyramid(center, pr)
-	-- Infdev-style: keep pyramid top pinned to world height.
-	local top_y = (mcl_vars and mcl_vars.mg_overworld_max) or 127
-	local base_y = top_y - 63
-	local schem = get_brick_pyramid_schematic()
-	return mcl_structures.place_schematic(
-		{ x = center.x, y = base_y, z = center.z },
+	-- Keep only the tip above terrain so most of the pyramid is buried.
+	local top_y = (center.y or 1) + PYRAMID_TOP_ABOVE_GROUND
+	local base_y = top_y - (PYRAMID_HEIGHT - 1)
+	local origin = {
+		x = center.x,
+		y = base_y,
+		z = center.z,
+	}
+	local schem = get_pyramid_schematic()
+	if not schem then
+		return false
+	end
+	minetest.place_schematic(
+		origin,
 		schem,
 		"0",
 		nil,
-		false,
-		"place_center_x,place_center_z",
-		nil,
-		pr
+		true,
+		"place_center_x,place_center_z"
 	)
+	return true
 end
 
 local function pick_weighted_schematic(pr, defs)
@@ -553,6 +563,10 @@ local function evaluate_ground_footprint(x0, x1, z0, z1, miny, maxy, rules)
 		for z = z0, z1 do
 			local y = find_surface_y(x, z, miny, maxy)
 			if y then
+				local above = minetest.get_node({ x = x, y = y + 1, z = z }).name
+				if is_liquid(above) then
+					return nil
+				end
 				heights[#heights + 1] = y
 				if (not min_h) or y < min_h then
 					min_h = y
@@ -591,21 +605,6 @@ local function evaluate_ground_footprint(x0, x1, z0, z1, miny, maxy, rules)
 	return median
 end
 
-local function clear_cover_box(p1, p2)
-	for x = p1.x, p2.x do
-		for y = p1.y, p2.y do
-			for z = p1.z, p2.z do
-				local pos = { x = x, y = y, z = z }
-				local name = minetest.get_node(pos).name
-				local def = minetest.registered_nodes[name]
-				if is_foliage(name) or (def and def.buildable_to) then
-					set_node(pos, NODE.air)
-				end
-			end
-		end
-	end
-end
-
 local function reinforce_foundation(x0, x1, z0, z1, top_y, material, max_depth)
 	local depth = max_depth or 20
 	for x = x0, x1 do
@@ -623,10 +622,6 @@ local function reinforce_foundation(x0, x1, z0, z1, top_y, material, max_depth)
 end
 
 local function place_village_well(center)
-	clear_cover_box(
-		{x = center.x - 4, y = center.y + 1, z = center.z - 4},
-		{x = center.x + 4, y = center.y + 10, z = center.z + 4}
-	)
 	reinforce_foundation(center.x - 2, center.x + 2, center.z - 2, center.z + 2, center.y, NODE.cobble, 20)
 
 	fill_box(
@@ -664,12 +659,6 @@ local function place_village_house_schematic(center, def, pr, ruined, with_spawn
 	local z0 = center.z - hz0
 	local z1 = center.z + hz1
 
-	-- Villages are generated after mapgen decorations in this pipeline, so clear
-	-- trees/plants from the build volume to mimic "before trees" placement.
-	clear_cover_box(
-		{x = x0 - 2, y = y + 1, z = z0 - 2},
-		{x = x1 + 2, y = y + def.height + 8, z = z1 + 2}
-	)
 	reinforce_foundation(x0, x1, z0, z1, y, def.floor, 24)
 
 	fill_box(
@@ -740,10 +729,6 @@ local function place_village_field_schematic(center, def, pr)
 	local z0 = center.z - hz0
 	local z1 = center.z + hz1
 
-	clear_cover_box(
-		{x = x0 - 1, y = y + 1, z = z0 - 1},
-		{x = x1 + 1, y = y + def.height + 6, z = z1 + 1}
-	)
 	reinforce_foundation(x0, x1, z0, z1, y, NODE.gravel, 16)
 
 	fill_box(
@@ -784,6 +769,32 @@ local function place_village_field_schematic(center, def, pr)
 				set_node({ x = x, y = y, z = z }, NODE.gravel)
 				if pr:next(1, 100) <= 10 then
 					set_node({ x = x, y = y + 1, z = z }, NODE.cobweb)
+				end
+			end
+		end
+	end
+end
+
+local function spawn_ocelots_for_village(center, pr)
+	if not minetest.registered_entities["mobs_mc:ocelot"] then
+		return
+	end
+	local rng = pr or PcgRandom(minetest.hash_node_position(center), world_seed)
+	local spawned = 0
+	for _ = 1, 10 do
+		if spawned >= 2 then
+			break
+		end
+		local ox = center.x + rng:next(-18, 18)
+		local oz = center.z + rng:next(-18, 18)
+		local y = find_surface_y(ox, oz, center.y - 12, center.y + 12)
+		if y then
+			local ground = minetest.get_node({ x = ox, y = y, z = oz }).name
+			local above = minetest.get_node({ x = ox, y = y + 1, z = oz }).name
+			if is_surface_ground(ground) and is_open(above) and not is_liquid(ground) then
+				local obj = minetest.add_entity({ x = ox, y = y + 1, z = oz }, "mobs_mc:ocelot")
+				if obj then
+					spawned = spawned + 1
 				end
 			end
 		end
@@ -877,15 +888,17 @@ local function place_empty_village(center, pr)
 			end
 		end
 	end
+	spawn_ocelots_for_village(center, pr)
 	return true
 end
 
 local function structure_bounds(struct_name, center)
 	if struct_name == "brick_pyramid" then
-		local top_y = (mcl_vars and mcl_vars.mg_overworld_max) or 127
+		local top_y = (center.y or 1) + PYRAMID_TOP_ABOVE_GROUND
+		local base_y = top_y - (PYRAMID_HEIGHT - 1)
 		return {
 			x = center.x - PYRAMID_HALF,
-			y = top_y - (PYRAMID_HEIGHT - 1),
+			y = base_y,
 			z = center.z - PYRAMID_HALF,
 		}, {
 			x = center.x + PYRAMID_HALF,
@@ -920,6 +933,11 @@ local function chunk_contains(minp, maxp, x, z)
 end
 
 local function try_region_grid(minp, maxp, kind, region_size, chance, salt, try_place_fn)
+	local margin = 0
+	local def = STRUCTURE_DEFS[kind]
+	if def and def.margin then
+		margin = def.margin
+	end
 	local rx_min = floor_div(minp.x, region_size)
 	local rx_max = floor_div(maxp.x, region_size)
 	local rz_min = floor_div(minp.z, region_size)
@@ -927,7 +945,7 @@ local function try_region_grid(minp, maxp, kind, region_size, chance, salt, try_
 
 	for rx = rx_min, rx_max do
 		for rz = rz_min, rz_max do
-			local tx, tz, pr = region_target(rx, rz, region_size, salt)
+			local tx, tz, pr = region_target(rx, rz, region_size, salt, margin)
 			if chunk_contains(minp, maxp, tx, tz) then
 				local key = key_for(kind, rx, rz)
 				if (not resolved(key)) and (not pending[key]) then
@@ -1004,7 +1022,7 @@ function mcl_beta_structures.locate_structure(name, pos, max_rings)
 		return nil, "wrong_dimension", def.dimension
 	end
 
-	local found = locate_in_region_grid(pos, def.region, def.salt, def.chance, max_rings or 256)
+	local found = locate_in_region_grid(pos, def.region, def.salt, def.chance, def.margin, max_rings or 256)
 	if not found then
 		return nil, "not_found"
 	end
@@ -1061,6 +1079,10 @@ local function register_mcl_structure_defs()
 	register_spawn_alias("mcl_beta-structure", pyramid_def)
 	register_spawn_alias("mcl_beta_pyramid", pyramid_def)
 	register_spawn_alias("mcl_beta_structures", pyramid_def)
+	register_spawn_alias("mtl_beta_structure", pyramid_def)
+	register_spawn_alias("mtl_beta-structure", pyramid_def)
+	register_spawn_alias("mtl_beta_pyramid", pyramid_def)
+	register_spawn_alias("mtl_beta_structures", pyramid_def)
 
 	local village_def = {
 		place_on = {"group:solid"},
@@ -1078,6 +1100,7 @@ local function register_mcl_structure_defs()
 	mcl_structures.register_structure("empty_village", village_def)
 	api_registered_structures[#api_registered_structures + 1] = village_def
 	register_spawn_alias("mcl_beta_empty_village", village_def)
+	register_spawn_alias("mtl_beta_empty_village", village_def)
 end
 
 local function beta_structures_from_mcl_notify(_, _, _)
@@ -1101,4 +1124,4 @@ local function beta_structures_from_mcl_notify(_, _, _)
 end
 
 register_mcl_structure_defs()
-mcl_mapgen_core.register_generator("mcl_beta_structures", nil, beta_structures_from_mcl_notify, 999990)
+mcl_mapgen_core.register_generator("mcl_beta_structures", nil, beta_structures_from_mcl_notify, 999990, false, true)

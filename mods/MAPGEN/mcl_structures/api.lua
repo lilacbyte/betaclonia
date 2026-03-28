@@ -34,13 +34,68 @@ local function ecb_place(blockpos, action, calls_remaining, param) ---@diagnosti
 	end
 end
 
+local function has_flag(flags, flag)
+	if type(flags) ~= "string" or flags == "" then
+		return false
+	end
+	for token in string.gmatch(flags, "[^,%s]+") do
+		if token == flag then
+			return true
+		end
+	end
+	return false
+end
+
 function mcl_structures.place_schematic(pos, schematic, rotation, replacements, force_placement, flags, after_placement_callback, pr, callback_param)
 	if type(schematic) ~= "table" and not mcl_util.file_exists(schematic) then
 		minetest.log("warning","[mcl_structures] schematic file "..tostring(schematic).." does not exist.")
 		return end
-	local s = loadstring(minetest.serialize_schematic(schematic, "lua", {lua_use_comments = false, lua_num_indent_spaces = 0}) .. " return schematic")()
+
+	local s
+	if type(schematic) == "table" then
+		s = schematic
+	elseif minetest.read_schematic then
+		local ok, loaded = pcall(minetest.read_schematic, schematic, {})
+		if ok then
+			s = loaded
+		else
+			minetest.log("warning", "[mcl_structures] Could not read schematic " .. tostring(schematic) .. ": " .. tostring(loaded))
+		end
+	end
+
+	if not s and minetest.serialize_schematic then
+		local serialized = minetest.serialize_schematic(schematic, "lua", {
+			lua_use_comments = false,
+			lua_num_indent_spaces = 0,
+		})
+		if serialized then
+			local loader = loadstring or load
+			if loader then
+				local chunk, err = loader(serialized .. " return schematic")
+				if chunk then
+					local ok, result = pcall(chunk)
+					if ok then
+						s = result
+					else
+						minetest.log("warning", "[mcl_structures] Could not evaluate schematic Lua: " .. tostring(result))
+					end
+				else
+					minetest.log("warning", "[mcl_structures] Could not compile schematic Lua: " .. tostring(err))
+				end
+			else
+				minetest.log("warning", "[mcl_structures] No Lua loader available (loadstring/load missing).")
+			end
+		end
+	end
+
+	if not s or not s.size then
+		minetest.log("warning", "[mcl_structures] Could not load schematic: " .. tostring(schematic))
+		return
+	end
+
 	if s and s.size then
 		local x, z = s.size.x, s.size.z
+		local y = s.size.y
 		if rotation then
 			if rotation == "random" and pr then
 				rotation = rotations[pr:next(1,#rotations)]
@@ -52,8 +107,11 @@ function mcl_structures.place_schematic(pos, schematic, rotation, replacements, 
 				x, z = z, x
 			end
 		end
-		local p1 = {x=pos.x    , y=pos.y           , z=pos.z    }
-		local p2 = {x=pos.x+x-1, y=pos.y+s.size.y-1, z=pos.z+z-1}
+		local cx = has_flag(flags, "place_center_x") and math.floor(x / 2) or 0
+		local cy = has_flag(flags, "place_center_y") and math.floor(y / 2) or 0
+		local cz = has_flag(flags, "place_center_z") and math.floor(z / 2) or 0
+		local p1 = {x = pos.x - cx, y = pos.y - cy, z = pos.z - cz}
+		local p2 = {x = p1.x + x - 1, y = p1.y + y - 1, z = p1.z + z - 1}
 		minetest.log("verbose", "[mcl_structures] size=" ..minetest.pos_to_string(s.size) .. ", rotation=" .. tostring(rotation) .. ", emerge from "..minetest.pos_to_string(p1) .. " to " .. minetest.pos_to_string(p2))
 		local param = {pos=vector.new(pos), schematic=s, rotation=rotation, replacements=replacements, force_placement=force_placement, flags=flags, p1=p1, p2=p2, after_placement_callback = after_placement_callback, size=vector.new(s.size), pr=pr, callback_param=callback_param}
 		minetest.emerge_area(p1, p2, ecb_place, param)

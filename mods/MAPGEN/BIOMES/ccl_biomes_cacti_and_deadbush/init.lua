@@ -28,9 +28,9 @@
 		place_on = {"group:sand"},
 		sidelen = 16,
 		noise_params = {
-			offset = -0.003,
-			scale = 0.006,
-			spread = {x = 160, y = 160, z = 160},
+			offset = 0.012,
+			scale = 0.03,
+			spread = {x = 96, y = 96, z = 96},
 			seed = 1972,
 			octaves = 3,
 			persist = 0.6

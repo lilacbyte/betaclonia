@@ -13,14 +13,6 @@ local base_props = {
 	textures = { "blank.png" },
 }
 
-local map_props = {
-	visual = "upright_sprite",
-	visual_size = { x = 1, y = 1 },
-	collide_with_objects = false,
-	textures = { "blank.png" },
-	_mcl_pistons_unmovable = true
-}
-
 mcl_itemframes.tpl_node = {
 	drawtype = "nodebox",
 	is_ground_content = false,
@@ -78,12 +70,6 @@ local function drop_item(pos)
 	minetest.add_item(pos, inv:get_stack("main", 1))
 	inv:set_stack("main", 1, ItemStack(""))
 	remove_entity(pos)
-end
-
-local function get_map_id(itemstack)
-	local map_id = itemstack:get_meta():get_string("mcl_maps:id")
-	if map_id == "" then map_id = nil end
-	return map_id
 end
 
 local function update_entity(pos)
@@ -153,20 +139,11 @@ function mcl_itemframes.tpl_entity:set_item(itemstack, pos)
 	local def = mcl_itemframes.registered_itemframes[ndef._mcl_itemframe]
 	self._item = itemstack:get_name()
 	self._stack = itemstack
-	self._map_id = get_map_id(itemstack)
 
 	local dir = minetest.wallmounted_to_dir(minetest.get_node(pos).param2)
 	self.object:set_pos(vector.add(self._itemframe_pos, dir * 0.42))
 	self.object:set_rotation(vector.dir_to_rotation(dir))
 
-	if self._map_id then
-		mcl_maps.load_map(self._map_id, function(texture)
-			if self.object and self.object:get_pos() then
-				self.object:set_properties(table.merge(map_props, { textures = { texture }}))
-			end
-		end)
-		return
-	end
 	local idef = itemstack:get_definition()
 	local ws = idef.wield_scale
 	self.object:set_properties(table.merge(base_props, {
@@ -176,7 +153,7 @@ function mcl_itemframes.tpl_entity:set_item(itemstack, pos)
 end
 
 function mcl_itemframes.tpl_entity:get_staticdata()
-	local s = { item = self._item, itemframe_pos = self._itemframe_pos, itemstack = self._itemstack, map_id = self._map_id }
+	local s = { item = self._item, itemframe_pos = self._itemframe_pos, itemstack = self._itemstack }
 	s.props = self.object:get_properties()
 	return minetest.serialize(s)
 end
@@ -195,7 +172,6 @@ function mcl_itemframes.tpl_entity:on_activate(staticdata, dtime_s)
 		self._itemframe_pos = s.itemframe_pos
 		self._itemstack = s.itemstack
 		self._item = s.item
-		self._map_id = s.map_id
 		update_entity(self._itemframe_pos)
 		return
 	end

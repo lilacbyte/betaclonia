@@ -202,8 +202,8 @@ minetest.register_tool("mcl_farming:hoe_gold", {
 	_mcl_diggroups = {
 		hoey = { speed = 12, level = 2, uses = 33 }
 	},
-	_mcl_cooking_output = "mcl_core:gold_nugget"
-})
+		_mcl_cooking_output = "mcl_core:gold_ingot"
+	})
 
 minetest.register_craft({
 	output = "mcl_farming:hoe_gold",

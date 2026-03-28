@@ -49,7 +49,6 @@ local group_stereotypes = {
 	banner       = "mcl_banners:banner_item_white",
 	mesecon_conductor_craftable = "mesecons:wire_00000000_off",
 	normal_sandstone = "mcl_core:sandstone",
-	red_sandstone = "mcl_core:redsandstone",
 	compass      = mcl_compass.stereotype,
 	clock        = mcl_clock.sterotype,
 }
@@ -61,7 +60,6 @@ local group_names = {
 	tree = S("Any wood"),
 	sand = S("Any sand"),
 	normal_sandstone = S("Any normal sandstone"),
-	red_sandstone = S("Any red sandstone"),
 	carpet = S("Any carpet"),
 	dye = S("Any dye"),
 	water_bucket = S("Any water bucket"),

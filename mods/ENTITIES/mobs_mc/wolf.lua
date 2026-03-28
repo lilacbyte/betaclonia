@@ -29,8 +29,6 @@ local biomes = {
 	["ColdTaiga"] = {textures = "ashen", group_size = 4},
 	["ColdTaiga_beach"] = {textures = "ashen", group_size = 4},
 	["ColdTaiga_beach_water"] = {textures = "ashen", group_size = 4},
-	["Jungle"] = {textures = "rusty", group_size_min = 2, group_size = 4},
-	["JungleEdge"] = {textures = "rusty", group_size_min = 2, group_size = 4},
 	["IcePlains"] = {textures = "snowy", group_size = 1},
 	["IcePlainsSpikes"] = {textures = "snowy", group_size = 1}
 }

@@ -152,8 +152,12 @@ pumpkin_face_base_def._on_shears_place = nil
 if minetest.get_modpath("mobs_mc") then
 pumpkin_face_base_def.after_place_node = function(pos, placer)
 	-- Attempt to spawn iron golem or snow golem
-	mobs_mc.check_iron_golem_summon(pos, placer)
-	mobs_mc.check_snow_golem_summon(pos, placer)
+	if mobs_mc.check_iron_golem_summon then
+		mobs_mc.check_iron_golem_summon(pos, placer)
+	end
+	if mobs_mc.check_snow_golem_summon then
+		mobs_mc.check_snow_golem_summon(pos, placer)
+	end
 end
 end
 
@@ -240,8 +244,12 @@ local jackolangerndef = {
 if minetest.get_modpath("mobs_mc") then
 	jackolangerndef.after_place_node = function(pos, placer)
 		-- Attempt to spawn iron golem or snow golem
-		mobs_mc.check_iron_golem_summon(pos, placer)
-		mobs_mc.check_snow_golem_summon(pos, placer)
+		if mobs_mc.check_iron_golem_summon then
+			mobs_mc.check_iron_golem_summon(pos, placer)
+		end
+		if mobs_mc.check_snow_golem_summon then
+			mobs_mc.check_snow_golem_summon(pos, placer)
+		end
 	end
 end
 minetest.register_node("mcl_farming:pumpkin_face_light", jackolangerndef)

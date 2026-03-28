@@ -31,7 +31,7 @@ local nidp2_degrotate = {
 local mcl2standingsigns = {}
 mcl2standingsigns["mcl_signs:standing_sign"] = "mcl_signs:standing_sign_oak"
 mcl2standingsigns["mcl_signs:standing_sign_acaciawood"] = "mcl_signs:standing_sign_acacia"
-mcl2standingsigns["mcl_signs:standing_sign_junglewood"] = "mcl_signs:standing_sign_jungle"
+mcl2standingsigns["mcl_signs:standing_sign_junglewood"] = "mcl_signs:standing_sign_oak"
 mcl2standingsigns["mcl_signs:standing_sign_birchwood"] = "mcl_signs:standing_sign_birch"
 mcl2standingsigns["mcl_signs:standing_sign_darkwood"] = "mcl_signs:standing_sign_dark_oak"
 mcl2standingsigns["mcl_signs:standing_sign_sprucewood"] = "mcl_signs:standing_sign_spruce"
@@ -45,7 +45,7 @@ local mcl2rotsigns = {}
 for _,v in pairs(rotkeys) do
 	mcl2rotsigns["mcl_signs:standing_sign"..v] = "mcl_signs:standing_sign_oak"
 	mcl2rotsigns["mcl_signs:standing_sign"..v.."_acaciawood"] = "mcl_signs:standing_sign_acacia"
-	mcl2rotsigns["mcl_signs:standing_sign"..v.."_junglewood"] = "mcl_signs:standing_sign_jungle"
+	mcl2rotsigns["mcl_signs:standing_sign"..v.."_junglewood"] = "mcl_signs:standing_sign_oak"
 	mcl2rotsigns["mcl_signs:standing_sign"..v.."_birchwood"] = "mcl_signs:standing_sign_birch"
 	mcl2rotsigns["mcl_signs:standing_sign"..v.."_darkwood"] = "mcl_signs:standing_sign_dark_oak"
 	mcl2rotsigns["mcl_signs:standing_sign"..v.."_sprucewood"] = "mcl_signs:standing_sign_spruce"

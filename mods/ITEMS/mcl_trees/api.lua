@@ -649,7 +649,7 @@ function mcl_trees.register_wood(name, p)
 	end
 
 	if minetest.get_modpath("mcl_pressureplates") then
-	if p.pressure_plate == nil or type(p.pressure_plate) == "table" then
+	if name == "oak" and (p.pressure_plate == nil or type(p.pressure_plate) == "table") then
 		p.pressure_plate = p.pressure_plate or {}
 		mcl_redstone.register_pressure_plate(
 			"mcl_pressureplates:pressure_plate_"..name,
@@ -668,7 +668,7 @@ function mcl_trees.register_wood(name, p)
 	end
 	end
 	if minetest.get_modpath("mcl_buttons") then
-	if p.button == nil or type(p.button) == "table" then
+	if name == "oak" and (p.button == nil or type(p.button) == "table") then
 		p.button = p.button or {}
 		mcl_buttons.register_button(name, {
 			description = p.button.description or D(rname .. " Button"),

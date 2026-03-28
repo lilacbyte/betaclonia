@@ -15,17 +15,10 @@ minetest.register_craftitem("mcl_copper:copper_ingot", {
 	groups = {craftitem = 1},
 })
 
-minetest.register_craftitem("mcl_copper:copper_nugget", {
-	description = S("Copper Nugget"),
-	_doc_items_longdesc = S("A small piece of copper used for compact crafting recipes."),
-	inventory_image = "mcl_copper_nugget.png",
-	groups = {craftitem = 1},
-})
-
 minetest.register_node("mcl_copper:stone_with_copper", {
 	description = S("Copper Ore"),
-	_doc_items_longdesc = S("Stone containing copper ore."),
-	tiles = {"mcl_copper_ore.png"},
+	_doc_items_longdesc = S("Some copper contained in stone, it is prety common and can be found below sea level."),
+	tiles = {"default_stone.png^mcl_copper_ore.png"},
 	groups = {pickaxey = 3, building_block = 1, material_stone = 1, blast_furnace_smeltable = 1},
 	drop = "mcl_copper:raw_copper",
 	sounds = mcl_sounds.node_sound_stone_defaults(),
@@ -60,20 +53,6 @@ minetest.register_craft({
 	recipe = {{"mcl_copper:block"}}
 })
 
-minetest.register_craft({
-	output = "mcl_copper:copper_ingot",
-	recipe = {
-		{"mcl_copper:copper_nugget", "mcl_copper:copper_nugget", "mcl_copper:copper_nugget"},
-		{"mcl_copper:copper_nugget", "mcl_copper:copper_nugget", "mcl_copper:copper_nugget"},
-		{"mcl_copper:copper_nugget", "mcl_copper:copper_nugget", "mcl_copper:copper_nugget"},
-	}
-})
-
-minetest.register_craft({
-	output = "mcl_copper:copper_nugget 9",
-	recipe = {{"mcl_copper:copper_ingot"}}
-})
-
 local tools_registered = false
 local function register_copper_tools()
 	if tools_registered then
@@ -87,9 +66,9 @@ local function register_copper_tools()
 		craftable = true,
 		material = "mcl_copper:copper_ingot",
 		uses = 180,
-		level = 4,
+		level = 2,
 		speed = 5,
-		max_drop_level = 4,
+		max_drop_level = 2,
 		groups = { dig_class_speed = 3, enchantability = 10 }
 	}, {
 		["pick"] = {

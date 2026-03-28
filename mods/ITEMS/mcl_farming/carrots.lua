@@ -125,9 +125,9 @@ minetest.register_craftitem("mcl_farming:carrot_item_gold", {
 minetest.register_craft({
 	output = "mcl_farming:carrot_item_gold",
 	recipe = {
-		{"mcl_core:gold_nugget", "mcl_core:gold_nugget", "mcl_core:gold_nugget"},
-		{"mcl_core:gold_nugget", "mcl_farming:carrot_item", "mcl_core:gold_nugget"},
-		{"mcl_core:gold_nugget", "mcl_core:gold_nugget", "mcl_core:gold_nugget"},
+		{"mcl_core:gold_ingot", "mcl_core:gold_ingot", "mcl_core:gold_ingot"},
+		{"mcl_core:gold_ingot", "mcl_farming:carrot_item", "mcl_core:gold_ingot"},
+		{"mcl_core:gold_ingot", "mcl_core:gold_ingot", "mcl_core:gold_ingot"},
 	}
 })
 

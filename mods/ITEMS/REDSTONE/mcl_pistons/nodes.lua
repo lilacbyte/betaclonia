@@ -239,10 +239,10 @@ local pusherdef = {
 		-- It is possible for a piston to extend just before server
 		-- shutdown. To avoid circuits stopping because of that we
 		-- update all neighbouring nodes during loading as if a
-		-- redstone block was just removed at the pusher.
+		-- temporary power source was just removed at the pusher.
 		init = function(pos, node)
 			mcl_redstone._update_neighbours(pos, {
-				name = "mcl_redstone_torch:redstoneblock",
+				name = "mcl_redstone_torch:redstone_torch_on",
 				param2 = 0,
 			})
 		end,

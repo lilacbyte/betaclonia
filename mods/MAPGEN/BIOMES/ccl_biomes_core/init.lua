@@ -6,32 +6,36 @@ DEEP_OCEAN_MIN = -31
 local mod_mcl_core = minetest.get_modpath("mcl_core")
 
 ccl_overworld_biomes = {
-		"IcePlains",
-		"ColdTaiga",
-		"Taiga",
-		"MegaTaiga",
-		"MegaSpruceTaiga",
-		"StoneBeach",
-		"Plains",
-		"SunflowerPlains",
-		"Forest",
-		"FlowerForest",
-		"BirchForest",
-		"BirchForestM",
-		"RoofedForest",
-		"Swampland",
-		"Jungle",
-		"JungleM",
-		"JungleEdge",
-		"JungleEdgeM",
-		"Savanna",
-		"SavannaM",
+	"IcePlains",
+	"Plains",
+	"Forest",
+	"Desert",
+	"StoneBeach",
+	"SunflowerPlains",
 }
+
+	local function strip_plain_biomes(biomes)
+		if type(biomes) ~= "table" then
+			return {}
+		end
+		local out = {}
+		for i = 1, #biomes do
+			local b = biomes[i]
+			if b ~= "Plains" and b ~= "SunflowerPlains" then
+				out[#out + 1] = b
+			end
+		end
+		return out
+	end
 
 	-- Spruce
 	function mcl_quick_spruce(seed, offset, sprucename, biomes, y)
 		if not y then
 			y = 1
+		end
+		biomes = strip_plain_biomes(biomes)
+		if #biomes == 0 then
+			return
 		end
 		-- Beta tuning: keep spruce present but very rare.
 		local rare_offset = (offset or 0) * 0.20 - 0.00025

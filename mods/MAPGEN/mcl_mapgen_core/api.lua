@@ -16,8 +16,15 @@ end
 minetest.register_on_generated(function(minp, maxp, blockseed)
 	local t1 = os.clock()
 	local p1, p2 = {x=minp.x, y=minp.y, z=minp.z}, {x=maxp.x, y=maxp.y, z=maxp.z}
+	local has_pre_deco_nodes = false
+	for _, rec in ipairs(registered_generators) do
+		if rec.nf and rec.before_decorations then
+			has_pre_deco_nodes = true
+			break
+		end
+	end
+	local lvm_used, shadow, deco_used, deco_table, ore_used, ore_table = false, false, false, {}, false, {}
 	if lvm > 0 then
-		local lvm_used, shadow, deco_used, deco_table, ore_used, ore_table = false, false, false, {}, false, {}
 		local lb2 = {} -- param2
 		local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
 		local e1, e2 = {x=emin.x, y=emin.y, z=emin.z}, {x=emax.x, y=emax.y, z=emax.z}
@@ -56,15 +63,17 @@ minetest.register_on_generated(function(minp, maxp, blockseed)
 			if param2 > 0 then
 				vm:set_param2_data(data2)
 			end
-			if type(deco_table) == "table" and deco_table.min and deco_table.max then
-				minetest.generate_decorations(vm,vector.new(minp.x,deco_table.min,minp.z),vector.new(maxp.x,deco_table.max,maxp.z))
-			elseif deco_used then
-				minetest.generate_decorations(vm)
-			end
 			if type(ore_table) == "table" and ore_table.min and ore_table.max then
 				minetest.generate_ores(vm,vector.new(minp.x,ore_table.min,minp.z),vector.new(maxp.x,ore_table.max,maxp.z))
 			elseif ore_used then
 				minetest.generate_ores(vm)
+			end
+			if not has_pre_deco_nodes then
+				if type(deco_table) == "table" and deco_table.min and deco_table.max then
+					minetest.generate_decorations(vm,vector.new(minp.x,deco_table.min,minp.z),vector.new(maxp.x,deco_table.max,maxp.z))
+				elseif deco_used then
+					minetest.generate_decorations(vm)
+				end
 			end
 			vm:calc_lighting(p1, p2, shadow)
 			vm:write_to_map()
@@ -72,9 +81,34 @@ minetest.register_on_generated(function(minp, maxp, blockseed)
 		end
 	end
 
+	if nodes > 0 and has_pre_deco_nodes then
+		for _, rec in ipairs(registered_generators) do
+			if rec.nf and rec.before_decorations then
+				rec.nf(p1, p2, blockseed)
+			end
+		end
+	end
+
+	if has_pre_deco_nodes and lvm_used then
+		local do_decorate = false
+		local vm_deco = minetest.get_voxel_manip()
+		vm_deco:read_from_map(p1, p2)
+		if type(deco_table) == "table" and deco_table.min and deco_table.max then
+			minetest.generate_decorations(vm_deco,vector.new(minp.x,deco_table.min,minp.z),vector.new(maxp.x,deco_table.max,maxp.z))
+			do_decorate = true
+		elseif deco_used then
+			minetest.generate_decorations(vm_deco)
+			do_decorate = true
+		end
+		if do_decorate then
+			vm_deco:write_to_map()
+			vm_deco:update_liquids()
+		end
+	end
+
 	if nodes > 0 then
 		for _, rec in ipairs(registered_generators) do
-			if rec.nf then
+			if rec.nf and not rec.before_decorations then
 				rec.nf(p1, p2, blockseed)
 			end
 		end
@@ -96,7 +130,7 @@ function minetest.register_on_generated(node_function)
 	end
 end
 
-function mcl_mapgen_core.register_generator(id, lvm_function, node_function, priority, needs_param2)
+function mcl_mapgen_core.register_generator(id, lvm_function, node_function, priority, needs_param2, before_decorations)
 	if not id then return end
 
 	local priority = priority or 5000
@@ -111,6 +145,7 @@ function mcl_mapgen_core.register_generator(id, lvm_function, node_function, pri
 		vf = lvm_function,
 		nf = node_function,
 		needs_param2 = needs_param2,
+		before_decorations = before_decorations == true,
 	}
 
 	table.insert(registered_generators, new_record)
