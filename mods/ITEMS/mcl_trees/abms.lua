@@ -47,7 +47,7 @@ minetest.register_abm({
 minetest.register_abm({
 	label = "Tree growth",
 	nodenames = {"group:sapling"},
-	neighbors = {"group:soil_sapling","group:soil_propagule"},
+	neighbors = {"group:soil_sapling"},
 	interval = 35,
 	chance = 5,
 	action = function(pos, node)

@@ -29,29 +29,7 @@ minetest.register_node("mcl_copper:stone_with_copper", {
 	_mcl_cooking_output = "mcl_copper:copper_ingot",
 })
 
-minetest.register_node("mcl_copper:block", {
-	description = S("Block of Copper"),
-	_doc_items_longdesc = S("A storage block made from copper ingots."),
-	tiles = {"mcl_copper_block.png"},
-	groups = {pickaxey = 2, building_block = 1, material_stone = 1},
-	sounds = mcl_sounds.node_sound_metal_defaults(),
-	_mcl_blast_resistance = 6,
-	_mcl_hardness = 5,
-})
-
-minetest.register_craft({
-	output = "mcl_copper:block",
-	recipe = {
-		{"mcl_copper:copper_ingot", "mcl_copper:copper_ingot", "mcl_copper:copper_ingot"},
-		{"mcl_copper:copper_ingot", "mcl_copper:copper_ingot", "mcl_copper:copper_ingot"},
-		{"mcl_copper:copper_ingot", "mcl_copper:copper_ingot", "mcl_copper:copper_ingot"},
-	}
-})
-
-minetest.register_craft({
-	output = "mcl_copper:copper_ingot 9",
-	recipe = {{"mcl_copper:block"}}
-})
+minetest.register_alias("mcl_copper:block", "mcl_core:stone")
 
 local tools_registered = false
 local function register_copper_tools()

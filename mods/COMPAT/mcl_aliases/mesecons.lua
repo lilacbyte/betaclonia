@@ -18,8 +18,6 @@ minetest.register_alias("mesecons_button:button_dark_oak_off", "mcl_buttons:butt
 minetest.register_alias("mesecons_button:button_dark_oak_on", "mcl_buttons:button_oak_on")
 minetest.register_alias("mesecons_button:button_jungle_off", "mcl_buttons:button_oak_off")
 minetest.register_alias("mesecons_button:button_jungle_on", "mcl_buttons:button_oak_on")
---minetest.register_alias("mesecons_button:button_mangrove_off", "mcl_buttons:button_mangrove_off")--removed
---minetest.register_alias("mesecons_button:button_mangrove_on", "mcl_buttons:button_mangrove_on")--removed
 minetest.register_alias("mesecons_button:button_oak_off", "mcl_buttons:button_oak_off")
 minetest.register_alias("mesecons_button:button_oak_on", "mcl_buttons:button_oak_on")
 --minetest.register_alias("mesecons_button:button_polished_blackstone_off", "mcl_buttons:button_polished_blackstone_off")--removed
@@ -67,10 +65,6 @@ minetest.register_alias("mesecons_pressureplates:pressure_plate_jungle_off", "mc
 minetest.register_alias("mesecons_pressureplates:pressure_plate_jungle_on", "mcl_pressureplates:pressure_plate_oak_on")
 minetest.register_alias("mesecons_pressureplates:pressure_plate_junglewood_off", "mcl_pressureplates:pressure_plate_oak_off")
 minetest.register_alias("mesecons_pressureplates:pressure_plate_junglewood_on", "mcl_pressureplates:pressure_plate_oak_on")
---minetest.register_alias("mesecons_pressureplates:pressure_plate_mangrove_off", "mcl_pressureplates:pressure_plate_mangrove_off")--removed
---minetest.register_alias("mesecons_pressureplates:pressure_plate_mangrove_on", "mcl_pressureplates:pressure_plate_mangrove_on")--removed
---minetest.register_alias("mesecons_pressureplates:pressure_plate_mangrove_wood_off", "mcl_pressureplates:pressure_plate_mangrove_off")--removed
---minetest.register_alias("mesecons_pressureplates:pressure_plate_mangrove_wood_on", "mcl_pressureplates:pressure_plate_mangrove_on")--removed
 minetest.register_alias("mesecons_pressureplates:pressure_plate_oak_off", "mcl_pressureplates:pressure_plate_oak_off")
 minetest.register_alias("mesecons_pressureplates:pressure_plate_oak_on", "mcl_pressureplates:pressure_plate_oak_on")
 minetest.register_alias("mesecons_pressureplates:pressure_plate_polished_blackstone_off", "mcl_pressureplates:pressure_plate_polished_blackstone_off")

@@ -48,10 +48,6 @@ minetest.register_alias("mcl_cherry_blossom:cherrywood", "mcl_trees:wood_cherry_
 minetest.register_alias("mcl_cherry_blossom:cherryleaves", "mcl_trees:leaves_cherry_blossom")
 minetest.register_alias("mcl_cherry_blossom:cherrysapling", "mcl_trees:sapling_cherry_blossom")
 
--- Mangrove Mineclonia-style compatibility aliases.
-minetest.register_alias("mcl_mangrove:mangrove_log", "mcl_trees:tree_mangrove")
-minetest.register_alias("mcl_mangrove:mangrove_wood", "mcl_trees:wood_mangrove")
-minetest.register_alias("mcl_mangrove:mangrove_leaves", "mcl_trees:leaves_mangrove")
 
 -- Copper tool ID compatibility.
 minetest.register_alias("mcl_copper:pickaxe_copper", "mcl_copper:pick_copper")

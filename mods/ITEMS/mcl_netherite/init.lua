@@ -49,16 +49,6 @@ minetest.register_craftitem("mcl_netherite:netherite_ingot", {
 	groups = { craftitem = 1 },
 })
 
-minetest.register_node("mcl_netherite:netherite_block", {
-	description = S("Block of Netherite"),
-	_doc_items_longdesc = S("A decorative and very blast-resistant netherite storage block."),
-	tiles = { "mcl_netherite_block.png" },
-	groups = { pickaxey = 1, building_block = 1, material_stone = 1 },
-	sounds = mcl_sounds.node_sound_stone_defaults(),
-	_mcl_blast_resistance = 1200,
-	_mcl_hardness = 50,
-})
-
 minetest.register_craft({
 	output = "mcl_netherite:netherite_ingot",
 	type = "shapeless",
@@ -74,28 +64,14 @@ minetest.register_craft({
 	},
 })
 
-minetest.register_craft({
-	output = "mcl_netherite:netherite_block",
-	recipe = {
-		{ "mcl_netherite:netherite_ingot", "mcl_netherite:netherite_ingot", "mcl_netherite:netherite_ingot" },
-		{ "mcl_netherite:netherite_ingot", "mcl_netherite:netherite_ingot", "mcl_netherite:netherite_ingot" },
-		{ "mcl_netherite:netherite_ingot", "mcl_netherite:netherite_ingot", "mcl_netherite:netherite_ingot" },
-	}
-})
-
-minetest.register_craft({
-	output = "mcl_netherite:netherite_ingot 9",
-	recipe = {
-		{ "mcl_netherite:netherite_block" },
-	}
-})
+minetest.register_alias("mcl_netherite:netherite_block", "mcl_core:stone")
 
 -- Backward compatibility for old MineClone-style names.
 minetest.register_alias("mcl_nether:ancient_debris", "mcl_netherite:ancient_debris")
 minetest.register_alias("mcl_nether:netherite_scrap", "mcl_netherite:netherite_scrap")
 minetest.register_alias("mcl_nether:netherite_ingot", "mcl_netherite:netherite_ingot")
-minetest.register_alias("mcl_nether:netheriteblock", "mcl_netherite:netherite_block")
-minetest.register_alias("mcl_nether:netherite_block", "mcl_netherite:netherite_block")
+minetest.register_alias("mcl_nether:netheriteblock", "mcl_core:stone")
+minetest.register_alias("mcl_nether:netherite_block", "mcl_core:stone")
 
 if minetest.settings:get_bool("mcl_generate_ores", true) then
 	-- Ancient debris: two pass generation similar to MC density profile.

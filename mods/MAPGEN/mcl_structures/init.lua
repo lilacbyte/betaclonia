@@ -17,50 +17,13 @@ mcl_structures.register_structure("desert_well",{
 	y_offset = -2,
 	biomes = { "Desert" },
 	filenames = { modpath.."/schematics/mcl_structures_desert_well.mts" },
-	after_place = function(pos,def,pr)
-		local hl = def.sidelen / 2
-		local p1 = vector.offset(pos,-hl,-hl,-hl)
-		local p2 = vector.offset(pos,hl,hl,hl)
-		if minetest.registered_nodes["mcl_sus_nodes:sand"] then
-			local sus_poss = minetest.find_nodes_in_area(vector.offset(p1,0,-3,0), vector.offset(p2,0,-hl+2,0), {"mcl_core:sand","mcl_core:sandstone","mcl_core:redsand"})
-			if #sus_poss > 0 then
-				table.shuffle(sus_poss)
-				for i = 1,pr:next(1,#sus_poss) do
-					minetest.swap_node(sus_poss[i],{name="mcl_sus_nodes:sand"})
-					local meta = minetest.get_meta(sus_poss[i])
-					meta:set_string("structure","desert_well")
-				end
-			end
-		end
-	end,
-	loot = {
-		["SUS"] = {
-		{
-			stacks_min = 1,
-			stacks_max = 1,
-			items = {
-				{ itemstring = "mcl_pottery_sherds:arms_up", weight = 2, },
-				{ itemstring = "mcl_pottery_sherds:brewer", weight = 2, },
-				{ itemstring = "mcl_core:brick", weight = 1 },
-				{ itemstring = "mcl_core:gold_ingot", weight = 1 },
-				{ itemstring = "mcl_core:stick", weight = 1 },
-				{ itemstring = "mcl_sus_stew:stew", weight = 1 },
-
-			}
-		}},
-	},
 })
 
 
 mcl_structures.register_structure("boulder",{
 	filenames = {
-		modpath.."/schematics/mcl_structures_boulder_small.mts",
-		modpath.."/schematics/mcl_structures_boulder_small.mts",
-		modpath.."/schematics/mcl_structures_boulder_small.mts",
-		modpath.."/schematics/mcl_structures_boulder.mts",
-		-- small boulder 3x as likely
-	},
-},true) --is spawned as a normal decoration. this is just for /spawnstruct
+		modpath.."/schematics/mcl_structures_boulder_small.mts"},
+},true)
 
 -- Re-enable natural boulder decorations for overworld life/detail.
 local boulder_biomes = {
@@ -104,27 +67,6 @@ minetest.register_on_mods_loaded(function()
 		rotation = "random",
 	})
 
-	minetest.register_decoration({
-		name = "mcl_structures:boulder_large_worldgen",
-		deco_type = "schematic",
-		place_on = {
-			"mcl_core:stone",
-			"group:grass_block_no_snow",
-			"mcl_core:dirt",
-			"mcl_core:coarse_dirt",
-			"mcl_core:podzol",
-			"mcl_core:gravel",
-			"mcl_core:sand",
-		},
-		sidelen = 16,
-		fill_ratio = 0.00018,
-		biomes = boulder_biomes,
-		y_min = 1,
-		y_max = mcl_vars.mg_overworld_max,
-		schematic = modpath.."/schematics/mcl_structures_boulder.mts",
-		flags = "place_center_x, place_center_z",
-		rotation = "random",
-	})
 end)
 
 mcl_structures.register_structure("ice_spike_small",{
