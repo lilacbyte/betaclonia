@@ -97,10 +97,6 @@ end
 
 register_copper_tools()
 
-minetest.register_on_mods_loaded(function()
-	register_copper_tools()
-end)
-
 -- Copper spawns a bit higher than iron, while staying underground.
 minetest.register_ore({
 	ore_type = "scatter",
@@ -132,6 +128,50 @@ local function resolve_alias(name)
 	end
 	return name
 end
+
+local COPPER_PICK_BLOCKED_GOLD_NODES = {
+	["mcl_core:stone_with_gold"] = true,
+	["default:stone_with_gold"] = true,
+	["mcl_deepslate:deepslate_with_gold"] = true,
+	["mcl_nether:nether_gold_ore"] = true,
+	["mcl_blackstone:nether_gold"] = true,
+}
+
+local COPPER_PICK_ALLOWED_IRON_NODES = {
+	["mcl_core:stone_with_iron"] = true,
+	["default:stone_with_iron"] = true,
+	["mcl_deepslate:deepslate_with_iron"] = true,
+}
+
+local function copper_pick_harvest_override(nodename, toolname)
+	local resolved_tool = resolve_alias(toolname) or toolname
+	if resolved_tool ~= "mcl_copper:pick_copper" then
+		return nil
+	end
+	local resolved_node = resolve_alias(nodename) or nodename
+	if COPPER_PICK_BLOCKED_GOLD_NODES[resolved_node] then
+		return false
+	end
+	if COPPER_PICK_ALLOWED_IRON_NODES[resolved_node] then
+		return true
+	end
+	return nil
+end
+
+minetest.register_on_mods_loaded(function()
+	register_copper_tools()
+	if mcl_autogroup and type(mcl_autogroup.can_harvest) == "function" and not mcl_autogroup._copper_pick_gold_guard then
+		local base_can_harvest = mcl_autogroup.can_harvest
+		mcl_autogroup.can_harvest = function(nodename, toolname, player)
+			local harvest_override = copper_pick_harvest_override(nodename, toolname)
+			if harvest_override ~= nil then
+				return harvest_override
+			end
+			return base_can_harvest(nodename, toolname, player)
+		end
+		mcl_autogroup._copper_pick_gold_guard = true
+	end
+end)
 
 local EXPLOSIVE_CHANCE = 0.15
 local EXPLOSIVE_MAX_EXTRA = 1
