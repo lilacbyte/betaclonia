@@ -358,7 +358,6 @@ minetest.register_on_punchplayer(function(player, hitter, _, _, _, damage)
 	-- damage is fully mitigated.
 	wear_hitter_weapon(hitter)
 
-	-- Hardcoded special behavior: copper sword always ignites player target.
 	if damage and damage > 0 and hitter and hitter.is_player and hitter:is_player() and mcl_burning and mcl_burning.set_on_fire then
 		local weapon = hitter:get_wielded_item()
 		if weapon and not weapon:is_empty() and is_copper_sword_item(weapon:get_name()) then
