@@ -166,46 +166,6 @@ mcl_trees.register_wood("cherry_blossom",{
 	},
 })
 
-mcl_trees.register_wood("mangrove",{
-	readable_name = "Mangrove",
-	sign_color = "#8A4E3B",
-	chest_boat = false,
-	tree_schems = {
-		{ file = core_schem_path.."/mcl_core_birch.mts"},
-		{ file = core_schem_path.."/mcl_core_birch_tall.mts"},
-	},
-	tree = { tiles = {
-		"mcl_mangrove_log_top.png",
-		"mcl_mangrove_log_top.png",
-		"mcl_mangrove_log.png",
-	} },
-	wood = { tiles = {"mcl_mangrove_planks.png"}},
-	leaves = {
-		tiles = { "mcl_mangrove_leaves.png" },
-		color = "#4E7F3E",
-	},
-	fence = {
-		tiles = { "mcl_mangrove_fence.png" },
-	},
-	door = {
-		inventory_image = "mcl_mangrove_doors.png",
-		tiles_bottom = {"mcl_mangrove_door_bottom.png", "mcl_mangrove_door_bottom.png"},
-		tiles_top = {"mcl_mangrove_door_top.png", "mcl_mangrove_door_top.png"},
-	},
-	sapling = {
-		tiles = {"mcl_mangrove_propagule_item.png"},
-		inventory_image = "mcl_mangrove_propagule_item.png",
-		wield_image = "mcl_mangrove_propagule_item.png",
-		_after_grow = make_after_grow_replacer({
-			["mcl_trees:tree_birch"] = "mcl_trees:tree_mangrove",
-			["mcl_trees:leaves_birch"] = "mcl_trees:leaves_mangrove",
-		}),
-	},
-	potted_sapling = {
-		image = "mcl_mangrove_propagule_item.png",
-	},
-})
-
 mcl_trees.register_wood("pale_oak",{
 	readable_name = "Pale Oak",
 	sign_color = "#CFCFD2",

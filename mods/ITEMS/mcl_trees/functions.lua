@@ -135,9 +135,6 @@ end
 
 function mcl_trees.grow_tree(pos, node)
 	local name = node.name:gsub("mcl_trees:sapling_", "")
---[[	if node.name:find("propagule") then
-		name = "mangrove"
-	end]]--removed
 	if not mcl_trees.woods[name] or ( not mcl_trees.woods[name].tree_schems and not mcl_trees.woods[name].tree_schems_2x2 ) then
 		return
 	end

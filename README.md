@@ -75,11 +75,13 @@ Nether dungeon path:
 
 re-adds selected non-Beta content intentionally where it improves progression variety:
 
-- copper ore, raw copper, ingots/nuggets, storage blocks
+- infdev pyramids
+- beta 1.8.1 empty villages
+- netherite tools
+- copper ore, raw copper, ingots
 - copper tools
 - copper armor
-- cherry/mangrove/pale wood sets present as curated content
-- cherry/mangrove/pale saplings are dungeon-loot oriented (not intended as common worldgen trees)
+- cherry/pale wood sets present as curated content
 
 ## Credits and Legal
 
