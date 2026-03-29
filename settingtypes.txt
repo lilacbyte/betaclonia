@@ -8,6 +8,7 @@ betaclonia.allow_copper_generation (allow copper to be generated) bool false
 betaclonia.copper_clust_scarcity (copper clust scarcity, higher number means less copper) int 11
 betaclonia.copper_min (copper minimum height) int -256
 betaclonia.copper_max (copper maximum height) int -16
+betaclonia.enable_netherite_addon (enable netherite addon) bool false
 betacloniawithminetestgamecompatibility1 (enable aliases from minetest to betaclonia when applicable) bool true
 betacloniawithminetestgamecompatibility2 (enable aliases from betaclonia to minetest when applicable) bool true
 

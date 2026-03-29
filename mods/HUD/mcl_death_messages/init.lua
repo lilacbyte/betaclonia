@@ -175,6 +175,11 @@ local function get_fallback_message(obj, _, reason)
 	return "mcl_death_messages.messages." .. reason.type .. " " .. mcl_util.get_object_name(obj)
 end
 
+local function get_death_pos_string(player)
+	local pos = vector.round(player:get_pos())
+	return S("Death coordinates: @1, @2, @3", pos.x, pos.y, pos.z)
+end
+
 mcl_damage.register_on_death(function(obj, reason)
 	if not minetest.settings:get_bool("mcl_showDeathMessages", true) then
 		return
@@ -201,6 +206,18 @@ mcl_damage.register_on_death(function(obj, reason)
 			minetest.chat_send_all(message)
 		else
 			minetest.chat_send_player(send_to, message)
+		end
+	end
+
+	if obj:is_player() then
+		local pos_msg = get_death_pos_string(obj)
+		minetest.chat_send_player(obj:get_player_name(), pos_msg)
+		if mcl_title and mcl_title.set then
+			minetest.after(0, function()
+				if obj and obj:is_player() then
+					mcl_title.set(obj, "actionbar", { text = pos_msg, color = "red", stay = 100, bold = true })
+				end
+			end)
 		end
 	end
 end)

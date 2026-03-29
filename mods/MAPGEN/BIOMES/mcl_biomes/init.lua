@@ -436,10 +436,10 @@ if not mcl_vars.superflat then
 	dofile(minetest.get_modpath("mcl_biomes") .. "/overworld_generic_biomes_register.lua")
 
 	--Register “fake” ores directly related to the biomes. These are mostly low-level landscape alternations
-	--Random coarse dirt floor in Mega Taiga
+	-- Random dirt floor variation in Mega Taiga
 	minetest.register_ore({
 		ore_type	= "sheet",
-		ore		= "mcl_core:coarse_dirt",
+		ore		= "mcl_core:dirt",
 		wherein		= {"mcl_core:podzol", "mcl_core:dirt"},
 		clust_scarcity	= 1,
 		clust_num_ores	= 12,

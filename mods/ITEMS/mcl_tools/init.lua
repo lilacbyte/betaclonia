@@ -74,7 +74,7 @@ mcl_tools.commondefs = {
 	},
 	["hoe"] = {
 		longdesc = S("Hoes are essential tools for growing crops. They are used to create farmland in order to plant seeds on it. Hoes can also be used as very weak weapons in a pinch."),
-		usagehelp = S("Use the hoe on a cultivatable block (by rightclicking it) to turn it into farmland. Dirt, grass blocks and grass paths are cultivatable blocks. Using a hoe on coarse dirt turns it into dirt."),
+		usagehelp = S("Use the hoe on a cultivatable block (by rightclicking it) to turn it into farmland. Dirt, grass blocks and grass paths are cultivatable blocks."),
 		groups = { hoe = 1, tool = 1 },
 		diggroups = { hoey = {} },
 		craft_shapes = {

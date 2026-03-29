@@ -84,7 +84,7 @@ doc.sub.items.register_factoid("nodes", "groups", function(_, def)
 	if def.groups.place_flowerlike == 1 then
 		return S("This plant can only grow on grass blocks and dirt. To survive, it needs to have an unobstructed view to the sky above or be exposed to a light level of 8 or higher.")
 	elseif def.groups.place_flowerlike == 2 then
-		return S("This plant can grow on grass blocks, podzol, dirt and coarse dirt. To survive, it needs to have an unobstructed view to the sky above or be exposed to a light level of 8 or higher.")
+		return S("This plant can grow on grass blocks, podzol and dirt. To survive, it needs to have an unobstructed view to the sky above or be exposed to a light level of 8 or higher.")
 	end
 	return ""
 end)

@@ -30,7 +30,7 @@ local function on_bone_meal(_, _, _, pos, n)
 	if math.random(1, 100) > 40 then return end --40% chance
 
 	local bn = minetest.get_node(vector.offset(pos,0,-1,0)).name
-	if bn ~= "mcl_core:dirt" and minetest.get_item_group(bn, "grass_block") ~= 1 and bn ~= "mcl_core:coarse_dirt" and bn ~= "mcl_core:podzol" then
+	if bn ~= "mcl_core:dirt" and minetest.get_item_group(bn, "grass_block") ~= 1 and bn ~= "mcl_core:podzol" then
 		return
 	end
 

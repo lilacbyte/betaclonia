@@ -637,7 +637,7 @@ end
 	-- Sugar canes
 	beta_register_decoration({
 		deco_type = "simple",
-		place_on = {"mcl_core:dirt", "mcl_core:coarse_dirt", "group:grass_block_no_snow", "group:sand", "mcl_core:podzol", "mcl_core:reeds"},
+		place_on = {"mcl_core:dirt", "group:grass_block_no_snow", "group:sand", "mcl_core:podzol", "mcl_core:reeds"},
 		sidelen = 16,
 		noise_params = {
 			offset = -0.40,
@@ -657,7 +657,7 @@ end
 	})
 	beta_register_decoration({
 		deco_type = "simple",
-		place_on = {"mcl_core:dirt", "mcl_core:coarse_dirt", "group:grass_block_no_snow", "group:sand", "mcl_core:podzol", "mcl_core:reeds"},
+		place_on = {"mcl_core:dirt", "group:grass_block_no_snow", "group:sand", "mcl_core:podzol", "mcl_core:reeds"},
 		sidelen = 16,
 		noise_params = {
 			offset = -0.08,

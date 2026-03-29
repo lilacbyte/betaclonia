@@ -11,21 +11,6 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = "mcl_core:coarse_dirt 4",
-	recipe = {
-		{"mcl_core:dirt", "mcl_core:gravel"},
-		{"mcl_core:gravel", "mcl_core:dirt"},
-	}
-})
-minetest.register_craft({
-	output = "mcl_core:coarse_dirt 4",
-	recipe = {
-		{"mcl_core:gravel", "mcl_core:dirt"},
-		{"mcl_core:dirt", "mcl_core:gravel"},
-	}
-})
-
-minetest.register_craft({
 	output = "mcl_core:sandstonesmooth 4",
 	recipe = {
 		{"mcl_core:sandstone","mcl_core:sandstone"},

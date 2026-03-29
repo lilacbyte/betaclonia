@@ -13,10 +13,7 @@ local tpl_playerinfo = {
 	sneak = false,
 	visible = true,
 	attached = false,
-	elytra = {active = false, rocketing = 0, speed = 0},
-	is_pressing_jump = {},
 	lastPos = nil,
-	swimDistance = 0,
 	jump_cooldown = -1,	-- Cooldown timer for jumping, we need this to prevent the jump exhaustion to increase rapidly
 	vel_yaw = nil,
 	is_swimming = false,
@@ -110,11 +107,7 @@ end)
 mcl_player.register_globalstep_slow(function(player)
 	-- Is player suffocating inside node? (Only for solid full opaque cube type nodes
 	-- without group disable_suffocation=1)
-	-- if swimming, check the feet node instead, because the head node will be above the player when swimming
 	local ndef = minetest.registered_nodes[mcl_player.players[player].nodes.head]
-	if mcl_player.players[player].is_swimming then
-		ndef = minetest.registered_nodes[mcl_player.players[player].nodes.feet]
-	end
 	if (ndef.walkable == nil or ndef.walkable == true)
 	and (ndef.collision_box == nil or ndef.collision_box.type == "regular")
 	and (ndef.node_box == nil or ndef.node_box.type == "regular")

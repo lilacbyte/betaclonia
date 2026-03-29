@@ -305,16 +305,7 @@ cclregisterdefaultnodes("mcl_core:dirt", "default:dirt", {
 	sounds = mcl_sounds.node_sound_dirt_defaults(),
 })
 
-minetest.register_node("mcl_core:coarse_dirt", {
-	description = S("Coarse Dirt"),
-	_doc_items_longdesc = S("Coarse dirt acts as a soil for some plants and is similar to dirt, but it will never grow a cover."),
-	tiles = {"mcl_core_coarse_dirt.png"},
-	groups = { handy=1, shovely=1, dirt=3, soil=1, soil_sugarcane=1, soil_bamboo=1, soil_fungus=1, cultivatable=1, enderman_takable=1, building_block=1, soil_sapling=2, converts_to_moss=1},
-	sounds = mcl_sounds.node_sound_dirt_defaults(),
-	_on_shovel_place = mcl_core.make_dirtpath,
-	_mcl_blast_resistance = 0.5,
-	_mcl_hardness = 0.5,
-})
+minetest.register_alias_force("mcl_core:coarse_dirt", "mcl_core:dirt")
 
 cclregisterdefaultnodes("mcl_core:gravel", "default:gravel", {
 	_doc_items_longdesc = S("This block consists of a couple of loose stones and can't support itself."),

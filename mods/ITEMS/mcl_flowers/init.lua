@@ -97,7 +97,7 @@ mcl_flowers.on_place_flower = mcl_util.generate_on_place_plant_function(function
 
 --[[	Placement requirements:
 	* Dirt, grass or moss block
-	* If not flower, also allowed on podzol and coarse dirt
+	* If not flower, also allowed on podzol
 	* Light level >= 8 at any time or exposed to sunlight at day
 ]]
 	local light_night = minetest.get_node_light(pos, 0.0)
@@ -106,11 +106,11 @@ mcl_flowers.on_place_flower = mcl_util.generate_on_place_plant_function(function
 	if (light_night and light_night >= 8) or (light_day and light_day >= minetest.LIGHT_MAX) then
 		light_ok = true
 	end
-	if itemstack:get_name() == "mcl_flowers:wither_rose" and (  minetest.get_item_group(soil_node.name, "grass_block") > 0 or soil_node.name == "mcl_core:dirt" or soil_node.name == "mcl_core:coarse_dirt" or soil_node.name == "mcl_lush_caves:moss" or soil_node.name == "mcl_nether:netherrack" or minetest.get_item_group(soil_node.name, "soul_block") > 0  ) then
+	if itemstack:get_name() == "mcl_flowers:wither_rose" and (  minetest.get_item_group(soil_node.name, "grass_block") > 0 or soil_node.name == "mcl_core:dirt" or soil_node.name == "mcl_lush_caves:moss" or soil_node.name == "mcl_nether:netherrack" or minetest.get_item_group(soil_node.name, "soul_block") > 0  ) then
 		return true,colorize
 	end
 	local is_flower = minetest.get_item_group(itemstack:get_name(), "flower") == 1
-	local ok = (soil_node.name == "mcl_core:dirt" or minetest.get_item_group(soil_node.name, "grass_block") == 1 or soil_node.name == "mcl_lush_caves:moss" or (not is_flower and (soil_node.name == "mcl_core:coarse_dirt" or soil_node.name == "mcl_core:podzol" or soil_node.name == "mcl_core:podzol_snow"))) and light_ok
+	local ok = (soil_node.name == "mcl_core:dirt" or minetest.get_item_group(soil_node.name, "grass_block") == 1 or soil_node.name == "mcl_lush_caves:moss" or (not is_flower and (soil_node.name == "mcl_core:podzol" or soil_node.name == "mcl_core:podzol_snow"))) and light_ok
 	return ok, colorize
 end)
 
@@ -230,10 +230,10 @@ local tpl_large_plant_bottom = table.merge(tpl_large_plant_top, {
 
 		-- Placement rules:
 		-- * Allowed on dirt, grass or moss block
-		-- * If not a flower, also allowed on podzol and coarse dirt
+		-- * If not a flower, also allowed on podzol
 		-- * Only with light level >= 8
 		-- * Only if two enough space
-		if (floor.name == "mcl_core:dirt" or minetest.get_item_group(floor.name, "grass_block") == 1 or floor.name == "mcl_lush_caves:moss" or (not is_flower and (floor.name == "mcl_core:coarse_dirt" or floor.name == "mcl_core:podzol" or floor.name == "mcl_core:podzol_snow"))) and bottom_buildable and top_buildable and light_ok then
+		if (floor.name == "mcl_core:dirt" or minetest.get_item_group(floor.name, "grass_block") == 1 or floor.name == "mcl_lush_caves:moss" or (not is_flower and (floor.name == "mcl_core:podzol" or floor.name == "mcl_core:podzol_snow"))) and bottom_buildable and top_buildable and light_ok then
 			local param2
 			local def = minetest.registered_nodes[floor.name]
 			if def and def.paramtype2 == "color" then

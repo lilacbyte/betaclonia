@@ -55,5 +55,3 @@ function playerphysics.get_physics_factor(player, attribute, id)
 		return a[attribute][id]
 	end
 end
-
-dofile(minetest.get_modpath(minetest.get_current_modname()).."/elytra.lua")

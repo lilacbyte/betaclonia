@@ -2,6 +2,12 @@ local S = minetest.get_translator(minetest.get_current_modname())
 
 local NETHER_Y_MIN = (mcl_vars and mcl_vars.mg_nether_min) or -29000
 local NETHER_Y_MAX = (mcl_vars and mcl_vars.mg_nether_max) or -27000
+local ENABLE_NETHERITE_ADDON = minetest.settings:get_bool("betaclonia.enable_netherite_addon", false)
+
+if not ENABLE_NETHERITE_ADDON then
+	minetest.log("action", "[mcl_netherite] disabled by setting: betaclonia.enable_netherite_addon")
+	return
+end
 
 -- Iron stick used as handle for netherite tools.
 minetest.register_craftitem("mcl_netherite:iron_stick", {

@@ -52,7 +52,6 @@ minetest.register_on_mods_loaded(function()
 			"mcl_core:stone",
 			"group:grass_block_no_snow",
 			"mcl_core:dirt",
-			"mcl_core:coarse_dirt",
 			"mcl_core:podzol",
 			"mcl_core:gravel",
 			"mcl_core:sand",

@@ -71,7 +71,7 @@ tt.register_snippet(function(itemstring)
 	if def.groups.place_flowerlike == 1 then
 		return S("Grows on grass blocks or dirt")
 	elseif def.groups.place_flowerlike == 2 then
-		return S("Grows on grass blocks, podzol, dirt or coarse dirt")
+		return S("Grows on grass blocks, podzol or dirt")
 	end
 end)
 

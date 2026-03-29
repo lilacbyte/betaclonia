@@ -291,9 +291,6 @@ minetest.register_on_mods_loaded(function()
 end)
 
 function mcl_trees.generate_leaves_def(modname, subname, def, sapling, drop_apples, sapling_chances)
-	local apple_chances = {80, 70, 60, 45, 20}
-	local stick_chances = {50, 45, 30, 35, 10}
-
 	local palette = tpl_leaves.palette
 	if def.palette == "" then
 		palette = def.palette
@@ -302,16 +299,7 @@ function mcl_trees.generate_leaves_def(modname, subname, def, sapling, drop_appl
 	local function get_drops(fortune_level)
 		local drop = {
 			max_items = 1,
-			items = {
-				{
-					items = {"mcl_core:stick 1"},
-					rarity = stick_chances[fortune_level + 1]
-				},
-				{
-					items = {"mcl_core:stick 2"},
-					rarity = stick_chances[fortune_level + 1]
-				},
-			}
+			items = {}
 		}
 		if type(sapling) == "string" then
 			table.insert(drop.items, {
@@ -325,14 +313,6 @@ function mcl_trees.generate_leaves_def(modname, subname, def, sapling, drop_appl
 						rarity = sapling_chances[fortune_level + 1] or sapling_chances[fortune_level]
 				})
 			end
-		end
-		if drop_apples then
-			-- Allow apples to drop together with another leaf drop.
-			drop.max_items = 2
-			table.insert(drop.items, 1, {
-				items = {"mcl_core:apple"},
-				rarity = apple_chances[fortune_level + 1]
-			})
 		end
 		return drop
 	end
