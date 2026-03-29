@@ -175,10 +175,37 @@ local function get_fallback_message(obj, _, reason)
 	return "mcl_death_messages.messages." .. reason.type .. " " .. mcl_util.get_object_name(obj)
 end
 
-local function get_death_pos_string(player)
+local function get_death_menu_string(player)
 	local pos = vector.round(player:get_pos())
-	return S("Death coordinates: @1, @2, @3", pos.x, pos.y, pos.z)
+	return "You died at " .. pos.x .. ", " .. pos.y .. ", " .. pos.z
 end
+
+local function install_death_screen_override()
+	if type(minetest.show_death_screen) ~= "function" then
+		return
+	end
+	local F = minetest.formspec_escape
+	local B = minetest.get_translator("__builtin")
+	local H = minetest.hypertext_escape or function(text) return text end
+
+	minetest.show_death_screen = function(player, _reason)
+		local death_line = get_death_menu_string(player)
+		local fs_w = 11
+		local btn_w = 3
+		local btn_x = (fs_w - btn_w) / 2
+		local death_markup = "<global size=18 color=#000000><center>" .. H(death_line) .. "</center>"
+		local fs = {
+			"formspec_version[1]",
+			"size[" .. fs_w .. ",5.5,true]",
+			"bgcolor[#320000b4;true]",
+			"hypertext[0,1.0;11,0.8;death_line;", F(death_markup), "]",
+			"button_exit[" .. btn_x .. ",3;" .. btn_w .. ",0.5;btn_respawn;", F(B("Respawn")), "]",
+		}
+		minetest.show_formspec(player:get_player_name(), "__builtin:death", table.concat(fs, ""))
+	end
+end
+
+minetest.register_on_mods_loaded(install_death_screen_override)
 
 mcl_damage.register_on_death(function(obj, reason)
 	if not minetest.settings:get_bool("mcl_showDeathMessages", true) then
@@ -202,24 +229,16 @@ mcl_damage.register_on_death(function(obj, reason)
 			get_plain_message(obj, messages, reason) or
 			get_fallback_message(obj, messages, reason)
 
+		-- Keep death chat in multiplayer, but avoid chat spam in singleplayer.
 		if send_to == true then
-			minetest.chat_send_all(message)
+			if not minetest.is_singleplayer() then
+				minetest.chat_send_all(message)
+			end
 		else
 			minetest.chat_send_player(send_to, message)
 		end
 	end
 
-	if obj:is_player() then
-		local pos_msg = get_death_pos_string(obj)
-		minetest.chat_send_player(obj:get_player_name(), pos_msg)
-		if mcl_title and mcl_title.set then
-			minetest.after(0, function()
-				if obj and obj:is_player() then
-					mcl_title.set(obj, "actionbar", { text = pos_msg, color = "red", stay = 100, bold = true })
-				end
-			end)
-		end
-	end
 end)
 
 mcl_damage.register_on_damage(function(obj, damage, reason)
