@@ -82,7 +82,7 @@ local function register_copper_tools()
 			axe = {
 				description = S("Copper Axe"),
 				inventory_image = "mcl_copper_tool_axe.png",
-				effect_desc = S("Effect: Small chance to char logs."),
+				effect_desc = S("Effect: Chance to smelt wood"),
 				tool_capabilities = {
 					full_punch_interval = 1.18,
 					damage_groups = { fleshy = 8 },
