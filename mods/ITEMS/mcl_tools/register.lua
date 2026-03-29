@@ -163,6 +163,7 @@ mcl_tools.register_set("gold", {
     ["sword"] = {
         description = S("Golden Sword"),
         inventory_image = "default_tool_goldsword.png",
+        effect_desc = S("Effect: Lucky"),
         tool_capabilities = {
             full_punch_interval = 0.625,
             damage_groups = { fleshy = 4 }

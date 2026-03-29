@@ -7,6 +7,26 @@ local DEATH_DELAY = 0.5
 local PATHFINDING = "gowp"
 local mobs_drop_items = minetest.settings:get_bool("mobs_drop_items") ~= false
 
+local function resolve_alias_name(name)
+	local seen = {}
+	while name and minetest.registered_aliases[name] and not seen[name] do
+		seen[name] = true
+		name = minetest.registered_aliases[name]
+	end
+	return name
+end
+
+local function is_gold_sword_item(name)
+	if not name or name == "" then
+		return false
+	end
+	if name == "mcl_tools:sword_gold" or name == "mcl_core:sword_gold" then
+		return true
+	end
+	local resolved = resolve_alias_name(name)
+	return resolved == "mcl_tools:sword_gold"
+end
+
 local function resolve_killer_player(cmi_cause)
 	if not cmi_cause then
 		return nil
@@ -32,6 +52,24 @@ local function resolve_killer_player(cmi_cause)
 	end
 
 	return nil
+end
+
+local function lucky_drop_multiplier(cmi_cause)
+	local player = resolve_killer_player(cmi_cause)
+	if not player then
+		return 1
+	end
+	local wield = player:get_wielded_item()
+	if not wield or wield:is_empty() then
+		return 1
+	end
+	if not is_gold_sword_item(wield:get_name()) then
+		return 1
+	end
+	if math.random() < 0.35 then
+		return 2
+	end
+	return 1
 end
 
 local function award_kill_points(self, cmi_cause)
@@ -126,9 +164,10 @@ function mob_class:drop_armor()
 	end
 end
 
-function mob_class:item_drop(cooked, looting_level, cmi_cause)
+function mob_class:item_drop(cooked, looting_level, cmi_cause, drop_multiplier)
 	if not mobs_drop_items then return end
 	looting_level = looting_level or 0
+	drop_multiplier = drop_multiplier or 1
 	if (self.child and self.type ~= "monster") then
 		return
 	end
@@ -174,6 +213,7 @@ function mob_class:item_drop(cooked, looting_level, cmi_cause)
 		end
 
 		if num > 0 then
+			num = num * drop_multiplier
 			item = dropdef.name
 			if cooked then
 				local output = minetest.get_craft_result({ method = "cooking", width = 1, items = {item}})
@@ -550,16 +590,10 @@ function mob_class:check_for_death(cause, cmi_cause)
 	if cmi_cause and (cmi_cause.type == "lava" or cmi_cause.type == "fire") then
 		self:item_drop(true, 0, cmi_cause)
 	else
-		local wielditem = ItemStack()
-		if cmi_cause and cmi_cause.type == "player" then
-			local puncher = cmi_cause.direct
-			if puncher then
-				wielditem = puncher:get_wielded_item()
-			end
-		end
 		local cooked = mcl_burning.is_burning(self.object)
 		local looting = 0
-		self:item_drop(cooked, looting, cmi_cause)
+		local drop_multiplier = lucky_drop_multiplier(cmi_cause)
+		self:item_drop(cooked, looting, cmi_cause, drop_multiplier)
 	end
 
 	-- Remove body after a few seconds

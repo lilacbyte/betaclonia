@@ -10,9 +10,9 @@ local overworld_threshold = 0
 local overworld_sky_threshold = 7
 local overworld_passive_threshold = 7
 
-local PASSIVE_INTERVAL = tonumber(minetest.settings:get("betaclonia_passive_spawn_interval")) or 6
+local PASSIVE_INTERVAL = tonumber(minetest.settings:get("betaclonia_passive_spawn_interval")) or 0
 local HOSTILE_INTERVAL = 10
-local PASSIVE_CHANCE_MULT = tonumber(minetest.settings:get("betaclonia_passive_spawn_weight")) or 6
+local PASSIVE_CHANCE_MULT = tonumber(minetest.settings:get("betaclonia_passive_spawn_weight")) or 1
 local ANIMAL_LOCAL_CAP = tonumber(minetest.settings:get("betaclonia_animal_local_cap")) or 8
 local dbg_spawn_attempts = 0
 local dbg_spawn_succ = 0
@@ -112,7 +112,7 @@ local spawn_defaults = {
 	max_height = 31000,
 }
 
-local spawn_defaults_meta = { __INDEX = spawn_defaults }
+local spawn_defaults_meta = { __index = spawn_defaults }
 
 function mcl_mobs.spawn_setup(def)
 	if not mobs_spawn then return end
@@ -453,16 +453,23 @@ end
 
 
 if mobs_spawn then
-	local cumulative_chance
+	local cumulative_spawn_weight
 	local mob_library_worker_table
+	local function get_spawn_weight(def)
+		local chance = tonumber(def.chance) or 1
+		if chance < 1 then
+			chance = 1
+		end
+		return 1 / chance
+	end
 	local function initialize_spawn_data()
 		if not mob_library_worker_table then
 			mob_library_worker_table = table.copy(spawn_dictionary)
 		end
-		if not cumulative_chance then
-			cumulative_chance = 0
+		if not cumulative_spawn_weight then
+			cumulative_spawn_weight = 0
 			for _, v in pairs(mob_library_worker_table) do
-				cumulative_chance = cumulative_chance + v.chance
+				cumulative_spawn_weight = cumulative_spawn_weight + get_spawn_weight(v)
 			end
 		end
 	end
@@ -473,6 +480,9 @@ if mobs_spawn then
 
 		local mob_library_worker_table = table.copy(spawn_dictionary)
 		local spawning_position = get_next_mob_spawn_pos(pos)
+		if not spawning_position or not cumulative_spawn_weight or cumulative_spawn_weight <= 0 then
+			return
+		end
 
 		local spawn_loop_counter = #mob_library_worker_table
 		--use random weighted choice with replacement to grab a mob, don't exclude any possibilities
@@ -480,23 +490,18 @@ if mobs_spawn then
 		--repeat grabbing a mob to maintain existing spawn rates
 		while spawn_loop_counter > 0 do
 			table.shuffle(mob_library_worker_table)
-			local mob_chance_offset = math.random(1, cumulative_chance)
+			local mob_weight_offset = math.random() * cumulative_spawn_weight
 			local mob_index = 1
-			local mob_chance = mob_library_worker_table[mob_index].chance
-			local step_chance = mob_chance
-			while step_chance < mob_chance_offset do
-				mob_index = mob_index + 1
-				if mob_index <= #mob_library_worker_table then
-					mob_chance = mob_library_worker_table[mob_index].chance
-					step_chance = step_chance + mob_chance
-				else
+			local step_weight = 0
+			for i = 1, #mob_library_worker_table do
+				step_weight = step_weight + get_spawn_weight(mob_library_worker_table[i])
+				if step_weight >= mob_weight_offset then
+					mob_index = i
 					break
 				end
-				mob_chance = mob_library_worker_table[mob_index].chance
-				step_chance = step_chance + mob_chance
 			end
 			local spawn_def = mob_library_worker_table[mob_index]
-			--minetest.log(spawn_def.name.." "..step_chance.. " "..mob_chance)
+			--minetest.log(spawn_def.name.." "..step_weight.. " "..mob_weight_offset)
 			if spawn_def and spawn_def.name and minetest.registered_entities[spawn_def.name] then
 				local entity_def = minetest.registered_entities[spawn_def.name]
 				local spawn_in_group = entity_def.spawn_in_group or 4
