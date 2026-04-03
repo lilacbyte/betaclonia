@@ -10,10 +10,19 @@ local overworld_threshold = 0
 local overworld_sky_threshold = 7
 local overworld_passive_threshold = 7
 
-local PASSIVE_INTERVAL = tonumber(minetest.settings:get("betaclonia_passive_spawn_interval")) or 0
+local PASSIVE_INTERVAL = tonumber(minetest.settings:get("betaclonia_passive_spawn_interval")) or 10
+if PASSIVE_INTERVAL <= 0 then
+	PASSIVE_INTERVAL = 10
+end
 local HOSTILE_INTERVAL = 10
 local PASSIVE_CHANCE_MULT = tonumber(minetest.settings:get("betaclonia_passive_spawn_weight")) or 1
 local ANIMAL_LOCAL_CAP = tonumber(minetest.settings:get("betaclonia_animal_local_cap")) or 8
+local SPAWN_DISTANCE = tonumber(minetest.settings:get("active_block_range")) or 4
+local PASSIVE_CHUNK_CAP = 10
+local MOB_CAP_DIVISOR = 289
+local MOB_CAP_RECIPROCAL = 1 / MOB_CAP_DIVISOR
+local OVERWORLD_CEILING_MARGIN = 64
+local OVERWORLD_DEFAULT_CEILING = 256
 local dbg_spawn_attempts = 0
 local dbg_spawn_succ = 0
 local dbg_spawn_counts = {}
@@ -98,6 +107,16 @@ local function count_mobs_total_cap(mob_type)
 	return num
 end
 
+local function count_mobs_total_cap_by_name(name_lookup)
+	local num = 0
+	for _,l in pairs(minetest.luaentities) do
+		if l.is_mob and name_lookup[l.name] and l.can_despawn and not l.nametag then
+			num = num + 1
+		end
+	end
+	return num
+end
+
 --this is where all of the spawning information is kept
 local spawn_dictionary = {}
 
@@ -168,6 +187,14 @@ end
 
 local function is_farm_animal(n)
 	return n == "mobs_mc:pig" or n == "mobs_mc:cow" or n == "mobs_mc:sheep" or n == "mobs_mc:chicken" or n == "mobs_mc:horse" or n == "mobs_mc:donkey"
+end
+
+local function is_passive_ground_spawn_def(spawn_def, entity_def)
+	entity_def = entity_def or minetest.registered_entities[spawn_def.name]
+	return entity_def
+		and entity_def.spawn_class == "passive"
+		and entity_def.type == "animal"
+		and spawn_def.type_of_spawning == "ground"
 end
 
 local function get_water_spawn(p)
@@ -370,19 +397,6 @@ local function can_spawn(spawn_def,spawning_position)
 	return true
 end
 
-local passive_timer = PASSIVE_INTERVAL
-
---timer function to check if passive mobs should spawn (only every 20 secs unlike other mob spawn classes)
-local function check_timer(spawn_def)
-	local mob_def = minetest.registered_entities[spawn_def.name]
-	if mob_def and mob_def.spawn_class == "passive" then
-		if passive_timer > 0 then
-			return false
-		end
-	end
-	return true
-end
-
 local MOB_SPAWN_ZONE_INNER = 24
 local MOB_SPAWN_ZONE_OUTER = 128
 
@@ -390,6 +404,300 @@ local MOB_SPAWN_ZONE_OUTER = 128
 local SPAWN_MAPGEN_LIMIT  = 30911
 
 local function math_round(x) return (x > 0) and math.floor(x + 0.5) or math.ceil(x - 0.5) end
+
+local function level_y_range(level, pos)
+	if level == "overworld" then
+		local nodepos = math.floor(pos.y + 0.5)
+		if nodepos < OVERWORLD_DEFAULT_CEILING - OVERWORLD_CEILING_MARGIN then
+			return mcl_vars.mg_overworld_min, OVERWORLD_DEFAULT_CEILING
+		end
+		return nodepos
+			- OVERWORLD_DEFAULT_CEILING
+			+ OVERWORLD_CEILING_MARGIN
+			+ mcl_vars.mg_overworld_min,
+			nodepos + OVERWORLD_CEILING_MARGIN
+	elseif level == "nether" then
+		return mcl_vars.mg_nether_min, mcl_vars.mg_nether_max - 1
+	elseif level == "end" then
+		return mcl_vars.mg_end_min, (mcl_vars.mg_end_max_official or mcl_vars.mg_end_max) - 1
+	end
+end
+
+local function merge_range(rangearray, start, fin)
+	local nmax, first_overlap, last_overlap = #rangearray
+	local last_before = 0
+	assert(nmax % 2 == 0)
+
+	for i = 1, nmax, 2 do
+		if rangearray[i] < start then
+			last_before = i + 1
+		end
+		if rangearray[i] <= fin and start <= rangearray[i + 1] then
+			if not first_overlap then
+				first_overlap = i
+			end
+			last_overlap = i
+		end
+	end
+
+	if first_overlap then
+		if rangearray[first_overlap] == start and rangearray[last_overlap + 1] == fin then
+			return
+		end
+		if rangearray[first_overlap] > start then
+			rangearray[first_overlap] = start
+		end
+
+		local value = rangearray[last_overlap + 1]
+		local src_begin = last_overlap + 2
+		local dst_begin = first_overlap + 2
+
+		if src_begin ~= dst_begin then
+			local num_copies = nmax - src_begin + 1
+			for i = 0, num_copies - 1 do
+				rangearray[dst_begin + i] = rangearray[src_begin + i]
+			end
+			for i = dst_begin + num_copies, nmax do
+				rangearray[i] = nil
+			end
+		end
+		rangearray[first_overlap + 1] = math.max(value, fin)
+	else
+		local new_max = nmax + 2
+		for i = 0, nmax - last_before - 1 do
+			rangearray[new_max - i] = rangearray[nmax - i]
+		end
+		rangearray[last_before + 1] = start
+		rangearray[last_before + 2] = fin
+	end
+	return rangearray
+end
+
+local function position_in_chunk(data)
+	local total = 0
+	local ranges = data.y_ranges
+	local psize = #ranges
+	for i = 1, psize, 2 do
+		total = total + (ranges[i + 1] - ranges[i] + 1)
+	end
+	local value = math.random(1, total)
+	for i = 1, psize, 2 do
+		value = value - (ranges[i + 1] - ranges[i] + 1)
+		if value <= 0 then
+			return ranges[i + 1] + value
+		end
+	end
+	assert(false)
+end
+
+local function collect_unique_chunks(level)
+	local chunk_data, chunks, players = {}, {}, {}
+	for player in mcl_util.connected_players() do
+		local pos = player:get_pos()
+		local chunk_dim = mcl_worlds.pos_to_dimension(pos)
+		players[player] = pos
+
+		if chunk_dim == level then
+			local chunk_x = math.floor(pos.x / 16.0)
+			local chunk_z = math.floor(pos.z / 16.0)
+			local start, fin = level_y_range(level, pos)
+			for x = chunk_x - SPAWN_DISTANCE, chunk_x + SPAWN_DISTANCE do
+				for z = chunk_z - SPAWN_DISTANCE, chunk_z + SPAWN_DISTANCE do
+					local hash = ((x + 2048) * 4096) + (z + 2048)
+					local data = chunk_data[hash]
+					if not data then
+						chunks[#chunks + 1] = hash
+						chunk_data[hash] = {
+							y_ranges = { start, fin },
+						}
+					else
+						merge_range(data.y_ranges, start, fin)
+					end
+				end
+			end
+		end
+	end
+	return chunks, players, chunk_data
+end
+
+local function collect_all_unique_chunks()
+	local chunks = {}
+	local n_chunks = 0
+	for _, level in ipairs({ "overworld", "nether", "end" }) do
+		chunks[level] = { collect_unique_chunks(level) }
+		n_chunks = n_chunks + #chunks[level][1]
+	end
+	return chunks, n_chunks
+end
+
+local function dist_sqr(a, b)
+	local dx = b.x - a.x
+	local dy = b.y - a.y
+	local dz = b.z - a.z
+	return dx * dx + dy * dy + dz * dz
+end
+
+local function get_nearest_player(pos, list)
+	local dist, pos_nearest, player = nil
+	for player_1, test_pos in pairs(list) do
+		local d = dist_sqr(test_pos, pos)
+		if not dist or dist > d then
+			dist = d
+			pos_nearest = test_pos
+			player = player_1
+		end
+	end
+	return player, pos_nearest
+end
+
+local function find_surface_spawn_pos(x, z, y_ranges)
+	local surface_pos
+	for i = 1, #y_ranges, 2 do
+		local found = minetest.find_nodes_in_area_under_air(
+			{x = x, y = y_ranges[i], z = z},
+			{x = x, y = y_ranges[i + 1], z = z},
+			{"group:opaque"}
+		)
+		for _, pos in ipairs(found or {}) do
+			if not surface_pos or pos.y > surface_pos.y then
+				surface_pos = pos
+			end
+		end
+	end
+	if surface_pos then
+		return vector.offset(surface_pos, 0, 1, 0)
+	end
+end
+
+local function get_passive_spawn_weight(def)
+	local chance = tonumber(def.chance) or 1
+	if chance < 1 then
+		chance = 1
+	end
+	return 1 / chance
+end
+
+local function get_eligible_passive_spawn_def(base_pos, level, passive_defs)
+	local biome_data = minetest.get_biome_data(base_pos)
+	if not biome_data then
+		return
+	end
+	local biome_name = minetest.get_biome_name(biome_data.biome)
+	local total_weight = 0
+	local eligible = {}
+
+	for _, spawn_def in ipairs(passive_defs) do
+		if spawn_def.dimension == level
+			and base_pos.y >= spawn_def.min_height
+			and base_pos.y <= spawn_def.max_height
+			and (not spawn_def.biomes_except or not biome_check(spawn_def.biomes_except, biome_name))
+			and (not spawn_def.biomes or biome_check(spawn_def.biomes, biome_name)) then
+			local weight = get_passive_spawn_weight(spawn_def)
+			total_weight = total_weight + weight
+			eligible[#eligible + 1] = {
+				def = spawn_def,
+				weight = weight,
+			}
+		end
+	end
+
+	if total_weight <= 0 then
+		return
+	end
+
+	local mob_weight_offset = math.random() * total_weight
+	local step_weight = 0
+	for _, entry in ipairs(eligible) do
+		step_weight = step_weight + entry.weight
+		if step_weight >= mob_weight_offset then
+			return entry.def
+		end
+	end
+	return eligible[#eligible] and eligible[#eligible].def
+end
+
+local function unpack3(x)
+	return x[1], x[2], x[3]
+end
+
+local function spawn_passive_pack(level, chunk, players, chunk_data, passive_defs)
+	local chunk_x = math.floor(chunk / 4096) - 2048
+	local chunk_z = chunk % 4096 - 2048
+	local x = math.random(chunk_x * 16, chunk_x * 16 + 15)
+	local z = math.random(chunk_z * 16, chunk_z * 16 + 15)
+	local base_pos = find_surface_spawn_pos(x, z, chunk_data[chunk].y_ranges)
+	if not base_pos then
+		return 0
+	end
+	local spawn_def = get_eligible_passive_spawn_def(base_pos, level, passive_defs)
+	if not spawn_def then
+		return 0
+	end
+
+	local entity_def = minetest.registered_entities[spawn_def.name]
+	local spawn_in_group = entity_def.spawn_in_group or 4
+	local spawn_in_group_min = entity_def.spawn_in_group_min or 1
+	local n_spawned = 0
+
+	for _ = 1, math.random(spawn_in_group_min, spawn_in_group) do
+		local dx = math.random(0, 5) - math.random(0, 5)
+		local dz = math.random(0, 5) - math.random(0, 5)
+		local spawning_position = find_surface_spawn_pos(x + dx, z + dz, chunk_data[chunk].y_ranges)
+		if spawning_position then
+			local _, player_pos = get_nearest_player(spawning_position, players)
+			local dist = player_pos and dist_sqr(player_pos, spawning_position)
+			if dist and dist > 576 and dist < (MOB_SPAWN_ZONE_OUTER * MOB_SPAWN_ZONE_OUTER) then
+				local check_pos = vector.new(spawning_position.x, spawning_position.y, spawning_position.z)
+				if spawn_check(check_pos, spawn_def, true) and can_spawn(spawn_def, spawning_position) then
+					local spawned_obj = mcl_mobs.spawn(spawning_position, spawn_def.name)
+					if spawned_obj then
+						dbg_spawn_succ = dbg_spawn_succ + 1
+						n_spawned = n_spawned + 1
+						if logging then
+							minetest.log("action", "[mcl_mobs] Passive mob " .. spawn_def.name .. " spawns on " .. minetest.get_node(vector.offset(spawning_position, 0, -1, 0)).name .. " at " .. minetest.pos_to_string(spawning_position, 1))
+						end
+					end
+				end
+			end
+		end
+	end
+
+	return n_spawned
+end
+
+local function spawn_passive_cycle(level, chunks, existing, global_max, passive_defs)
+	local chunk_list, players, chunk_data = unpack3(chunks[level])
+	if not chunk_list or #chunk_list == 0 then
+		return existing
+	end
+
+	table.shuffle(chunk_list)
+	for i = 1, #chunk_list do
+		if existing >= global_max then
+			break
+		end
+		local chunk = chunk_list[i]
+		local chunk_x = math.floor(chunk / 4096) - 2048
+		local chunk_z = chunk % 4096 - 2048
+		local center_x = (chunk_x * 16) + 7.5
+		local center_z = (chunk_z * 16) + 7.5
+		local eligible = false
+
+		for _, pos in pairs(players) do
+			local dist = (pos.x - center_x) * (pos.x - center_x) + (pos.z - center_z) * (pos.z - center_z)
+			if dist < 16384.0 then
+				eligible = true
+				break
+			end
+		end
+
+		if eligible then
+			existing = existing + spawn_passive_pack(level, chunk, players, chunk_data, passive_defs)
+		end
+	end
+
+	return existing
+end
 
 local function get_next_mob_spawn_pos(pos, spawn_def)
 	-- Select a distance such that distances closer to the player are selected much more often than
@@ -481,18 +789,27 @@ end
 if mobs_spawn then
 	local cumulative_spawn_weight
 	local mob_library_worker_table
+	local passive_ground_spawn_defs
+	local passive_ground_spawn_names
 	local function get_spawn_weight(def)
-		local chance = tonumber(def.chance) or 1
-		if chance < 1 then
-			chance = 1
-		end
-		return 1 / chance
+		return get_passive_spawn_weight(def)
 	end
 	local function initialize_spawn_data()
-		if not mob_library_worker_table then
-			mob_library_worker_table = table.copy(spawn_dictionary)
+		if not mob_library_worker_table or not passive_ground_spawn_defs or not passive_ground_spawn_names then
+			mob_library_worker_table = {}
+			passive_ground_spawn_defs = {}
+			passive_ground_spawn_names = {}
+			for _, def in pairs(spawn_dictionary) do
+				local entity_def = minetest.registered_entities[def.name]
+				if is_passive_ground_spawn_def(def, entity_def) then
+					passive_ground_spawn_defs[#passive_ground_spawn_defs + 1] = def
+					passive_ground_spawn_names[def.name] = true
+				else
+					mob_library_worker_table[#mob_library_worker_table + 1] = def
+				end
+			end
 		end
-		if not cumulative_spawn_weight then
+		if cumulative_spawn_weight == nil then
 			cumulative_spawn_weight = 0
 			for _, v in pairs(mob_library_worker_table) do
 				cumulative_spawn_weight = cumulative_spawn_weight + get_spawn_weight(v)
@@ -504,28 +821,28 @@ if mobs_spawn then
 		--create a disconnected clone of the spawn dictionary
 		--prevents memory leak
 
-		local mob_library_worker_table = table.copy(spawn_dictionary)
+		local worker_table = table.copy(mob_library_worker_table)
 		if not cumulative_spawn_weight or cumulative_spawn_weight <= 0 then
 			return
 		end
 
-		local spawn_loop_counter = #mob_library_worker_table
+		local spawn_loop_counter = #worker_table
 		--use random weighted choice with replacement to grab a mob, don't exclude any possibilities
 		--shuffle table once every loop to provide equal inclusion probability to all mobs
 		--repeat grabbing a mob to maintain existing spawn rates
 		while spawn_loop_counter > 0 do
-			table.shuffle(mob_library_worker_table)
+			table.shuffle(worker_table)
 			local mob_weight_offset = math.random() * cumulative_spawn_weight
 			local mob_index = 1
 			local step_weight = 0
-			for i = 1, #mob_library_worker_table do
-				step_weight = step_weight + get_spawn_weight(mob_library_worker_table[i])
+			for i = 1, #worker_table do
+				step_weight = step_weight + get_spawn_weight(worker_table[i])
 				if step_weight >= mob_weight_offset then
 					mob_index = i
 					break
 				end
 			end
-			local spawn_def = mob_library_worker_table[mob_index]
+			local spawn_def = worker_table[mob_index]
 			--minetest.log(spawn_def.name.." "..step_weight.. " "..mob_weight_offset)
 			if spawn_def and spawn_def.name and minetest.registered_entities[spawn_def.name] then
 				local entity_def = minetest.registered_entities[spawn_def.name]
@@ -535,7 +852,7 @@ if mobs_spawn then
 				local spawning_position = get_next_mob_spawn_pos(pos, spawn_def)
 				if spawn_check(spawning_position,spawn_def) then
 
-					if can_spawn(spawn_def,spawning_position) and check_timer(spawn_def) then
+					if can_spawn(spawn_def,spawning_position) then
 						--everything is correct, spawn mob
 						local spawned_obj
 						if spawn_in_group and ( mob_type ~= "monster" or math.random(5) == 1 ) then
@@ -550,9 +867,6 @@ if mobs_spawn then
 							end
 							spawned_obj = mcl_mobs.spawn(spawning_position, spawn_def.name)
 						end
-						if spawned_obj and entity_def.spawn_class == "passive" then
-							passive_timer = PASSIVE_INTERVAL
-						end
 					end
 				end
 			end
@@ -564,13 +878,15 @@ if mobs_spawn then
 	--MAIN LOOP
 
 	local timer = HOSTILE_INTERVAL
+	local passive_spawn_timer = 0
 	minetest.register_globalstep(function(dtime)
-		passive_timer = passive_timer - dtime
 		timer = timer - dtime
-		if timer > 0 then return end
-		timer = HOSTILE_INTERVAL
+		passive_spawn_timer = passive_spawn_timer - dtime
 
 		local players = minetest.get_connected_players()
+		if #players == 0 then
+			return
+		end
 		local total_mobs = count_mobs_total_cap()
 		if total_mobs > mob_cap.total or total_mobs > #players * mob_cap.player then
 			minetest.log("action","[mcl_mobs] global mob cap reached. no cycle spawning.")
@@ -578,13 +894,30 @@ if mobs_spawn then
 		end --mob cap per player
 
 		initialize_spawn_data()
-		for _, player in pairs(players) do
-			local pos = player:get_pos()
-			local dimension = mcl_worlds.pos_to_dimension(pos)
-			-- ignore void and unloaded area
-			if dimension ~= "void" and dimension ~= "default" then
-				spawn_a_mob(pos, dimension, dtime)
+		if timer <= 0 then
+			timer = HOSTILE_INTERVAL
+			for _, player in pairs(players) do
+				local pos = player:get_pos()
+				local dimension = mcl_worlds.pos_to_dimension(pos)
+				-- ignore void and unloaded area
+				if dimension ~= "void" and dimension ~= "default" then
+					spawn_a_mob(pos, dimension, dtime)
+				end
 			end
+		end
+
+		if passive_spawn_timer <= 0 and passive_ground_spawn_defs and #passive_ground_spawn_defs > 0 then
+			local chunks, n_chunks = collect_all_unique_chunks()
+			local passive_global_cap = math.max(math.floor((n_chunks * PASSIVE_CHUNK_CAP) * MOB_CAP_RECIPROCAL), PASSIVE_CHUNK_CAP)
+			local existing_passives = count_mobs_total_cap_by_name(passive_ground_spawn_names)
+
+			if existing_passives < passive_global_cap then
+				existing_passives = spawn_passive_cycle("overworld", chunks, existing_passives, passive_global_cap, passive_ground_spawn_defs)
+				existing_passives = spawn_passive_cycle("nether", chunks, existing_passives, passive_global_cap, passive_ground_spawn_defs)
+				existing_passives = spawn_passive_cycle("end", chunks, existing_passives, passive_global_cap, passive_ground_spawn_defs)
+			end
+
+			passive_spawn_timer = PASSIVE_INTERVAL
 		end
 	end)
 end
