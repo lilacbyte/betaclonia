@@ -14,35 +14,9 @@ local drops_common = {
 		chance = 1,
 		min = 1,
 		max = 1,},
-	{name = "mcl_core:iron_ingot",
-	chance = 120, -- 2.5% / 3
-	min = 1,
-	max = 1,
-	looting = "rare",
-	looting_factor = 0.01 / 3,},
-	{name = "mcl_farming:carrot_item",
-	chance = 120, -- 2.5% / 3
-	min = 1,
-	max = 1,
-	looting = "rare",
-	looting_factor = 0.01 / 3,},
-	{name = "mcl_farming:potato_item",
-	chance = 120, -- 2.5% / 3
-	min = 1,
-	max = 1,
-	looting = "rare",
-	looting_factor = 0.01 / 3,},
 }
 
 local drops_zombie = table.copy(drops_common)
-table.insert(drops_zombie, {
-	-- Zombie Head
-	name = "mcl_heads:zombie",
-	chance = 200, -- 0.5%
-	min = 1,
-	max = 1,
-	mob_head = true,
-})
 
 local zombie = {
 	description = S("Zombie"),

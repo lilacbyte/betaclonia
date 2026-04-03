@@ -78,6 +78,27 @@ mcl_mobs.register_mob("mobs_mc:chicken", {
 	view_range = 16,
 	fear_height = 4,
 
+	do_custom = function(self, dtime)
+		if self.child then
+			return
+		end
+
+		self.egg_timer = (self.egg_timer or math.random(300, 600)) - dtime
+		if self.egg_timer > 0 then
+			return
+		end
+
+		self.egg_timer = nil
+
+		local pos = self.object:get_pos()
+		minetest.add_item(pos, "mcl_throwing:egg")
+		minetest.sound_play("mobs_mc_chicken_lay_egg", {
+			pos = pos,
+			gain = 1.0,
+			max_hear_distance = 16,
+		}, true)
+	end,
+
 	on_rightclick = function(self, clicker)
 		if self:follow_holding(clicker) and self:feed_tame(clicker, 4, true, false) then return end
 	end,

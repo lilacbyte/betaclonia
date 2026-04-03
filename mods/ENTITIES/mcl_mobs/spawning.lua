@@ -391,7 +391,7 @@ local SPAWN_MAPGEN_LIMIT  = 30911
 
 local function math_round(x) return (x > 0) and math.floor(x + 0.5) or math.ceil(x - 0.5) end
 
-local function get_next_mob_spawn_pos(pos)
+local function get_next_mob_spawn_pos(pos, spawn_def)
 	-- Select a distance such that distances closer to the player are selected much more often than
 	-- those further away from the player. This does produce a concentration at INNER (24 blocks)
 	local distance = math.random()^2 * (MOB_SPAWN_ZONE_OUTER - MOB_SPAWN_ZONE_INNER) + MOB_SPAWN_ZONE_INNER
@@ -431,10 +431,27 @@ local function get_next_mob_spawn_pos(pos)
 	y_min = math_round(y_min)
 	y_max = math_round(y_max)
 
+	local spawn_nodes = {"group:opaque", "group:water", "group:lava"}
+	local prefer_surface = false
+	if spawn_def then
+		if spawn_def.type_of_spawning == "ground" then
+			spawn_nodes = {"group:opaque"}
+			local entity_def = minetest.registered_entities[spawn_def.name]
+			prefer_surface = entity_def
+				and entity_def.spawn_class == "passive"
+				and entity_def.type == "animal"
+				and spawn_def.dimension == "overworld"
+		elseif spawn_def.type_of_spawning == "water" then
+			spawn_nodes = {"group:water"}
+		elseif spawn_def.type_of_spawning == "lava" then
+			spawn_nodes = {"group:lava"}
+		end
+	end
+
 	local spawning_position_list = minetest.find_nodes_in_area_under_air(
 			{x = goal_pos.x, y = y_min, z = goal_pos.z},
 			{x = goal_pos.x, y = y_max, z = goal_pos.z},
-			{"group:opaque", "group:water", "group:lava"}
+			spawn_nodes
 	) or {}
 
 	-- Select only the locations at a valid distance
@@ -447,6 +464,15 @@ local function get_next_mob_spawn_pos(pos)
 	end
 
 	if #valid_positions == 0 then return end
+	if prefer_surface then
+		local surface_pos = valid_positions[1]
+		for i = 2, #valid_positions do
+			if valid_positions[i].y > surface_pos.y then
+				surface_pos = valid_positions[i]
+			end
+		end
+		return surface_pos
+	end
 	return valid_positions[math.random(#valid_positions)]
 
 end
@@ -479,8 +505,7 @@ if mobs_spawn then
 		--prevents memory leak
 
 		local mob_library_worker_table = table.copy(spawn_dictionary)
-		local spawning_position = get_next_mob_spawn_pos(pos)
-		if not spawning_position or not cumulative_spawn_weight or cumulative_spawn_weight <= 0 then
+		if not cumulative_spawn_weight or cumulative_spawn_weight <= 0 then
 			return
 		end
 
@@ -507,6 +532,7 @@ if mobs_spawn then
 				local spawn_in_group = entity_def.spawn_in_group or 4
 				local spawn_in_group_min = entity_def.spawn_in_group_min or 1
 				local mob_type = entity_def.type
+				local spawning_position = get_next_mob_spawn_pos(pos, spawn_def)
 				if spawn_check(spawning_position,spawn_def) then
 
 					if can_spawn(spawn_def,spawning_position) and check_timer(spawn_def) then
