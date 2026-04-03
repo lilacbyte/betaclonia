@@ -201,7 +201,7 @@ function mob_class:drive_follow (moving_anim, stand_anim, dtime, moveresult)
 
 	local velocity = self.run_velocity
 	if elapsed then
-		local f = 1.0 + 1.5 * math.sin (elapsed / total * math.pi)
+		local f = 1.0 + 2.5 * math.sin (elapsed / total * math.pi)
 		velocity = velocity * f
 	end
 

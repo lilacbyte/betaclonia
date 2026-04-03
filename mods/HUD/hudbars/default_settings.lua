@@ -48,13 +48,13 @@ else
 	-- Modified in MCL2!
 	-- Beta HUD layout:
 	-- - Armor aligns beside hearts
-	-- - Breath bubbles appear above armor
-	-- - Stamina remains on the left row above hearts
+	-- - Breath bubbles appear above hearts
+	-- - Stamina appears above armor
 	hb.settings.sorting = {
 		["health"] = 0,
 		["armor"] = 1,
-		["stamina"] = 2,
-		["breath"] = 3,
+		["breath"] = 2,
+		["stamina"] = 3,
 		["hunger"] = 4,
 		["exhaustion"] = 5,
 	}

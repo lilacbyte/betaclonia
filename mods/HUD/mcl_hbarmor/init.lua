@@ -12,7 +12,7 @@ local mcl_hbarmor = {
     autohide = true,
 }
 
-local breath_align_state = {}
+local stamina_align_state = {}
 
 local tick_config = minetest.settings:get("mcl_hbarmor_tick")
 
@@ -99,12 +99,12 @@ local function apply_hudbar_layout(player, identifier, layout)
 	end
 end
 
-local function update_breath_alignment(player, arm)
+local function update_stamina_alignment(player, arm)
 	local name = player:get_player_name()
-	local state = breath_align_state[name] or {}
+	local state = stamina_align_state[name] or {}
 
 	if not state.default_layout then
-		state.default_layout = capture_hudbar_layout(player, "breath")
+		state.default_layout = capture_hudbar_layout(player, "stamina")
 	end
 	if not state.armor_layout then
 		state.armor_layout = capture_hudbar_layout(player, "armor")
@@ -115,11 +115,11 @@ local function update_breath_alignment(player, arm)
 	local target_mode = move_to_armor_row and "armor_row" or "default_row"
 
 	if target_layout and state.mode ~= target_mode then
-		apply_hudbar_layout(player, "breath", target_layout)
+		apply_hudbar_layout(player, "stamina", target_layout)
 		state.mode = target_mode
 	end
 
-	breath_align_state[name] = state
+	stamina_align_state[name] = state
 end
 
 local function custom_hud(player)
@@ -141,13 +141,13 @@ local function custom_hud(player)
 			else
 				hide = false
 			end
-			hb.init_hudbar(player, "armor", arm_printable(arm), nil, hide)
-			update_breath_alignment(player, arm)
-		end
+				hb.init_hudbar(player, "armor", arm_printable(arm), nil, hide)
+				update_stamina_alignment(player, arm)
+			end
 end
 
 --register and define armor HUD bar
-hb.register_hudbar("armor", 0xFFFFFF, S("Armor"), { icon = "hbarmor_icon.png", bgicon = "hbarmor_bgicon.png", bar = "hbarmor_bar.png" }, 0, 20, mcl_hbarmor.autohide)
+hb.register_hudbar("armor", 0xFFFFFF, S("Armor"), { icon = "hbarmor_icon.png", bgicon = "hbarmor_bgicon.png", bar = "hbarmor_bar.png" }, 0, 20, mcl_hbarmor.autohide, nil, nil, 1)
 
 function mcl_hbarmor.get_armor(player)
 	local name = player:get_player_name()
@@ -184,7 +184,7 @@ local function update_hud(player)
 	else
 		hb.change_hudbar(player, "armor", arm_printable(arm))
 	end
-	update_breath_alignment(player, arm)
+	update_stamina_alignment(player, arm)
 end
 
 minetest.register_on_joinplayer(function(player)
@@ -196,7 +196,7 @@ end)
 minetest.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
 	mcl_hbarmor.player_active[name] = false
-	breath_align_state[name] = nil
+	stamina_align_state[name] = nil
 end)
 
 local main_timer = 0

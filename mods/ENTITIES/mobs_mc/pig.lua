@@ -2,6 +2,25 @@
 
 local S = minetest.get_translator("mobs_mc")
 
+local HORSE_SPEED_RAND_SCALE = 1 / 2147483647
+
+local function generate_pig_speed(rand)
+	local t1, t2, t3
+	t1 = (rand or math.random(0, 2147483647) * HORSE_SPEED_RAND_SCALE) * 0.3
+	t2 = (rand or math.random(0, 2147483647) * HORSE_SPEED_RAND_SCALE) * 0.3
+	t3 = (rand or math.random(0, 2147483647) * HORSE_SPEED_RAND_SCALE) * 0.3
+
+	return (0.45 + t1 + t2 + t3) * 20 * 0.25
+end
+
+local function apply_pig_speed(self)
+	local speed = self._pig_speed or generate_pig_speed()
+	self._pig_speed = speed
+	self.walk_velocity = speed / 3
+	self.run_velocity = speed
+	self.follow_velocity = speed
+end
+
 mcl_mobs.register_mob("mobs_mc:pig", {
 	description = S("Pig"),
 	type = "animal",
@@ -26,8 +45,8 @@ mcl_mobs.register_mob("mobs_mc:pig", {
 	head_yaw="z",
 	makes_footstep_sound = true,
 	walk_velocity = 1,
-	run_velocity = 1.5,
-	follow_velocity = 1.5,
+	run_velocity = 3.0,
+	follow_velocity = 3.0,
 	drops = {
 		{name = "mcl_mobitems:beef",
 		chance = 1,
@@ -172,7 +191,19 @@ mcl_mobs.register_mob("mobs_mc:pig", {
 		end
 	end,
 
+	on_spawn = function(self)
+		apply_pig_speed(self)
+	end,
+
 	after_activate = function(self)
+		if not self._pig_speed then
+			apply_pig_speed(self)
+		else
+			self.walk_velocity = self._pig_speed / 3
+			self.run_velocity = self._pig_speed
+			self.follow_velocity = self._pig_speed
+		end
+
 		if self.saddle == "yes" then -- Make saddle load upon rejoin
 			self.base_texture = {
 				"mobs_mc_pig.png", -- base

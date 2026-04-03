@@ -161,7 +161,7 @@ if hb and hb.register_hudbar then
 		icon = "minetest_wadsprint_is_sprinting_icon.png",
 		bgicon = "minetest_wadsprint_is_not_sprinting_icon.png",
 		bar = "minetest_wadsprint_is_sprinting_icon.png",
-	}, mcl_sprint.STAMINA_MAX, mcl_sprint.STAMINA_MAX, true)
+	}, mcl_sprint.STAMINA_MAX, mcl_sprint.STAMINA_MAX, true, nil, nil, 1)
 end
 
 install_sprint_factor_guard()

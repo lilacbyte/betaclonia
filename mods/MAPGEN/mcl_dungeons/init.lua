@@ -56,6 +56,7 @@ local loottable_overworld =
 			{ itemstring = "mcl_jukebox:record_6", weight = 8 },
 			{ itemstring = "mcl_jukebox:record_7", weight = 8 },
 			{ itemstring = "mcl_jukebox:record_8", weight = 4 },
+			{ itemstring = "mcl_mobitems:saddle", weight = 1 },
 			{ itemstring = "mcl_core:apple_gold", weight = 1, amount_min = 1, amount_max =1 },
 			{ itemstring = "mcl_books:book", weight = 10,  amount_min = 1, amount_max = 2 },
 			{ itemstring = "mcl_core:apple", weight = 5, amount_min = 1, amount_max = 1 },
