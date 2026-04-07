@@ -62,7 +62,7 @@ Nether dungeon path:
 - nether-brick themed dungeon internals
 - wither skeleton spawners
 - nether wart loot
-- rare nether music discs including pigstep
+- rare nether music discs
 
 ### Reintroduced curated content
 
@@ -84,4 +84,3 @@ See:
 - `LEGAL.md`
 - `LICENSE.txt`
 - `API.md`
-

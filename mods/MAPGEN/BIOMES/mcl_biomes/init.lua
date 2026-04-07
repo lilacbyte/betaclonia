@@ -310,9 +310,9 @@ local function register_dimension_ores()
 			ore_type       = "scatter",
 			ore            = "mcl_nether:quartz_ore",
 			wherein         = {"mcl_nether:netherrack"},
-			clust_scarcity = 850,
-			clust_num_ores = 4, -- MC cluster amount: 4-10
-			clust_size     = 3,
+			clust_scarcity = 3000, -- rarer than default
+			clust_num_ores = 3,
+			clust_size     = 2,
 			y_min = mcl_vars.mg_nether_min,
 			y_max = mcl_vars.mg_nether_max,
 		})
@@ -320,9 +320,9 @@ local function register_dimension_ores()
 			ore_type       = "scatter",
 			ore            = "mcl_nether:quartz_ore",
 			wherein         = {"mcl_nether:netherrack"},
-			clust_scarcity = 1650,
-			clust_num_ores = 8, -- MC cluster amount: 4-10
-			clust_size     = 4,
+			clust_scarcity = 6000, -- much rarer large clusters
+			clust_num_ores = 5,
+			clust_size     = 3,
 			y_min = mcl_vars.mg_nether_min,
 			y_max = mcl_vars.mg_nether_max,
 		})

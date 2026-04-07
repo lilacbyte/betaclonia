@@ -334,16 +334,6 @@ mcl_jukebox.register_record({
 	sound = "mcl_jukebox_track_8",
 	exclude_from_creeperdrop = true,
 })
-mcl_jukebox.register_record({
-	title = "Pigstep",
-	author = "Lena Raine",
-	id = "pigstep",
-	texture = "mcl_jukebox_record_11.png",
-	-- Pigstep track asset is not shipped here yet, so use an existing jukebox track.
-	sound = "mcl_jukebox_track_8",
-	exclude_from_creeperdrop = true,
-})
-
 --add backward compatibility
 minetest.register_alias("mcl_jukebox:record_1", "mcl_jukebox:record_13")
 minetest.register_alias("mcl_jukebox:record_2", "mcl_jukebox:record_wait")
@@ -353,3 +343,5 @@ minetest.register_alias("mcl_jukebox:record_5", "mcl_jukebox:record_chirp")
 minetest.register_alias("mcl_jukebox:record_6", "mcl_jukebox:record_strad")
 minetest.register_alias("mcl_jukebox:record_7", "mcl_jukebox:record_mellohi")
 minetest.register_alias("mcl_jukebox:record_8", "mcl_jukebox:record_mall")
+-- Removed record aliases
+minetest.register_alias("mcl_jukebox:record_pigstep", "mcl_jukebox:record_mall")

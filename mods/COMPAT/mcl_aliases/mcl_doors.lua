@@ -17,7 +17,9 @@ for oldname, newname in pairs(doornames) do
 	minetest.register_alias("doors:"..oldname.."_b_2", "mcl_doors:"..newname.."_b_2")
 end
 
-minetest.register_alias("doors:trapdoor", "mcl_trees:wood_oak")
-minetest.register_alias("doors:trapdoor_open", "mcl_trees:wood_oak")
-minetest.register_alias("doors:iron_trapdoor", "mcl_core:stone")
-minetest.register_alias("doors:iron_trapdoor_open", "mcl_core:stone")
+-- Map legacy trapdoor to oak trapdoor node
+minetest.register_alias("doors:trapdoor", "mcl_doors:trapdoor_oak")
+minetest.register_alias("doors:trapdoor_open", "mcl_doors:trapdoor_oak_open")
+-- Keep iron trapdoor pointing to real iron trapdoor
+minetest.register_alias("doors:iron_trapdoor", "mcl_doors:iron_trapdoor")
+minetest.register_alias("doors:iron_trapdoor_open", "mcl_doors:iron_trapdoor_open")

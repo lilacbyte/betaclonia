@@ -27,4 +27,23 @@ minetest.register_craft({
 	}
 })
 
--- Trapdoors removed for beta gameplay rules.
+-- Oak Trapdoor (re-enabled)
+mcl_doors:register_trapdoor("mcl_doors:trapdoor_oak", {
+	description = S("Oak Trapdoor"),
+	_doc_items_longdesc = S("Oak trapdoors are horizontal barriers which can be opened and closed by hand or a redstone signal. They occupy the upper or lower part of a block, depending on placement. When open, they can be climbed like a ladder."),
+	tile_front = "doors_trapdoor.png",
+	tile_side = "doors_trapdoor_side.png",
+	wield_image = "doors_trapdoor.png",
+	groups = {handy=1, axey=1, material_wood=1, flammable=-1},
+	_mcl_hardness = 3,
+	_mcl_burntime = 15,
+	sounds = mcl_sounds.node_sound_wood_defaults(),
+})
+
+minetest.register_craft({
+	output = "mcl_doors:trapdoor_oak 2",
+	recipe = {
+		{"mcl_trees:wood_oak","mcl_trees:wood_oak","mcl_trees:wood_oak"},
+		{"mcl_trees:wood_oak","mcl_trees:wood_oak","mcl_trees:wood_oak"},
+	}
+})

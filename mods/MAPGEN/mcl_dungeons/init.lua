@@ -107,7 +107,6 @@ local loottable_nether = {
 				{ itemstring = "mcl_jukebox:record_3", weight = 3 },
 				{ itemstring = "mcl_jukebox:record_6", weight = 2 },
 				{ itemstring = "mcl_jukebox:record_8", weight = 1 },
-				{ itemstring = "mcl_jukebox:record_pigstep", weight = 1 },
 		},
 	},
 }

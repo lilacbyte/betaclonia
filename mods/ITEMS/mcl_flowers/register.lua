@@ -1,5 +1,58 @@
 local S = minetest.get_translator(minetest.get_current_modname())
 
+-- Only keep Beta-era flowers: dandelion (yellow) and poppy/rose (red).
+-- Everything else is ignored by wrapping the registration helpers.
+local _old_simple = mcl_flowers.register_simple_flower
+local _old_large = mcl_flowers.add_large_plant
+local allowed_simple = {
+	dandelion = true,
+	tulip_red = true, -- used here as the red flower / poppy replacement
+}
+local allowed_large = {} -- none for beta
+function mcl_flowers.register_simple_flower(name, def)
+	if not allowed_simple[name] then return end
+	return _old_simple(name, def)
+end
+function mcl_flowers.add_large_plant(name, def)
+	if not allowed_large[name] then return end
+	return _old_large(name, def)
+end
+
+-- Aliases for removed flowers -> closest beta equivalent (dandelion/red flower) or air
+local alias_to_dandelion = {
+	"mcl_flowers:oxeye_daisy",
+	"mcl_flowers:tulip_orange",
+	"mcl_flowers:tulip_pink",
+	"mcl_flowers:tulip_white",
+	"mcl_flowers:allium",
+	"mcl_flowers:azure_bluet",
+	"mcl_flowers:blue_orchid",
+	"mcl_flowers:lily_of_the_valley",
+	"mcl_flowers:cornflower",
+	"mcl_flowers:peony",
+	"mcl_flowers:lilac",
+	"mcl_flowers:sunflower",
+	"mcl_flowers:double_grass",
+	"mcl_flowers:double_fern",
+	"mcl_flowers:tallgrass",
+	"mcl_flowers:fern",
+}
+for _, name in ipairs(alias_to_dandelion) do
+	minetest.register_alias(name, "mcl_flowers:dandelion")
+end
+
+-- Tops of double plants and variants -> air to avoid missing nodes
+local alias_to_air = {
+	"mcl_flowers:peony_top",
+	"mcl_flowers:lilac_top",
+	"mcl_flowers:sunflower_top",
+	"mcl_flowers:double_grass_top",
+	"mcl_flowers:double_fern_top",
+}
+for _, name in ipairs(alias_to_air) do
+	minetest.register_alias(name, "air")
+end
+
 mcl_flowers.register_simple_flower("dandelion", {
 	desc = S("Dandelion"),
 	image = "flowers_dandelion_yellow.png",
