@@ -187,6 +187,14 @@ function mob_class:mob_activate(staticdata, dtime)
 		end
 	end
 
+	-- Migrate older entities whose saved can_despawn flag predates the current mob definition.
+	if self._default_can_despawn ~= nil
+		and self.can_despawn ~= self._default_can_despawn
+		and not self.tamed
+		and not self.persistent then
+		self.can_despawn = self._default_can_despawn
+	end
+
 	if not self.state then
 		self:set_state("stand")
 	elseif self.state == "die" then

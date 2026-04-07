@@ -25,6 +25,7 @@ mcl_mobs.register_mob("mobs_mc:pig", {
 	description = S("Pig"),
 	type = "animal",
 	spawn_class = "passive",
+	can_despawn = true,
 	runaway = true,
 	hp_min = 10,
 	hp_max = 10,

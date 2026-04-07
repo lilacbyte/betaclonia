@@ -12,6 +12,7 @@ mcl_mobs.register_mob("mobs_mc:chicken", {
 	description = S("Chicken"),
 	type = "animal",
 	spawn_class = "passive",
+	can_despawn = true,
 
 	hp_min = 4,
 	hp_max = 4,
