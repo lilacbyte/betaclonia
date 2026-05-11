@@ -224,7 +224,7 @@ local function register_dimension_biomes()
 
 --[[	minetest.register_decoration({
 		deco_type = "simple",
-		place_on = {"mcl_nether:netherrack","mcl_nether:glowstone","mcl_blackstone:nether_gold","mcl_nether:quartz_ore","mcl_core:gravel","mcl_nether:soul_sand","mcl_nether:glowstone","mcl_nether:magma"},
+		place_on = {"mcl_nether:netherrack","mcl_nether:glowstone","mcl_core:gravel","mcl_nether:soul_sand","mcl_nether:glowstone","mcl_nether:magma"},
 		sidelen = 16,
 		fill_ratio = 10,
 		biomes = { "Nether" },
@@ -304,15 +304,14 @@ local function register_dimension_ores()
 		},
 	})
 
-	-- Nether quartz
 	if minetest.settings:get_bool("mcl_generate_ores", true) then
 		minetest.register_ore({
 			ore_type       = "scatter",
 			ore            = "mcl_nether:quartz_ore",
 			wherein         = {"mcl_nether:netherrack"},
-			clust_scarcity = 3000, -- rarer than default
-			clust_num_ores = 3,
-			clust_size     = 2,
+			clust_scarcity = 850,
+			clust_num_ores = 4,
+			clust_size     = 3,
 			y_min = mcl_vars.mg_nether_min,
 			y_max = mcl_vars.mg_nether_max,
 		})
@@ -320,9 +319,9 @@ local function register_dimension_ores()
 			ore_type       = "scatter",
 			ore            = "mcl_nether:quartz_ore",
 			wherein         = {"mcl_nether:netherrack"},
-			clust_scarcity = 6000, -- much rarer large clusters
-			clust_num_ores = 5,
-			clust_size     = 3,
+			clust_scarcity = 1650,
+			clust_num_ores = 8,
+			clust_size     = 4,
 			y_min = mcl_vars.mg_nether_min,
 			y_max = mcl_vars.mg_nether_max,
 		})

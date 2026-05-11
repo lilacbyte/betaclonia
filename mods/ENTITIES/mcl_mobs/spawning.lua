@@ -713,7 +713,7 @@ local function find_spawn_pos_for_def(player_pos, spawn_def)
 	return get_next_mob_spawn_pos(player_pos, spawn_def)
 end
 
-local function try_spawn_def_at(spawn_pos, spawn_def, ignore_caps)
+local function try_spawn_def_at(spawn_pos, spawn_def, ignore_caps, sdata, idx, pack_size)
 	if not spawn_pos then
 		return false
 	end
@@ -725,7 +725,12 @@ local function try_spawn_def_at(spawn_pos, spawn_def, ignore_caps)
 	if not spawn_pos then
 		return false
 	end
-	local object = mcl_mobs.spawn(spawn_pos, spawn_def.name)
+	local object
+	if spawn_def.spawn then
+		object = spawn_def.spawn(spawn_def, spawn_pos, idx or 1, sdata, pack_size or 1)
+	else
+		object = mcl_mobs.spawn(spawn_pos, spawn_def.name, sdata and minetest.serialize(sdata))
+	end
 	if object then
 		dbg_spawn_succ = dbg_spawn_succ + 1
 		return true
@@ -744,18 +749,28 @@ local function spawn_def_pack(player_pos, spawn_def)
 		return 0
 	end
 
-	local spawn_in_group = entity_def.spawn_in_group or 1
-	local spawn_in_group_min = entity_def.spawn_in_group_min or 1
+	local spawn_in_group = spawn_def.pack_max or entity_def.spawn_in_group or 1
+	local spawn_in_group_min = spawn_def.pack_min or entity_def.spawn_in_group_min or 1
 	local group_size = math.random(spawn_in_group_min, spawn_in_group)
 	local spawned = 0
+	local spawn_sdata
 
-	if try_spawn_def_at(base_pos, spawn_def, false) then
+	if spawn_def.prepare_to_spawn then
+		local ok, result = pcall(spawn_def.prepare_to_spawn, spawn_def, group_size, base_pos)
+		if ok and type(result) == "table" then
+			spawn_sdata = result
+		else
+			spawn_sdata = {}
+		end
+	end
+
+	if try_spawn_def_at(base_pos, spawn_def, false, spawn_sdata, 1, group_size) then
 		spawned = 1
 	end
 
 	for _ = 2, group_size do
 		local spawn_pos = find_group_member_spawn_pos(base_pos, spawn_def)
-		if try_spawn_def_at(spawn_pos, spawn_def, true) then
+		if try_spawn_def_at(spawn_pos, spawn_def, true, spawn_sdata, _, group_size) then
 			spawned = spawned + 1
 		end
 	end
@@ -787,7 +802,7 @@ local function spawn_group(pos, spawn_def, spawn_on, group_max, group_min)
 	for _ = 1, math.random(group_min, group_max) do
 		local support_pos = found[math.random(#found)]
 		local spawn_pos = vector.offset(support_pos, 0, 1, 0)
-		if try_spawn_def_at(spawn_pos, spawn_def, true) then
+		if try_spawn_def_at(spawn_pos, spawn_def, true, nil, 1, group_max) then
 			last_spawn = spawn_pos
 		end
 	end

@@ -130,31 +130,119 @@ end
 mcl_mobs.register_mob("mobs_mc:killer_bunny", killer_bunny)
 
 -- Mob spawning rules.
--- Different skins depending on spawn location <- we'll get to this when the spawning algorithm is fleshed out
+local function rabbit_biome_name (pos)
+	local biome_data = minetest.get_biome_data(pos)
+	if not biome_data then
+		return nil
+	end
+	return minetest.get_biome_name(biome_data.biome)
+end
 
-mcl_mobs.spawn_setup({
+local spawns_white_rabbits = {
+	["FrozenOcean"] = true,
+	["FrozenPeaks"] = true,
+	["FrozenRiver"] = true,
+	["Grove"] = true,
+	["IceSpikes"] = true,
+	["JaggedPeaks"] = true,
+	["SnowyBeach"] = true,
+	["SnowyPlains"] = true,
+	["SnowySlopes"] = true,
+	["SnowyTaiga"] = true,
+}
+
+local function rabbit_spawn_texture (biome_name)
+	local random = math.random(100)
+
+	if spawns_white_rabbits[biome_name] then
+		if random < 80 then
+			return "mobs_mc_rabbit_white.png"
+		end
+		return "mobs_mc_rabbit_white_splotched.png"
+	elseif biome_name == "Desert" then
+		return "mobs_mc_rabbit_gold.png"
+	elseif random < 50 then
+		return "mobs_mc_rabbit_brown.png"
+	elseif random < 90 then
+		return "mobs_mc_rabbit_salt.png"
+	end
+	return "mobs_mc_rabbit_black.png"
+end
+
+local rabbit_spawner_woody = table.merge (mobs_mc.animal_spawner, {
 	name = "mobs_mc:rabbit",
-	type_of_spawning = "ground",
-	dimension = "overworld",
-	aoc = 8,
+	weight = 4,
+	min_light = 9,
+	pack_min = 2,
+	pack_max = 3,
+	biomes = {
+		"FlowerForest",
+		"OldGrowthPineTaiga",
+		"OldGrowthSpruceTaiga",
+		"Taiga",
+	},
+})
+
+function rabbit_spawner_woody:test_supporting_node (node)
+	return minetest.get_item_group (node.name, "grass_block") > 0
+		or node.name == "mcl_core:sand"
+		or node.name == "mcl_core:snowblock"
+end
+
+function rabbit_spawner_woody:prepare_to_spawn (pack_size, center)
+	return {
+		_spawn_texture = rabbit_spawn_texture (rabbit_biome_name (center)),
+	}
+end
+
+local rabbit_spawner_meadow_or_cherry_grove = table.merge (rabbit_spawner_woody, {
+	name = "mobs_mc:rabbit",
+	weight = 2,
+	min_light = 9,
+	biomes = {
+		"Meadow",
+		"CherryGrove",
+	},
+})
+
+local rabbit_spawner_snowy = table.merge (rabbit_spawner_woody, {
+	name = "mobs_mc:rabbit",
+	weight = 10,
+	min_light = 9,
+	biomes = {
+		"FrozenOcean",
+		"FrozenRiver",
+		"IceSpikes",
+		"SnowyBeach",
+		"SnowyPlains",
+		"SnowySlopes",
+		"SnowyTaiga",
+	},
+})
+
+local rabbit_spawner_grove = table.merge (rabbit_spawner_woody, {
+	name = "mobs_mc:rabbit",
+	weight = 8,
+	min_light = 9,
+	biomes = {
+		"Grove",
+	},
+})
+
+local rabbit_spawner_desert = table.merge (rabbit_spawner_woody, {
+	name = "mobs_mc:rabbit",
+	weight = 4,
 	min_light = 9,
 	biomes = {
 		"Desert",
 	},
-	chance = 70,
 })
 
-mcl_mobs.spawn_setup({
-	name = "mobs_mc:rabbit",
-	type_of_spawning = "ground",
-	dimension = "overworld",
-	aoc = 8,
-	min_light = 9,
-	biomes = {
-		"Forest",
-	},
-	chance = 140,
-})
+mcl_mobs.register_spawner (rabbit_spawner_woody)
+mcl_mobs.register_spawner (rabbit_spawner_meadow_or_cherry_grove)
+mcl_mobs.register_spawner (rabbit_spawner_snowy)
+mcl_mobs.register_spawner (rabbit_spawner_grove)
+mcl_mobs.register_spawner (rabbit_spawner_desert)
 
 -- Spawn egg
 mcl_mobs.register_egg("mobs_mc:rabbit", S("Rabbit"), "#995f40", "#734831", 0)

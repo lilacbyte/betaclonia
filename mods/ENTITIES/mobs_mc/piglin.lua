@@ -250,17 +250,17 @@ mcl_mobs.register_mob("mobs_mc:zombified_piglin",table.merge(piglin,{
 	},
 }))
 
-mcl_mobs.spawn_setup({
+local zombified_piglin_spawner = table.merge (mobs_mc.monster_spawner, {
 	name = "mobs_mc:zombified_piglin",
-	type_of_spawning = "ground",
 	dimension = "nether",
-	min_light = 0,
-	max_light = minetest.LIGHT_MAX+1,
-	aoc = 4,
+	weight = 100,
+	pack_min = 4,
+	pack_max = 4,
 	biomes = {
 		"Nether"
 	},
-	chance = 1000,
 })
+
+mcl_mobs.register_spawner (zombified_piglin_spawner)
 
 mcl_mobs.register_egg("mobs_mc:zombified_piglin", S("Zombie Pigman"), "#ea9393", "#4c7129", 0)

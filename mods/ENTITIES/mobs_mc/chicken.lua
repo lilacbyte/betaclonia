@@ -106,42 +106,23 @@ mcl_mobs.register_mob("mobs_mc:chicken", {
 
 })
 
-mcl_mobs.spawn_setup({
+local chicken_spawner = table.merge (mobs_mc.animal_spawner, {
 	name = "mobs_mc:chicken",
-	type_of_spawning = "ground",
-	dimension = "overworld",
-	aoc = 9,
 	min_height = mobs_mc.water_level + 3,
-	biomes = {
-		"flat",
-		"IcePlainsSpikes",
-		"ColdTaiga",
-		"ColdTaiga_beach",
-		"ColdTaiga_beach_water",
-		"MegaTaiga",
-		"MegaSpruceTaiga",
-		"ExtremeHills",
-		"ExtremeHills_beach",
-		"ExtremeHillsM",
-		"ExtremeHills+",
-		"Plains",
-		"Plains_beach",
-		"SunflowerPlains",
-		"Taiga",
-		"Taiga_beach",
-		"Forest",
-		"Forest_beach",
-		"FlowerForest",
-		"FlowerForest_beach",
-		"BirchForest",
-		"BirchForestM",
-		"RoofedForest",
-		"Savanna",
-		"Savanna_beach",
-		"SavannaM",
-	},
-	chance = 100,
+	biomes = mobs_mc.farm_animal_biomes,
+	weight = 10,
 })
+
+local chicken_spawner_jungle = table.merge (mobs_mc.animal_spawner, {
+	name = "mobs_mc:chicken",
+	biomes = {
+		"Jungle",
+	},
+	weight = 10,
+})
+
+mcl_mobs.register_spawner (chicken_spawner)
+mcl_mobs.register_spawner (chicken_spawner_jungle)
 
 -- spawn eggs
 mcl_mobs.register_egg("mobs_mc:chicken", S("Chicken"), "#a1a1a1", "#ff0000", 0)

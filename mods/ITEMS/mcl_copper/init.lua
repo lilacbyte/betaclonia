@@ -133,8 +133,6 @@ local COPPER_PICK_BLOCKED_GOLD_NODES = {
 	["mcl_core:stone_with_gold"] = true,
 	["default:stone_with_gold"] = true,
 	["mcl_deepslate:deepslate_with_gold"] = true,
-	["mcl_nether:nether_gold_ore"] = true,
-	["mcl_blackstone:nether_gold"] = true,
 }
 
 local COPPER_PICK_ALLOWED_IRON_NODES = {

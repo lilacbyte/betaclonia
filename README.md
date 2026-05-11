@@ -21,7 +21,6 @@ It is being shaped into a Beta-flavored experience with:
 
 ### Combat, durability and armor
 
-- you can enable sprinting and it has a stamina bar ([texture credit](https://content.luanti.org/packages/drkwv/minetest_wadsprint/))
 - armor HUD uses a classic 10-icon / 20-point bar and updates from armor state
 - armor points are durability-weighted by remaining condition
 - armor effects :

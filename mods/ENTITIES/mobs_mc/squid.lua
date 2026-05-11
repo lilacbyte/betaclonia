@@ -69,17 +69,17 @@ mcl_mobs.register_mob("mobs_mc:squid", table.merge(squid_defs, {
 -- TODO: Behaviour: squirt
 
 -- Spawn near the water surface
-mcl_mobs.spawn_setup({
+local squid_spawner = table.merge (mobs_mc.aquatic_animal_spawner, {
 	name = "mobs_mc:squid",
-	type_of_spawning = "water",
-	dimension = "overworld",
 	min_height = mobs_mc.water_level - 16,
 	max_height = mobs_mc.water_level + 1,
 	min_light = 0,
 	max_light = minetest.LIGHT_MAX + 1,
-	aoc = 7,
-	chance = 80,
+	weight = 12,
+	biomes = mobs_mc.overworld_biomes,
 })
+
+mcl_mobs.register_spawner (squid_spawner)
 
 -- spawn eggs
 mcl_mobs.register_egg("mobs_mc:squid", S("Squid"), "#223b4d", "#708999", 0)

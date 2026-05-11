@@ -144,17 +144,16 @@ cave_spider.dealt_effect = {
 }
 mcl_mobs.register_mob("mobs_mc:cave_spider", cave_spider)
 
-mcl_mobs.spawn_setup({
+local spider_spawner = table.merge (mobs_mc.monster_spawner, {
 	name = "mobs_mc:spider",
-	type_of_spawning = "ground",
-	dimension = "overworld",
-	aoc = 9,
+	weight = 100,
 	biomes_except = {
 		"MushroomIslandShore",
-		"MushroomIsland"
+		"MushroomIsland",
 	},
-	chance = 1000,
 })
+
+mcl_mobs.register_spawner (spider_spawner)
 
 -- spawn eggs
 mcl_mobs.register_egg("mobs_mc:spider", S("Spider"), "#342d26", "#a80e0e", 0)

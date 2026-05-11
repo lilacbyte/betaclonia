@@ -215,23 +215,33 @@ local cave_biomes = {
 local cave_min = mcl_vars.mg_overworld_min
 local cave_max = water_level - 23
 
-for slime_name,slime_chance in pairs({
-	["mobs_mc:slime_tiny"] = 1000,
-	["mobs_mc:slime_small"] = 1000,
-	["mobs_mc:slime_big"] = 1000
+for _, slime_name in ipairs({
+	"mobs_mc:slime_tiny",
+	"mobs_mc:slime_small",
+	"mobs_mc:slime_big",
 }) do
-	mcl_mobs.spawn_setup({
+	local slime_spawner = table.merge (mobs_mc.default_spawner, {
 		name = slime_name,
-		type_of_spawning = "ground",
-		dimension = "overworld",
+		spawn_category = "monster",
+		spawn_placement = "ground",
+		weight = 100,
 		biomes = cave_biomes,
 		min_light = 0,
-		max_light = minetest.LIGHT_MAX+1,
+		max_light = minetest.LIGHT_MAX + 1,
 		min_height = cave_min,
 		max_height = cave_max,
-		chance = slime_chance,
-		check_position = in_slime_chunk,
 	})
+
+	function slime_spawner:test_spawn_position (spawn_pos, node_pos, sdata, node_cache,
+						    spawn_flag)
+		return in_slime_chunk (node_pos)
+			and mobs_mc.default_spawner.test_spawn_position (self, spawn_pos,
+									 node_pos, sdata,
+									 node_cache,
+									 spawn_flag)
+	end
+
+	mcl_mobs.register_spawner (slime_spawner)
 end
 
 mcl_mobs.register_egg("mobs_mc:slime_big", S("Slime"), "#52a03e", "#7ebf6d")

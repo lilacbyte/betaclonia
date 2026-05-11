@@ -259,11 +259,7 @@ mcl_player.register_globalstep(function(player)
 			animation_speed_mod = animation_speed_mod / 2
 		end]]--removed
 
-		-- ask if player is sprinting
 		local is_sprinting = false
-		if minetest.get_modpath("mcl_sprint") then
-			is_sprinting = mcl_sprint.is_sprinting(name)
-		end
 
 		local velocity = player:get_velocity()
 

@@ -35,20 +35,6 @@ minetest.register_node("mcl_nether:glowstone", {
 	}
 })
 
-minetest.register_node("mcl_nether:quartz_ore", {
-	description = S("Nether Quartz Ore"),
-	_doc_items_longdesc = S("Nether quartz ore is an ore containing nether quartz. It is commonly found around netherrack in the Nether."),
-	tiles = {"mcl_nether_quartz_ore.png"},
-	groups = {pickaxey=1, building_block=1, material_stone=1, xp=3},
-	drop = "mcl_nether:quartz",
-	sounds = mcl_sounds.node_sound_stone_defaults(),
-	_mcl_blast_resistance = 3,
-	_mcl_hardness = 3,
-	_mcl_silk_touch_drop = true,
-	_mcl_fortune_drop = mcl_core.fortune_drop_ore,
-	_mcl_cooking_output = "mcl_nether:quartz"
-})
-
 -- For eternal fire on top of netherrack and magma blocks
 -- (this code does not require a dependency on mcl_fire)
 local function eternal_after_destruct(pos)
@@ -88,6 +74,20 @@ minetest.register_node("mcl_nether:netherrack", {
 	-- Eternal fire on top
 	after_destruct = eternal_after_destruct,
 	_on_ignite = eternal_on_ignite,
+})
+
+minetest.register_node("mcl_nether:quartz_ore", {
+	description = S("Nether Quartz Ore"),
+	_doc_items_longdesc = S("Nether quartz ore is an ore containing nether quartz. It is commonly found around netherrack in the Nether."),
+	tiles = {"mcl_nether_quartz_ore.png"},
+	groups = {pickaxey=1, building_block=1, material_stone=1, xp=3},
+	drop = "mcl_nether:quartz",
+	sounds = mcl_sounds.node_sound_stone_defaults(),
+	_mcl_blast_resistance = 3,
+	_mcl_hardness = 3,
+	_mcl_silk_touch_drop = true,
+	_mcl_fortune_drop = mcl_core.fortune_drop_ore,
+	_mcl_cooking_output = "mcl_nether:quartz"
 })
 
 minetest.register_node("mcl_nether:soul_sand", {

@@ -292,6 +292,7 @@ function mcl_mobs.register_mob(name, def)
 		initial_properties = table.merge(mcl_mobs.mob_class.initial_properties,init_props),
 		can_despawn = can_despawn,
 		_default_can_despawn = can_despawn,
+		_spawn_category = def._spawn_category or def.spawn_class or "misc",
 		rotate = math.rad(def.rotate or 0), --  0=front, 90=side, 180=back, 270=side2
 		hp_min = scale_difficulty(def.hp_min, 5, 1),
 		on_rightclick = create_mob_on_rightclick(def.on_rightclick),

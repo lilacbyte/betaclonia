@@ -7,6 +7,16 @@ mobs_mc.check_iron_golem_summon = function()
 	return false
 end
 
+mobs_mc.is_mob_griefing_enabled = function(mob_name)
+	for _, mob in pairs((minetest.settings:get("mobs_griefing_disable_individual") or ""):split(",")) do
+		mob = mob:trim()
+		if mob == mob_name then
+			return false
+		end
+	end
+	return minetest.settings:get_bool("mobs_griefing", true)
+end
+
 local pr = PseudoRandom(os.time()*5)
 
 local offsets = {}
@@ -78,8 +88,21 @@ mobs_mc.water_level = tonumber(minetest.settings:get("water_level")) or 0
 
 -- Auto load all lua files
 local path = minetest.get_modpath("mobs_mc")
-for _, file in pairs(minetest.get_dir_list(path, false)) do
+local files = {}
+for _, file in ipairs(minetest.get_dir_list(path, false)) do
 	if file:sub(-4) == ".lua" and file ~= "init.lua" then
-		dofile(path .. "/" ..file)
+		files[#files + 1] = file
+	end
+end
+table.sort(files)
+
+for _, file in ipairs(files) do
+	if file == "spawning.lua" then
+		dofile(path .. "/" .. file)
+	end
+end
+for _, file in ipairs(files) do
+	if file ~= "spawning.lua" then
+		dofile(path .. "/" .. file)
 	end
 end

@@ -217,39 +217,13 @@ mcl_mobs.register_mob("mobs_mc:pig", {
 	end,
 })
 
-mcl_mobs.spawn_setup({
+local pig_spawner = table.merge (mobs_mc.animal_spawner, {
 	name = "mobs_mc:pig",
-	type_of_spawning = "ground",
-	dimension = "overworld",
-	aoc = 9,
 	min_height = mobs_mc.water_level + 3,
-	biomes = {
-		"flat",
-		"MegaTaiga",
-		"MegaSpruceTaiga",
-		"ExtremeHills",
-		"ExtremeHills_beach",
-		"ExtremeHillsM",
-		"ExtremeHills+",
-		"StoneBeach",
-		"Plains",
-		"Plains_beach",
-		"SunflowerPlains",
-		"Taiga",
-		"Taiga_beach",
-		"Forest",
-		"Forest_beach",
-		"FlowerForest",
-		"FlowerForest_beach",
-		"BirchForest",
-		"BirchForestM",
-		"RoofedForest",
-		"Savanna",
-		"Savanna_beach",
-		"SavannaM",
-	},
-	chance = 100,
+	biomes = mobs_mc.farm_animal_biomes,
+	weight = 10,
 })
+mcl_mobs.register_spawner (pig_spawner)
 
 -- spawn eggs
 mcl_mobs.register_egg("mobs_mc:pig", S("Pig"), "#f0a5a2", "#db635f", 0)

@@ -156,17 +156,16 @@ mcl_mobs.register_mob("mobs_mc:creeper_charged", table.merge(creeper_defs, {
 	glow = 3,
 }))
 
-mcl_mobs.spawn_setup({
+local creeper_spawner = table.merge (mobs_mc.monster_spawner, {
 	name = "mobs_mc:creeper",
-	type_of_spawning = "ground",
-	dimension = "overworld",
-	aoc = 2,
+	weight = 100,
 	biomes_except = {
 		"MushroomIslandShore",
-		"MushroomIsland"
+		"MushroomIsland",
 	},
-	chance = 1000,
 })
+
+mcl_mobs.register_spawner (creeper_spawner)
 
 -- spawn eggs
 mcl_mobs.register_egg("mobs_mc:creeper", S("Creeper"), "#0da70a", "#000000", 0)

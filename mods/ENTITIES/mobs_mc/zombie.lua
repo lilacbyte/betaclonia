@@ -105,30 +105,35 @@ local baby_zombie = table.merge(zombie, {
 
 mcl_mobs.register_mob("mobs_mc:baby_zombie", baby_zombie)
 
+local non_mushroom_biomes = {}
 
-mcl_mobs.spawn_setup({
+for _, biome in ipairs (mobs_mc.monster_biomes) do
+	if biome ~= "MushroomIslandShore" and biome ~= "MushroomIsland" then
+		non_mushroom_biomes[#non_mushroom_biomes + 1] = biome
+	end
+end
+
+local zombie_spawner = table.merge (mobs_mc.monster_spawner, {
 	name = "mobs_mc:zombie",
-	type_of_spawning = "ground",
-	dimension = "overworld",
-	aoc = 9,
-	biomes_except = {
-		"MushroomIslandShore",
-		"MushroomIsland"
-	},
-	chance = 1000,
+	weight = 95,
+	pack_min = 4,
+	pack_max = 4,
+	biomes = non_mushroom_biomes,
 })
 
-mcl_mobs.spawn_setup({
-	name = "mobs_mc:baby_zombie",
-	type_of_spawning = "ground",
-	dimension = "overworld",
-	aoc = 9,
-	biomes_except = {
-		"MushroomIslandShore",
-		"MushroomIsland"
-	},
-	chance = 50,
-})
+function zombie_spawner:spawn (spawn_pos, idx, sdata, pack_size)
+	if sdata and sdata._is_baby_zombie or math.random () < 0.05 then
+		return minetest.add_entity (spawn_pos, "mobs_mc:baby_zombie")
+	end
+	return minetest.add_entity (spawn_pos, "mobs_mc:zombie")
+end
+
+function zombie_spawner:describe_criteria (tbl, omit_group_details)
+	mobs_mc.monster_spawner.describe_criteria (self, tbl, omit_group_details)
+	table.insert (tbl, S ("5% of Zombies will spawn as their baby variants."))
+end
+
+mcl_mobs.register_spawner (zombie_spawner)
 
 -- Spawn eggs
 mcl_mobs.register_egg("mobs_mc:zombie", S("Zombie"), "#00afaf", "#799c66", 0)

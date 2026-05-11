@@ -223,43 +223,11 @@ mcl_mobs.register_mob("mobs_mc:sheep", {
 	end
 })
 
-mcl_mobs.spawn_setup({
+local sheep_spawner = table.merge (mobs_mc.animal_spawner, {
 	name = "mobs_mc:sheep",
-	type_of_spawning = "ground",
-	dimension = "overworld",
-	aoc = 9,
-	min_height = mobs_mc.water_level + 3,
-	biomes = {
-		"flat",
-		"IcePlainsSpikes",
-		"ColdTaiga",
-		"ColdTaiga_beach",
-		"ColdTaiga_beach_water",
-		"MegaTaiga",
-		"MegaSpruceTaiga",
-		"ExtremeHills",
-		"ExtremeHills_beach",
-		"ExtremeHillsM",
-		"ExtremeHills+",
-		"ExtremeHills+_snowtop",
-		"StoneBeach",
-		"Plains",
-		"Plains_beach",
-		"SunflowerPlains",
-		"Taiga",
-		"Taiga_beach",
-		"Forest",
-		"Forest_beach",
-		"FlowerForest",
-		"FlowerForest_beach",
-		"BirchForest",
-		"BirchForestM",
-		"RoofedForest",
-		"Savanna",
-		"Savanna_beach",
-		"SavannaM",
-	},
-	chance = 120,
+	biomes = mobs_mc.farm_animal_biomes,
+	weight = 12,
 })
+mcl_mobs.register_spawner (sheep_spawner)
 
 mcl_mobs.register_egg("mobs_mc:sheep", S("Sheep"), "#e7e7e7", "#ffb5b5", 0)

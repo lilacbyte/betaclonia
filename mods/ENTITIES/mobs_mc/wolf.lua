@@ -263,26 +263,102 @@ end
 
 mcl_mobs.register_mob("mobs_mc:dog", dog)
 
-mcl_mobs.spawn_setup({
+local function wolf_supporting_node (node)
+	return minetest.get_item_group (node.name, "grass_block") > 0
+		or node.name == "mcl_core:snowblock"
+		or node.name == "mcl_core:coarse_dirt"
+		or node.name == "mcl_core:podzol"
+end
+
+local wolf_spawner_taiga = table.merge (mobs_mc.animal_spawner, {
 	name = "mobs_mc:wolf",
-	type_of_spawning = "ground",
-	dimension = "overworld",
-	aoc = 7,
+	weight = 8,
+	pack_min = 4,
+	pack_max = 4,
 	min_height = mobs_mc.water_level + 3,
 	biomes = {
-		"flat",
 		"Taiga",
 		"MegaSpruceTaiga",
 		"MegaTaiga",
-		"Forest",
 		"ColdTaiga",
-		"Forest_beach",
+		"ColdTaiga_beach",
 		"ColdTaiga_beach_water",
 		"Taiga_beach",
-		"ColdTaiga_beach",
-		"IcePlains"
+		"IcePlains",
+		"IcePlainsSpikes",
 	},
-	chance = 80,
 })
+
+function wolf_spawner_taiga:test_supporting_node (node)
+	return wolf_supporting_node (node)
+end
+
+function wolf_spawner_taiga:describe_supporting_nodes ()
+	return S ("on grass, snow blocks, coarse dirt, or podzol")
+end
+
+local wolf_spawner_sparse_jungle = table.merge (wolf_spawner_taiga, {
+	pack_min = 2,
+	pack_max = 4,
+	biomes = {
+		"SparseJungle",
+	},
+})
+
+local wolf_spawner_savannah = table.merge (wolf_spawner_taiga, {
+	pack_min = 4,
+	pack_max = 8,
+	biomes = {
+		"Savannah",
+		"Savanna",
+		"SavannaM",
+	},
+})
+
+local wolf_spawner_mesa = table.merge (wolf_spawner_taiga, {
+	weight = 2,
+	pack_min = 4,
+	pack_max = 8,
+	biomes = {
+		"Mesa",
+		"MesaPlateauF",
+		"MesaPlateauFM",
+		"ErodedMesa",
+		"WoodedMesa",
+	},
+})
+
+local wolf_spawner_forest = table.merge (wolf_spawner_taiga, {
+	weight = 5,
+	pack_min = 4,
+	pack_max = 4,
+	biomes = {
+		"Forest",
+		"Forest_beach",
+		"FlowerForest",
+		"BirchForest",
+		"BirchForestM",
+		"OldGrowthBirchForest",
+		"OldGrowthSpruceTaiga",
+		"OldGrowthPineTaiga",
+		"WindsweptForest",
+	},
+})
+
+local wolf_spawner_grove = table.merge (wolf_spawner_taiga, {
+	weight = 1,
+	pack_min = 1,
+	pack_max = 1,
+	biomes = {
+		"Grove",
+	},
+})
+
+mcl_mobs.register_spawner (wolf_spawner_taiga)
+mcl_mobs.register_spawner (wolf_spawner_sparse_jungle)
+mcl_mobs.register_spawner (wolf_spawner_savannah)
+mcl_mobs.register_spawner (wolf_spawner_mesa)
+mcl_mobs.register_spawner (wolf_spawner_forest)
+mcl_mobs.register_spawner (wolf_spawner_grove)
 
 mcl_mobs.register_egg("mobs_mc:wolf", S("Wolf"), "#d7d3d3", "#ceaf96", 0)

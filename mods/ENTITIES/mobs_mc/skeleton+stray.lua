@@ -150,17 +150,16 @@ witherskeleton.on_spawn = nil
 mcl_mobs.register_mob("mobs_mc:witherskeleton", witherskeleton)
 
 
-mcl_mobs.spawn_setup({
+local skeleton_spawner = table.merge (mobs_mc.monster_spawner, {
 	name = "mobs_mc:skeleton",
-	type_of_spawning = "ground",
-	dimension = "overworld",
-	aoc = 2,
 	biomes_except = {
 		"MushroomIslandShore",
-		"MushroomIsland"
+		"MushroomIsland",
 	},
-	chance = 800,
+	weight = 1,
 })
+
+mcl_mobs.register_spawner (skeleton_spawner)
 
 -- spawn eggs
 mcl_mobs.register_egg("mobs_mc:skeleton", S("Skeleton"), "#c1c1c1", "#494949", 0)

@@ -83,18 +83,18 @@ mcl_mobs.register_mob("mobs_mc:ghast", {
 })
 
 
-mcl_mobs.spawn_setup({
+local ghast_spawner = table.merge (mobs_mc.monster_spawner, {
 	name = "mobs_mc:ghast",
-	type_of_spawning = "ground",
 	dimension = "nether",
 	min_light = 0,
 	max_light = 15,
-	aoc = 2,
+	weight = 50,
 	biomes = {
 		"Nether",
 	},
-	chance = 400,
 })
+
+mcl_mobs.register_spawner (ghast_spawner)
 
 -- fireball (projectile)
 mcl_mobs.register_arrow("mobs_mc:fireball", {

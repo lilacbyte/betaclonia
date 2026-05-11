@@ -84,9 +84,6 @@ mcl_hand_range (Hand range) float 4.5 1 128
 # Default: 10
 mcl_hand_range_creative (Creative mode hand range) float 10 1 128
 
-# If disabled, players cannot sprint and stamina UI is disabled.
-mcl_enable_sprinting (Sprinting) bool false
-
 [Mobs]
 # If enabled, mobs will spawn naturally.
 # This does not affect mob spawners.
