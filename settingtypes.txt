@@ -100,8 +100,8 @@ only_peaceful_mobs (Spawn only peaceful mobs) bool false
 mobs_spawn_protected (Spawn mobs in protected areas) bool false
 
 # Use light levels from The OG Game 1.18+ for monster spawning.
-# Disable to use older mob specific light levels.
-mcl_mobs_modern_lighting (Modern light rules for spawning) bool true
+# Disable to use older Beta/Alpha-style mob light rules.
+mcl_mobs_modern_lighting (Modern light rules for spawning) bool false
 
 # Mobs difficulty.
 # This is a number that will affect the initial and maximum

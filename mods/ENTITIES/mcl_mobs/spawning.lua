@@ -1,14 +1,14 @@
 --lua locals
 local mob_class = mcl_mobs.mob_class
 
-local modern_lighting = minetest.settings:get_bool("mcl_mobs_modern_lighting", true)
+local modern_lighting = minetest.settings:get_bool("mcl_mobs_modern_lighting", false)
 local peaceful_mode = minetest.settings:get_bool("only_peaceful_mobs", false)
 
 local nether_threshold = 11
 local end_threshold = 15
 local overworld_threshold = 0
 local overworld_sky_threshold = 7
-local overworld_passive_threshold = 7
+local overworld_passive_threshold = 8
 
 local PASSIVE_INTERVAL = tonumber(minetest.settings:get("betaclonia_passive_spawn_interval")) or 2
 if PASSIVE_INTERVAL <= 0 then
@@ -71,7 +71,7 @@ local BUCKET_CAPS = {
 
 --do mobs spawn?
 local mobs_spawn = minetest.settings:get_bool("mobs_spawn", true) ~= false
-local spawn_protected = minetest.settings:get_bool("mobs_spawn_protected") ~= false
+local spawn_protected = minetest.settings:get_bool("mobs_spawn_protected", false)
 local logging = minetest.settings:get_bool("mcl_logging_mobs_spawn", false)
 local mgname = minetest.get_mapgen_setting("mgname")
 
@@ -169,7 +169,13 @@ function mcl_mobs.spawn_setup(def)
 	assert(def.chance > 0, "Chance shouldn't be less than 1 (mob name: " .. def.name .. ")")
 
 	setmetatable(def, spawn_defaults_meta)
-	def.min_light = def.min_light or mob_def.min_light or (mob_def.spawn_class == "hostile" and 0)
+	if def.min_light == nil then
+		if mob_def.spawn_class == "passive" and not modern_lighting then
+			def.min_light = 9
+		else
+			def.min_light = mob_def.min_light or (mob_def.spawn_class == "hostile" and 0)
+		end
+	end
 	def.max_light = def.max_light or mob_def.max_light or (mob_def.spawn_class == "hostile" and 7)
 	def.min_height = def.min_height or mcl_vars["mg_" .. def.dimension .. "_min"]
 	def.max_height = def.max_height or mcl_vars["mg_" .. def.dimension .. "_max"]
@@ -247,6 +253,20 @@ local function dist_sqr(a, b)
 	local dy = b.y - a.y
 	local dz = b.z - a.z
 	return dx * dx + dy * dy + dz * dz
+end
+
+local function get_nearest_player_distance(pos)
+	local min_dist = math.huge
+	for _, player in ipairs(minetest.get_connected_players()) do
+		local player_pos = player:get_pos()
+		if player_pos then
+			local dist = vector.distance(player_pos, pos)
+			if dist < min_dist then
+				min_dist = dist
+			end
+		end
+	end
+	return min_dist
 end
 
 local function get_spawn_weight(def)
@@ -370,6 +390,13 @@ local function spawn_check(pos, spawn_def, ignore_caps)
 	local is_leaf = minetest.get_item_group(gotten_node, "leaves") ~= 0
 	local is_bedrock = gotten_node == "mcl_core:bedrock"
 	local is_grass = minetest.get_item_group(gotten_node, "grass_block") ~= 0
+	local nearest_player = get_nearest_player_distance(check_pos)
+	if nearest_player < 24 then
+		return false, "too close to player"
+	end
+	if nearest_player > 128 then
+		return false, "too far from player"
+	end
 
 	if check_pos.y < spawn_def.min_height then
 		return false, "too low"
@@ -537,6 +564,15 @@ local function get_spawn_target_xz(player_pos)
 	return x, z
 end
 
+local function get_chunk_target_xz(chunk_center)
+	local x = math_round(chunk_center.x + math.random(-7, 8))
+	local z = math_round(chunk_center.z + math.random(-7, 8))
+	if math.abs(x) > SPAWN_MAPGEN_LIMIT or math.abs(z) > SPAWN_MAPGEN_LIMIT then
+		return
+	end
+	return x, z
+end
+
 local function find_surface_spawn_pos(x, z, y_min, y_max, support_nodes)
 	local supports = minetest.find_nodes_in_area_under_air(
 		{x = x, y = y_min, z = z},
@@ -554,10 +590,19 @@ local function find_surface_spawn_pos(x, z, y_min, y_max, support_nodes)
 	end
 end
 
-local function get_next_mob_spawn_pos(player_pos, spawn_def)
+local function get_next_mob_spawn_pos(player_pos, spawn_def, chunk_center)
 	local distance = math.random()^2 * (MOB_SPAWN_ZONE_OUTER - MOB_SPAWN_ZONE_INNER) + MOB_SPAWN_ZONE_INNER
-	local dir = vector.random_direction()
-	local goal_pos = vector.offset(player_pos, dir.x * distance, dir.y * distance, dir.z * distance)
+	local goal_pos
+	if chunk_center then
+		local x, z = get_chunk_target_xz(chunk_center)
+		if not x or not z then
+			return
+		end
+		goal_pos = {x = x, y = player_pos.y, z = z}
+	else
+		local dir = vector.random_direction()
+		goal_pos = vector.offset(player_pos, dir.x * distance, dir.y * distance, dir.z * distance)
+	end
 
 	if not (math.abs(goal_pos.x) <= SPAWN_MAPGEN_LIMIT
 		and math.abs(goal_pos.y) <= SPAWN_MAPGEN_LIMIT
@@ -631,7 +676,7 @@ local function get_next_mob_spawn_pos(player_pos, spawn_def)
 	return valid_positions[math.random(#valid_positions)]
 end
 
-local function find_passive_ground_spawn_pos(player_pos, spawn_def)
+local function find_passive_ground_spawn_pos(player_pos, spawn_def, chunk_center)
 	local support_nodes = get_support_nodes_for_spawn_def(spawn_def)
 	local y_min, y_max = get_vertical_search_range(player_pos, spawn_def)
 	if not y_min or not y_max then
@@ -639,7 +684,12 @@ local function find_passive_ground_spawn_pos(player_pos, spawn_def)
 	end
 
 	for _ = 1, SURFACE_SEARCH_TRIES do
-		local x, z = get_spawn_target_xz(player_pos)
+		local x, z
+		if chunk_center then
+			x, z = get_chunk_target_xz(chunk_center)
+		else
+			x, z = get_spawn_target_xz(player_pos)
+		end
 		if x and z then
 			local spawn_pos = find_surface_spawn_pos(x, z, y_min, y_max, support_nodes)
 			if spawn_pos then
@@ -655,7 +705,7 @@ local function find_passive_ground_spawn_pos(player_pos, spawn_def)
 	end
 end
 
-local function resolve_spawn_position(spawn_def, spawn_pos)
+local function resolve_spawn_position(spawn_def, spawn_pos, player_pos)
 	if not spawn_pos then
 		return
 	end
@@ -667,6 +717,12 @@ local function resolve_spawn_position(spawn_def, spawn_pos)
 	if not spawn_pos then
 		return
 	end
+	if player_pos then
+		local dist = vector.distance(player_pos, spawn_pos)
+		if dist < MOB_SPAWN_ZONE_INNER or dist > MOB_SPAWN_ZONE_OUTER then
+			return
+		end
+	end
 	local entity_def = minetest.registered_entities[spawn_def.name]
 	if entity_def and entity_def.can_spawn and not entity_def.can_spawn(spawn_pos) then
 		return
@@ -674,15 +730,27 @@ local function resolve_spawn_position(spawn_def, spawn_pos)
 	return spawn_pos
 end
 
-local function find_group_member_spawn_pos(base_pos, spawn_def)
+local function find_group_member_spawn_pos(base_pos, spawn_def, player_pos, chunk_center)
 	if spawn_def.type_of_spawning == "ground" and is_passive_ground_spawn_def(spawn_def) then
 		local support_nodes = get_support_nodes_for_spawn_def(spawn_def)
 		local y_min = math.floor(base_pos.y) - 8
 		local y_max = math.floor(base_pos.y) + 8
 		for _ = 1, GROUP_SEARCH_TRIES do
-			local x = math_round(base_pos.x) + random_signed_offset(5)
-			local z = math_round(base_pos.z) + random_signed_offset(5)
+			local x
+			local z
+			if chunk_center then
+				x, z = get_chunk_target_xz(chunk_center)
+			else
+				x = math_round(base_pos.x) + random_signed_offset(5)
+				z = math_round(base_pos.z) + random_signed_offset(5)
+			end
 			local spawn_pos = find_surface_spawn_pos(x, z, y_min, y_max, support_nodes)
+			if spawn_pos and player_pos then
+				local dist = vector.distance(player_pos, spawn_pos)
+				if dist < MOB_SPAWN_ZONE_INNER or dist > MOB_SPAWN_ZONE_OUTER then
+					spawn_pos = nil
+				end
+			end
 			if spawn_pos then
 				return spawn_pos
 			end
@@ -706,22 +774,28 @@ local function find_group_member_spawn_pos(base_pos, spawn_def)
 	end
 end
 
-local function find_spawn_pos_for_def(player_pos, spawn_def)
+local function find_spawn_pos_for_def(player_pos, spawn_def, chunk_center)
 	if spawn_def.type_of_spawning == "ground" and is_passive_ground_spawn_def(spawn_def) then
-		return find_passive_ground_spawn_pos(player_pos, spawn_def)
+		return find_passive_ground_spawn_pos(player_pos, spawn_def, chunk_center)
 	end
-	return get_next_mob_spawn_pos(player_pos, spawn_def)
+	return get_next_mob_spawn_pos(player_pos, spawn_def, chunk_center)
 end
 
-local function try_spawn_def_at(spawn_pos, spawn_def, ignore_caps, sdata, idx, pack_size)
+local function try_spawn_def_at(spawn_pos, spawn_def, ignore_caps, sdata, idx, pack_size, player_pos)
 	if not spawn_pos then
 		return false
 	end
 	local check_pos = vector.new(spawn_pos.x, spawn_pos.y, spawn_pos.z)
+	if player_pos then
+		local dist = vector.distance(player_pos, check_pos)
+		if dist < MOB_SPAWN_ZONE_INNER or dist > MOB_SPAWN_ZONE_OUTER then
+			return false
+		end
+	end
 	if not spawn_check(check_pos, spawn_def, ignore_caps) then
 		return false
 	end
-	spawn_pos = resolve_spawn_position(spawn_def, spawn_pos)
+	spawn_pos = resolve_spawn_position(spawn_def, spawn_pos, player_pos)
 	if not spawn_pos then
 		return false
 	end
@@ -738,13 +812,13 @@ local function try_spawn_def_at(spawn_pos, spawn_def, ignore_caps, sdata, idx, p
 	return false
 end
 
-local function spawn_def_pack(player_pos, spawn_def)
+local function spawn_def_pack(player_pos, spawn_def, chunk_center)
 	local entity_def = minetest.registered_entities[spawn_def.name]
 	if not entity_def then
 		return 0
 	end
 
-	local base_pos = find_spawn_pos_for_def(player_pos, spawn_def)
+	local base_pos = find_spawn_pos_for_def(player_pos, spawn_def, chunk_center)
 	if not base_pos then
 		return 0
 	end
@@ -764,13 +838,13 @@ local function spawn_def_pack(player_pos, spawn_def)
 		end
 	end
 
-	if try_spawn_def_at(base_pos, spawn_def, false, spawn_sdata, 1, group_size) then
+	if try_spawn_def_at(base_pos, spawn_def, false, spawn_sdata, 1, group_size, player_pos) then
 		spawned = 1
 	end
 
 	for _ = 2, group_size do
-		local spawn_pos = find_group_member_spawn_pos(base_pos, spawn_def)
-		if try_spawn_def_at(spawn_pos, spawn_def, true, spawn_sdata, _, group_size) then
+		local spawn_pos = find_group_member_spawn_pos(base_pos, spawn_def, player_pos, chunk_center)
+		if try_spawn_def_at(spawn_pos, spawn_def, true, spawn_sdata, _, group_size, player_pos) then
 			spawned = spawned + 1
 		end
 	end
@@ -876,7 +950,36 @@ if mobs_spawn then
 		return defs[#defs]
 	end
 
-	local function run_bucket_for_player(player_pos, dimension, bucket)
+	local function collect_spawn_centers(players, dimension)
+		local seen = {}
+		local centers = {}
+		for _, player in ipairs(players) do
+			local player_pos = player:get_pos()
+			if player_pos and mcl_worlds.pos_to_dimension(player_pos) == dimension then
+				local chunk_x = math.floor(player_pos.x / 16)
+				local chunk_z = math.floor(player_pos.z / 16)
+				for dx = -8, 8 do
+					for dz = -8, 8 do
+						local cx = chunk_x + dx
+						local cz = chunk_z + dz
+						local key = cx .. ":" .. cz
+						if not seen[key] then
+							seen[key] = true
+							centers[#centers + 1] = {
+								x = cx * 16 + 8,
+								y = player_pos.y,
+								z = cz * 16 + 8,
+							}
+						end
+					end
+				end
+			end
+		end
+		table.shuffle(centers)
+		return centers
+	end
+
+	local function run_bucket_for_centers(player_pos, centers, dimension, bucket)
 		local defs = spawn_buckets[dimension][bucket]
 		if not defs or #defs == 0 then
 			return
@@ -888,13 +991,16 @@ if mobs_spawn then
 			return
 		end
 
-		for _ = 1, BUCKET_ATTEMPTS[bucket] or 1 do
+		for _ = 1, math.min(#centers, BUCKET_ATTEMPTS[bucket] or 1) do
 			if count_mobs_total_cap_by_name(name_lookup) >= bucket_cap then
 				break
 			end
 			local spawn_def = pick_weighted_spawn_def(dimension, bucket)
 			if spawn_def then
-				spawn_def_pack(player_pos, spawn_def)
+				local center = centers[math.random(#centers)]
+				if center then
+					spawn_def_pack(player_pos, spawn_def, center)
+				end
 			end
 		end
 	end
@@ -923,13 +1029,16 @@ if mobs_spawn then
 		if hostile_timer <= 0 then
 			hostile_timer = HOSTILE_INTERVAL
 			for _, player in ipairs(players) do
-				local pos = player:get_pos()
-				local dimension = mcl_worlds.pos_to_dimension(pos)
+				local player_pos = player:get_pos()
+				local dimension = mcl_worlds.pos_to_dimension(player_pos)
 				if spawn_buckets[dimension] then
-					run_bucket_for_player(pos, dimension, "hostile")
-					run_bucket_for_player(pos, dimension, "ambient")
-					run_bucket_for_player(pos, dimension, "water")
-					run_bucket_for_player(pos, dimension, "lava")
+					local centers = collect_spawn_centers({ player }, dimension)
+					if #centers > 0 then
+						run_bucket_for_centers(player_pos, centers, dimension, "hostile")
+						run_bucket_for_centers(player_pos, centers, dimension, "ambient")
+						run_bucket_for_centers(player_pos, centers, dimension, "water")
+						run_bucket_for_centers(player_pos, centers, dimension, "lava")
+					end
 				end
 			end
 		end
@@ -937,10 +1046,13 @@ if mobs_spawn then
 		if passive_timer <= 0 then
 			passive_timer = PASSIVE_INTERVAL
 			for _, player in ipairs(players) do
-				local pos = player:get_pos()
-				local dimension = mcl_worlds.pos_to_dimension(pos)
+				local player_pos = player:get_pos()
+				local dimension = mcl_worlds.pos_to_dimension(player_pos)
 				if spawn_buckets[dimension] then
-					run_bucket_for_player(pos, dimension, "passive")
+					local centers = collect_spawn_centers({ player }, dimension)
+					if #centers > 0 then
+						run_bucket_for_centers(player_pos, centers, dimension, "passive")
+					end
 				end
 			end
 		end

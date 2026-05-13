@@ -220,7 +220,12 @@ for _, slime_name in ipairs({
 	"mobs_mc:slime_small",
 	"mobs_mc:slime_big",
 }) do
-	local slime_spawner = table.merge (mobs_mc.default_spawner, {
+	local default_spawner = mcl_mobs.default_spawner or mobs_mc.default_spawner or {
+		test_spawn_position = function ()
+			return false
+		end,
+	}
+	local slime_spawner = table.merge (default_spawner, {
 		name = slime_name,
 		spawn_category = "monster",
 		spawn_placement = "ground",
@@ -235,10 +240,8 @@ for _, slime_name in ipairs({
 	function slime_spawner:test_spawn_position (spawn_pos, node_pos, sdata, node_cache,
 						    spawn_flag)
 		return in_slime_chunk (node_pos)
-			and mobs_mc.default_spawner.test_spawn_position (self, spawn_pos,
-									 node_pos, sdata,
-									 node_cache,
-									 spawn_flag)
+			and (mcl_mobs.default_spawner or default_spawner).test_spawn_position (
+				self, spawn_pos, node_pos, sdata, node_cache, spawn_flag)
 	end
 
 	mcl_mobs.register_spawner (slime_spawner)

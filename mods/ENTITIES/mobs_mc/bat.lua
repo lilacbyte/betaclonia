@@ -82,7 +82,11 @@ local function bat_maxlight ()
 	return 3
 end
 
-local default_spawner = mobs_mc.default_spawner
+local default_spawner = mcl_mobs.default_spawner or mobs_mc.default_spawner or {
+	test_spawn_position = function ()
+		return false
+	end,
+}
 local bat_spawner = table.merge (default_spawner, {
 	name = "mobs_mc:bat",
 	spawn_category = "ambient",
@@ -101,9 +105,8 @@ function bat_spawner:test_spawn_position (spawn_pos, node_pos, sdata, node_cache
 					  spawn_flag)
 	if spawn_pos.y < 0 then
 		local eligible
-			= default_spawner.test_spawn_position (self, spawn_pos, node_pos,
-							       sdata, node_cache,
-							       spawn_flag)
+			= (mcl_mobs.default_spawner or default_spawner).test_spawn_position (
+				self, spawn_pos, node_pos, sdata, node_cache, spawn_flag)
 		if eligible then
 			return minetest.get_node_light (node_pos) <= bat_maxlight ()
 				and not mcl_weather.can_see_outdoors (node_pos)

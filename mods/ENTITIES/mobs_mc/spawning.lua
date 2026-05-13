@@ -370,6 +370,7 @@ function mcl_mobs.register_spawner(spawner)
 end
 
 mcl_mobs.default_spawner = default_spawner
+mobs_mc.default_spawner = default_spawner
 
 local function make_spawn_table(base)
 	return setmetatable(table.copy(base), { __index = default_spawner })
